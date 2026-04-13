@@ -1,0 +1,7 @@
+.vercel
+.next
+node_modules
+.env.local
+.env*.local
+.DS_Store
+app/api/debug

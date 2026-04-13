@@ -1,0 +1,58 @@
+{
+  "framework": "nextjs",
+  "buildCommand": "pnpm build",
+  "installCommand": "pnpm install --no-frozen-lockfile",
+  "functions": {
+    "app/api/flights/search/route.ts": {
+      "maxDuration": 60
+    },
+    "app/api/hotels/search/route.ts": {
+      "maxDuration": 30
+    },
+    "app/api/mission/route.ts": {
+      "maxDuration": 60
+    },
+    "app/api/plan/route.ts": {
+      "maxDuration": 60
+    },
+    "app/api/chat/route.ts": {
+      "maxDuration": 60
+    },
+    "app/api/deals/route.ts": {
+      "maxDuration": 60
+    },
+    "app/api/missions/create/route.ts": {
+      "maxDuration": 30
+    },
+    "app/api/missions/[id]/propose/route.ts": {
+      "maxDuration": 60
+    },
+    "app/api/missions/[id]/confirm/route.ts": {
+      "maxDuration": 30
+    },
+    "app/api/missions/[id]/cancel/route.ts": {
+      "maxDuration": 30
+    },
+    "app/api/missions/[id]/confirm-deposit/route.ts": {
+      "maxDuration": 30
+    },
+    "app/api/webhooks/stripe/route.ts": {
+      "maxDuration": 30
+    },
+    "app/api/cron/monitor/route.ts": {
+      "maxDuration": 300
+    },
+    "app/api/agent/sweep/route.ts": {
+      "maxDuration": 300
+    },
+    "app/api/missions/[id]/prediction/route.ts": {
+      "maxDuration": 15
+    }
+  },
+  "crons": [
+    {
+      "path": "/api/cron/monitor",
+      "schedule": "0 8 * * *"
+    }
+  ]
+}

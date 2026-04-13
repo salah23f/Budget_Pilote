@@ -1,0 +1,29 @@
+type MissionCreated @entity(immutable: true) {
+  id: Bytes!
+  missionHash: Bytes!
+  user: Bytes!
+  budgetUsd: BigInt!
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type BookingExecuted @entity(immutable: true) {
+  id: Bytes!
+  missionHash: Bytes!
+  offerId: String!
+  priceUsd: BigInt!
+  bookingRef: String!
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type ReceiptIssued @entity(immutable: true) {
+  id: Bytes!
+  missionHash: Bytes!
+  receiptCidOrHash: String!
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}

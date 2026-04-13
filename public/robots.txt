@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /settings
+Disallow: /wallet
+
+Sitemap: https://faregenie.vercel.app/sitemap.xml

@@ -1,0 +1,73 @@
+name: Flyeas watcher
+
+# Keeps the AI agent "always watching" — runs every 15 minutes on
+# GitHub's free tier (2000 min/month for private repos, UNLIMITED for
+# public repos). Calls the /api/agent/sweep endpoint which:
+#   1. Loads every active mission
+#   2. Runs a fresh flight search
+#   3. Records a price sample into the time-series store
+#   4. Runs the statistical predictor
+#   5. Auto-buys (or creates a proposal) on BUY_NOW signals
+#
+# This is how Flyeas gives you Hopper-grade continuous monitoring
+# without Vercel Pro. Vercel Hobby's daily cron is the backup; this
+# workflow is the primary scheduler.
+#
+# Setup:
+#   1. Go to GitHub → Settings → Secrets and variables → Actions
+#   2. Add secret: FLYEAS_CRON_SECRET = same value as CRON_SECRET on Vercel
+#   3. Add secret: FLYEAS_BASE_URL = https://faregenie.vercel.app
+#   4. Commit this file — the workflow starts running automatically
+
+on:
+  schedule:
+    # Every 15 minutes. GitHub Actions cron has a minimum interval of
+    # 5 minutes; we use 15 to stay well under rate limits from
+    # Sky-Scrapper / Kiwi upstream.
+    - cron: '*/15 * * * *'
+  # Allow manual triggering from the Actions tab for debugging
+  workflow_dispatch:
+
+# Don't queue overlapping runs — if a previous sweep is still running
+# (e.g. Sky-Scrapper is slow) skip this tick instead of stacking up.
+concurrency:
+  group: flyeas-watcher
+  cancel-in-progress: false
+
+jobs:
+  sweep:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Call /api/agent/sweep
+        env:
+          BASE_URL: ${{ secrets.FLYEAS_BASE_URL }}
+          CRON_SECRET: ${{ secrets.FLYEAS_CRON_SECRET }}
+        run: |
+          if [ -z "$BASE_URL" ]; then
+            echo "::error::FLYEAS_BASE_URL secret is not set"
+            exit 1
+          fi
+          if [ -z "$CRON_SECRET" ]; then
+            echo "::error::FLYEAS_CRON_SECRET secret is not set"
+            exit 1
+          fi
+
+          echo "Calling sweep endpoint at $BASE_URL/api/agent/sweep"
+          response=$(curl -sS -w "\n%{http_code}" -X POST \
+            "$BASE_URL/api/agent/sweep" \
+            -H "authorization: Bearer $CRON_SECRET" \
+            -H "content-type: application/json" \
+            --max-time 280 \
+            -d '{"source":"github-actions"}')
+
+          http_code=$(echo "$response" | tail -n 1)
+          body=$(echo "$response" | sed '$d')
+
+          echo "HTTP $http_code"
+          echo "$body" | head -c 2000
+
+          if [ "$http_code" != "200" ]; then
+            echo "::error::Sweep failed with HTTP $http_code"
+            exit 1
+          fi

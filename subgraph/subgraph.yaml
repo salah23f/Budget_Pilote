@@ -1,0 +1,30 @@
+specVersion: 1.2.0
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: BudgetPilotReceipt
+    network: optimism-sepolia
+    source:
+      address: '0x0000000000000000000000000000000000000000'
+      abi: BudgetPilotReceipt
+      startBlock: 0
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - MissionCreated
+        - BookingExecuted
+        - ReceiptIssued
+      abis:
+        - name: BudgetPilotReceipt
+          file: ./abis/BudgetPilotReceipt.json
+      eventHandlers:
+        - event: MissionCreated(indexed bytes32,indexed address,uint256)
+          handler: handleMissionCreated
+        - event: BookingExecuted(indexed bytes32,string,uint256,string)
+          handler: handleBookingExecuted
+        - event: ReceiptIssued(indexed bytes32,string)
+          handler: handleReceiptIssued
+      file: ./src/mapping.ts
