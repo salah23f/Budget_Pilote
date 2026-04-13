@@ -106,7 +106,7 @@ export default function AccountPage() {
                     fullWidth
                     onClick={() => setPlan(p.tier)}
                   >
-                    {p.price > plan ? 'Upgrade' : p.price === 0 ? 'Downgrade' : 'Switch'}
+                    {p.price > currentPlan.price ? 'Upgrade' : p.price === 0 ? 'Downgrade' : 'Switch'}
                   </Button>
                 )}
               </div>
