@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { usePathname } from 'next/navigation';
 
 type FlightCard = {
   kind: 'flight';
@@ -180,6 +181,7 @@ function ResultCardView({ card, featured }: { card: ResultCard; featured?: boole
 }
 
 export default function ChatPanel() {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([WELCOME]);
   const [input, setInput] = useState('');
@@ -187,6 +189,9 @@ export default function ChatPanel() {
   const [mounted, setMounted] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Only show chat FAB on dashboard
+  const showFab = pathname === '/dashboard';
 
   // Hydrate welcome timestamp after mount (avoids server/client time mismatch)
   useEffect(() => {
@@ -263,11 +268,11 @@ export default function ChatPanel() {
 
   return (
     <>
-      {/* ── Floating button ── */}
-      {!open && (
+      {/* ── Floating button — dashboard only ── */}
+      {!open && showFab && (
         <button
           onClick={() => setOpen(true)}
-          className="fixed bottom-5 right-5 z-50 flex h-14 w-14 items-center justify-center rounded-2xl shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl"
+          className="fixed bottom-24 right-4 lg:bottom-6 lg:right-5 z-[90] flex h-14 w-14 items-center justify-center rounded-2xl shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl"
           style={{
             background: 'var(--flyeas-gradient, linear-gradient(135deg, #F59E0B, #F97316, #EF4444))',
             boxShadow: '0 8px 30px color-mix(in srgb, var(--flyeas-accent, #F59E0B) 40%, transparent)',
