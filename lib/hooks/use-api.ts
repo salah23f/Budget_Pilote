@@ -32,20 +32,17 @@ async function postFetcher<T>(key: string): Promise<T> {
 
 /**
  * GET request with SWR caching, deduplication, and revalidation.
- * Usage: const { data, error, isLoading } = useAPI('/api/airports?q=paris')
  */
 export function useAPI<T = any>(url: string | null, config?: SWRConfiguration) {
   return useSWR<T>(url, fetcher, {
     revalidateOnFocus: false,
-    dedupingInterval: 30_000, // 30s dedup
+    dedupingInterval: 30_000,
     ...config,
   });
 }
 
 /**
  * POST search with SWR caching.
- * The key includes the body so different payloads are cached separately.
- * Usage: const { data } = useSearchAPI('/api/flights/search', { origin: 'CDG' })
  */
 export function useSearchAPI<T = any>(
   url: string | null,
@@ -55,19 +52,18 @@ export function useSearchAPI<T = any>(
   const key = url && body ? `${url}::BODY::${JSON.stringify(body)}` : null;
   return useSWR<T>(key, postFetcher, {
     revalidateOnFocus: false,
-    dedupingInterval: 60_000, // 60s dedup for searches
+    dedupingInterval: 60_000,
     ...config,
   });
 }
 
 /**
  * Airport/location autocomplete with aggressive caching.
- * Results are cached for 5 minutes since airport data rarely changes.
  */
 export function useAutocomplete<T = any>(url: string | null) {
   return useSWR<T>(url, fetcher, {
     revalidateOnFocus: false,
-    dedupingInterval: 300_000, // 5 min
+    dedupingInterval: 300_000,
     keepPreviousData: true,
   });
 }
