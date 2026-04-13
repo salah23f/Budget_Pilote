@@ -122,7 +122,7 @@ export default function MultiCityPage() {
                   placeholder="City..."
                   value={leg.originCode}
                   onChange={(sel: AirportSelection) => {
-                    updateLeg(leg.id, 'origin', sel.name || sel.code);
+                    updateLeg(leg.id, 'origin', sel.code);
                     updateLeg(leg.id, 'originCode', sel.code);
                   }}
                 />
@@ -131,7 +131,7 @@ export default function MultiCityPage() {
                   placeholder="City..."
                   value={leg.destinationCode}
                   onChange={(sel: AirportSelection) => {
-                    updateLeg(leg.id, 'destination', sel.name || sel.code);
+                    updateLeg(leg.id, 'destination', sel.code);
                     updateLeg(leg.id, 'destinationCode', sel.code);
                   }}
                 />
