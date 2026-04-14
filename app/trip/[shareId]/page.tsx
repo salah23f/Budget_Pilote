@@ -6,11 +6,11 @@ import SharedTripClient from './SharedTripClient';
 /* ------------------------------------------------------------------ */
 
 interface PageProps {
-  params: Promise<{ shareId: string }>;
+  params: { shareId: string };
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { shareId } = await params;
+  const { shareId } = params;
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://faregenie.vercel.app';
 
   try {
@@ -57,7 +57,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 /*  Page                                                                */
 /* ------------------------------------------------------------------ */
 
-export default async function SharedTripPage({ params }: PageProps) {
-  const { shareId } = await params;
+export default function SharedTripPage({ params }: PageProps) {
+  const { shareId } = params;
   return <SharedTripClient shareId={shareId} />;
 }

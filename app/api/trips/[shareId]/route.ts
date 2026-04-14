@@ -14,9 +14,9 @@ async function getSupabase() {
 
 export async function GET(
   _req: NextRequest,
-  { params }: { params: Promise<{ shareId: string }> },
+  { params }: { params: { shareId: string } },
 ) {
-  const { shareId } = await params;
+  const { shareId } = params;
 
   if (!shareId || shareId.length !== 8) {
     return NextResponse.json({ error: 'Invalid share ID' }, { status: 400 });
