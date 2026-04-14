@@ -57,6 +57,15 @@ const navItems = [
     ),
   },
   {
+    label: 'Group Trip',
+    href: '/group-trip',
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="7" cy="6" r="3" /><circle cx="14" cy="8" r="2.5" /><path d="M2 17c0-3 2.5-5 5-5s5 2 5 5" /><path d="M12 17c0-2.5 1.5-4 3.5-4s3.5 1.5 3.5 4" />
+      </svg>
+    ),
+  },
+  {
     label: 'Missions',
     href: '/missions',
     icon: (
