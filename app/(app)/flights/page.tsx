@@ -22,6 +22,7 @@ import { PriceHistory } from '@/components/price-history';
 import { PriceComparator } from '@/components/price-comparator';
 import { WeatherWidget } from '@/components/weather-widget';
 import { FlightDetailModal } from '@/components/flight-detail-modal';
+import { FlightComparisonModal } from '@/components/flight-comparison-modal';
 import { DestinationGuide } from '@/components/destination-guide';
 import { CurrencyConverter } from '@/components/currency-converter';
 
@@ -197,6 +198,10 @@ export default function FlightsPage() {
   const [error, setError] = useState<string | null>(null);
   const [searched, setSearched] = useState(false);
   const [selectedFlight, setSelectedFlight] = useState<any | null>(null);
+
+  /* -- Comparison state -- */
+  const [compareSet, setCompareSet] = useState<Set<string>>(new Set());
+  const [showComparison, setShowComparison] = useState(false);
 
   /* -- Sort -- */
   const [sortBy, setSortBy] = useState('best');
@@ -424,11 +429,23 @@ export default function FlightsPage() {
           <h1 className="text-2xl font-bold text-white tracking-tight">
             Search Flights
           </h1>
-          {searched && !loading && flights.length > 0 && (
-            <Badge variant="success" size="sm">
-              Live prices
-            </Badge>
-          )}
+          <div className="flex items-center gap-3">
+            {searched && !loading && flights.length > 0 && (
+              <Badge variant="success" size="sm">
+                Live prices
+              </Badge>
+            )}
+            <Link
+              href="/flights/calendar"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-white/60 hover:text-white hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all"
+            >
+              <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="4" width="14" height="14" rx="2" />
+                <path d="M3 8h14M7 2v4M13 2v4" />
+              </svg>
+              Calendar view
+            </Link>
+          </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
           <div className="md:col-span-3">
@@ -844,7 +861,30 @@ export default function FlightsPage() {
             )}
 
             {results.map((f) => (
-              <Card key={f.id} hoverable padding="none" className="overflow-hidden card-interactive stagger-item cursor-pointer" onClick={() => setSelectedFlight(f)}>
+              <Card key={f.id} hoverable padding="none" className="overflow-hidden card-interactive stagger-item cursor-pointer relative" onClick={() => setSelectedFlight(f)}>
+                {/* Compare checkbox */}
+                <label
+                  className="absolute top-3 right-3 z-10 flex items-center gap-1.5 cursor-pointer"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <input
+                    type="checkbox"
+                    checked={compareSet.has(f.id)}
+                    onChange={() => {
+                      setCompareSet((prev) => {
+                        const next = new Set(prev);
+                        if (next.has(f.id)) {
+                          next.delete(f.id);
+                        } else if (next.size < 3) {
+                          next.add(f.id);
+                        }
+                        return next;
+                      });
+                    }}
+                    className="w-4 h-4 rounded accent-amber-400 cursor-pointer"
+                  />
+                  <span className="text-[10px] text-white/40 select-none">Compare</span>
+                </label>
                 <div className="p-5 md:p-6">
                   <div className="flex flex-col md:flex-row md:items-center gap-5">
                     {/* Airline + flight info */}
@@ -1138,6 +1178,51 @@ export default function FlightsPage() {
           destination={destination}
           departDate={departDate}
           onClose={() => setSelectedFlight(null)}
+        />
+      )}
+
+      {/* Floating compare bar */}
+      {compareSet.size >= 2 && (
+        <div
+          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-3 px-5 py-3 rounded-2xl shadow-2xl"
+          style={{
+            background: 'rgba(28,25,23,0.92)',
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
+            border: '1px solid rgba(245,158,11,0.25)',
+          }}
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="rgba(245,158,11,0.7)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="1" y="1" width="5" height="14" rx="1" />
+            <rect x="10" y="4" width="5" height="11" rx="1" />
+          </svg>
+          <span className="text-sm text-white/80 font-medium">
+            {compareSet.size} flights selected
+          </span>
+          <Button
+            size="sm"
+            variant="primary"
+            onClick={() => setShowComparison(true)}
+          >
+            Compare
+          </Button>
+          <button
+            className="text-xs text-white/40 hover:text-white/70 transition ml-1"
+            onClick={() => setCompareSet(new Set())}
+          >
+            Clear
+          </button>
+        </div>
+      )}
+
+      {/* Flight comparison modal */}
+      {showComparison && (
+        <FlightComparisonModal
+          flights={flights.filter((f) => compareSet.has(f.id))}
+          onClose={() => setShowComparison(false)}
+          origin={origin}
+          destination={destination}
+          departDate={departDate}
         />
       )}
     </div>

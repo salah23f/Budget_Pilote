@@ -18,6 +18,10 @@ interface UserState {
   markAsRead: (id: string) => void;
   markAllAsRead: () => void;
   setCurrentChain: (chain: string) => void;
+
+  /* Supabase preference sync */
+  syncPreferences: (userId: string) => Promise<void>;
+  loadPreferences: (userId: string) => Promise<void>;
 }
 
 export const useUserStore = create<UserState>()(
@@ -85,6 +89,64 @@ export const useUserStore = create<UserState>()(
       },
 
       setCurrentChain: (chain) => set({ currentChain: chain }),
+
+      /* -------------------------------------------------------------- */
+      /*  Supabase preference sync                                       */
+      /* -------------------------------------------------------------- */
+
+      /**
+       * Push the current user preferences to Supabase. Gracefully
+       * no-ops if the API is unreachable or Supabase is not configured.
+       */
+      syncPreferences: async (userId: string) => {
+        const { user } = get();
+        if (!user?.preferences) return;
+        try {
+          const res = await fetch('/api/user/preferences', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId, preferences: user.preferences }),
+          });
+          if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            console.warn('[user-store] sync preferences failed:', err);
+          }
+        } catch (err) {
+          console.warn('[user-store] sync preferences failed:', err);
+        }
+      },
+
+      /**
+       * Load preferences from Supabase and merge into the current user
+       * profile. Remote values overwrite local values. If there is no
+       * remote record yet the local preferences are kept as-is.
+       */
+      loadPreferences: async (userId: string) => {
+        try {
+          const res = await fetch(
+            `/api/user/preferences?userId=${encodeURIComponent(userId)}`
+          );
+          if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            console.warn('[user-store] load preferences failed:', err);
+            return;
+          }
+          const { preferences } = await res.json();
+          if (!preferences) return;
+
+          const current = get().user;
+          if (current) {
+            set({
+              user: {
+                ...current,
+                preferences: { ...current.preferences, ...preferences },
+              },
+            });
+          }
+        } catch (err) {
+          console.warn('[user-store] load preferences failed:', err);
+        }
+      },
     }),
     { name: 'sv-user-store' }
   )

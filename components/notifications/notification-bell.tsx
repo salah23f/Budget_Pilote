@@ -1,15 +1,16 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { useUserStore } from '@/stores/user-store';
 
 export type Notification = {
   id: string;
-  type: 'price_drop' | 'booking' | 'mission' | 'wallet' | 'system';
+  type: 'price_drop' | 'booking' | 'booking_confirmed' | 'mission' | 'mission_created' | 'proposal' | 'wallet' | 'system';
   title: string;
   body: string;
   timestamp: Date;
   read: boolean;
+  data?: Record<string, unknown>;
 };
 
 // Load notifications from localStorage (real events, not mocks)
@@ -76,23 +77,34 @@ export function pushNotification(n: Omit<Notification, 'id' | 'timestamp' | 'rea
 
 function getTypeIcon(type: Notification['type']) {
   switch (type) {
-    case 'price_drop':
-      return (
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--flyeas-accent, #F59E0B)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M8 2v12M4 10l4 4 4-4" />
-        </svg>
-      );
-    case 'booking':
-      return (
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#22c55e" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M3 8.5l3.5 3.5L13 5" />
-        </svg>
-      );
     case 'mission':
+    case 'mission_created':
       return (
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#f59e0b" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="8" cy="8" r="6" />
           <circle cx="8" cy="8" r="2" />
+        </svg>
+      );
+    case 'price_drop':
+      return (
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--flyeas-accent, #F59E0B)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 3L8 10 4 3" />
+          <path d="M4 13h8" />
+        </svg>
+      );
+    case 'proposal':
+      return (
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#60a5fa" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M4 2h8a1 1 0 011 1v10a1 1 0 01-1 1H4a1 1 0 01-1-1V3a1 1 0 011-1z" />
+          <path d="M6 5h4M6 8h4M6 11h2" />
+        </svg>
+      );
+    case 'booking':
+    case 'booking_confirmed':
+      return (
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#22c55e" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="8" cy="8" r="6" />
+          <path d="M5.5 8l2 2 3.5-4" />
         </svg>
       );
     case 'wallet':
@@ -104,6 +116,7 @@ function getTypeIcon(type: Notification['type']) {
         </svg>
       );
     case 'system':
+    default:
       return (
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#64748b" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="8" cy="8" r="6" />
@@ -118,12 +131,17 @@ function getTypeColor(type: Notification['type']) {
     case 'price_drop':
       return 'color-mix(in srgb, var(--flyeas-accent, #F59E0B) 12%, transparent)';
     case 'booking':
+    case 'booking_confirmed':
       return 'rgba(34,197,94,0.12)';
     case 'mission':
+    case 'mission_created':
       return 'color-mix(in srgb, var(--flyeas-accent, #F59E0B) 12%, transparent)';
+    case 'proposal':
+      return 'rgba(96,165,250,0.12)';
     case 'wallet':
       return 'rgba(167,139,250,0.12)';
     case 'system':
+    default:
       return 'rgba(100,116,139,0.12)';
   }
 }
@@ -152,6 +170,50 @@ export default function NotificationBell() {
     setUnreadNotifications(unreadCount);
   }, [unreadCount, setUnreadNotifications]);
 
+  // Fetch notifications from API if the user has an id
+  const fetchFromApi = useCallback(async () => {
+    try {
+      const stored = localStorage.getItem('sv_user');
+      if (!stored) return;
+      const user = JSON.parse(stored);
+      const userId = user.id || user.email;
+      if (!userId) return;
+
+      const res = await fetch(`/api/notifications?userId=${encodeURIComponent(userId)}&limit=20`);
+      if (!res.ok) return;
+      const json = await res.json();
+      if (!json.success || !json.notifications?.length) return;
+
+      // Merge API notifications with local ones
+      const apiNotifs: Notification[] = json.notifications.map((n: any) => ({
+        id: n.id,
+        type: n.type,
+        title: n.title,
+        body: n.body,
+        timestamp: new Date(n.created_at),
+        read: n.read ?? false,
+        data: n.data,
+      }));
+
+      setNotifications((prev) => {
+        const localIds = new Set(prev.map((p) => p.id));
+        const newFromApi = apiNotifs.filter((a) => !localIds.has(a.id));
+        if (newFromApi.length === 0) return prev;
+        const merged = [...prev, ...newFromApi].sort(
+          (a, b) => b.timestamp.getTime() - a.timestamp.getTime(),
+        );
+        saveNotifications(merged);
+        return merged;
+      });
+    } catch {
+      // Silently fail — local notifications still work
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchFromApi();
+  }, [fetchFromApi]);
+
   // Listen for new notifications pushed from other components
   useEffect(() => {
     function reload() { setNotifications(loadNotifications()); }
@@ -176,6 +238,14 @@ export default function NotificationBell() {
       saveNotifications(updated);
       return updated;
     });
+    // Also mark as read on the API
+    notifications.filter((n) => !n.read).forEach((n) => {
+      fetch('/api/notifications', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: n.id, read: true }),
+      }).catch(() => {});
+    });
   }
 
   function markRead(id: string) {
@@ -184,6 +254,12 @@ export default function NotificationBell() {
       saveNotifications(updated);
       return updated;
     });
+    // Also mark as read on the API
+    fetch('/api/notifications', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, read: true }),
+    }).catch(() => {});
   }
 
   return (
@@ -257,7 +333,9 @@ export default function NotificationBell() {
                 <p className="text-sm muted">No notifications yet</p>
               </div>
             ) : (
-              notifications.map((n) => (
+              [...notifications]
+                .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
+                .map((n) => (
                 <button
                   key={n.id}
                   onClick={() => markRead(n.id)}

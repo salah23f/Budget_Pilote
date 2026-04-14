@@ -14,6 +14,7 @@ import {
 import { buildBookingDeepLink } from '@/lib/payments/booking-link';
 import { watchMission } from '@/lib/agent/watcher';
 import type { MissionProposal, Offer } from '@/lib/types';
+import { dealFoundEmail } from '@/lib/email-templates';
 
 /** Minimum predictor confidence required to auto-buy without asking */
 const AUTO_BUY_MIN_CONFIDENCE = 0.6;
@@ -273,6 +274,38 @@ export async function POST(
       }
 
       await createProposal(proposal);
+
+      // Send deal-found email (non-blocking)
+      if ((mission as any).alertEmailEnabled && (mission as any).email && process.env.RESEND_API_KEY) {
+        try {
+          const { Resend } = await import('resend');
+          const resend = new Resend(process.env.RESEND_API_KEY);
+          const emailData = dealFoundEmail({
+            userName: (mission as any).userName || (mission as any).email.split('@')[0],
+            origin: mission.origin,
+            destination: mission.destination,
+            airline: snapshot.airline,
+            price: cheapest.priceUsd,
+            oldPrice: mission.bestSeenPrice != null && mission.bestSeenPrice > cheapest.priceUsd
+              ? mission.bestSeenPrice : undefined,
+            percentOff: mission.bestSeenPrice != null && mission.bestSeenPrice > cheapest.priceUsd
+              ? Math.round((1 - cheapest.priceUsd / mission.bestSeenPrice) * 100) : undefined,
+            departureTime: cheapest.departureTime || '',
+            deepLink: deepLink.url,
+            missionId,
+          });
+          await resend.emails.send({
+            from: 'Flyeas <onboarding@resend.dev>',
+            to: (mission as any).email,
+            subject: emailData.subject,
+            html: emailData.html,
+          });
+          console.log('[missions/propose] auto_bought email sent', { missionId });
+        } catch (emailErr: any) {
+          console.warn('[missions/propose] auto_bought email failed', { error: emailErr?.message });
+        }
+      }
+
       console.log('[missions/propose] auto_bought', {
         ...logCtx,
         ms: Date.now() - started,
@@ -319,6 +352,37 @@ export async function POST(
     };
     await createProposal(proposal);
     await updateMission(missionId, { status: 'proposal_pending' });
+
+    // Send deal-found email for pending proposal (non-blocking)
+    if ((mission as any).alertEmailEnabled && (mission as any).email && process.env.RESEND_API_KEY) {
+      try {
+        const { Resend } = await import('resend');
+        const resend = new Resend(process.env.RESEND_API_KEY);
+        const emailData = dealFoundEmail({
+          userName: (mission as any).userName || (mission as any).email.split('@')[0],
+          origin: mission.origin,
+          destination: mission.destination,
+          airline: snapshot.airline,
+          price: cheapest.priceUsd,
+          oldPrice: mission.bestSeenPrice != null && mission.bestSeenPrice > cheapest.priceUsd
+            ? mission.bestSeenPrice : undefined,
+          percentOff: mission.bestSeenPrice != null && mission.bestSeenPrice > cheapest.priceUsd
+            ? Math.round((1 - cheapest.priceUsd / mission.bestSeenPrice) * 100) : undefined,
+          departureTime: cheapest.departureTime || '',
+          deepLink: deepLink.url,
+          missionId,
+        });
+        await resend.emails.send({
+          from: 'Flyeas <onboarding@resend.dev>',
+          to: (mission as any).email,
+          subject: emailData.subject,
+          html: emailData.html,
+        });
+        console.log('[missions/propose] pending proposal email sent', { missionId });
+      } catch (emailErr: any) {
+        console.warn('[missions/propose] pending proposal email failed', { error: emailErr?.message });
+      }
+    }
 
     console.log('[missions/propose] pending proposal', {
       ...logCtx,

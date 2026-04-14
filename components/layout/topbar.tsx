@@ -5,6 +5,9 @@ import { useRouter } from 'next/navigation';
 import { useWallet } from '@/components/wallet-provider';
 import { useUserStore } from '@/stores/user-store';
 import { useSavingsStore } from '@/lib/store/savings-store';
+import { useThemeStore } from '@/lib/store/theme-store';
+import { useLocale } from '@/lib/i18n';
+import type { Locale } from '@/lib/i18n';
 import Link from 'next/link';
 
 type TopbarProps = {
@@ -15,6 +18,7 @@ export default function Topbar({ onMenuToggle }: TopbarProps) {
   const router = useRouter();
   const { walletAddress } = useWallet();
   const { name, unreadNotifications } = useUserStore();
+  const { locale, setLocale, t } = useLocale();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [searchFocused, setSearchFocused] = useState(false);
@@ -64,10 +68,10 @@ export default function Topbar({ onMenuToggle }: TopbarProps) {
   }
 
   const quickLinks = [
-    { label: 'Search Flights', href: '/flights', icon: '✈️' },
-    { label: 'Search Hotels', href: '/hotels', icon: '🏨' },
-    { label: 'New Mission', href: '/missions/new', icon: '🎯' },
-    { label: 'Wallet', href: '/wallet', icon: '💰' },
+    { label: t('pages.searchFlights'), href: '/flights', icon: '✈️' },
+    { label: t('pages.searchHotels'), href: '/hotels', icon: '🏨' },
+    { label: t('misc.newMission'), href: '/missions/new', icon: '🎯' },
+    { label: t('misc.wallet'), href: '/wallet', icon: '💰' },
   ];
 
   return (
@@ -91,7 +95,7 @@ export default function Topbar({ onMenuToggle }: TopbarProps) {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => setSearchFocused(true)}
-              placeholder="Where do you want to go?"
+              placeholder={t('topbar.searchPlaceholder')}
               className="w-full rounded-xl py-2.5 pl-10 pr-4 text-sm text-white outline-none transition-all"
               style={{
                 background: searchFocused ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.04)',
@@ -104,7 +108,7 @@ export default function Topbar({ onMenuToggle }: TopbarProps) {
         {/* Quick links dropdown */}
         {searchFocused && !searchQuery && (
           <div className="absolute top-full left-0 right-0 mt-2 rounded-xl overflow-hidden shadow-2xl" style={{ background: '#1C1917', border: '1px solid rgba(255,255,255,0.08)' }}>
-            <p className="px-4 pt-3 pb-1.5 text-[10px] font-medium text-white/30 uppercase tracking-wider">Quick access</p>
+            <p className="px-4 pt-3 pb-1.5 text-[10px] font-medium text-white/30 uppercase tracking-wider">{t('misc.quickAccess')}</p>
             {quickLinks.map((link) => (
               <Link
                 key={link.href}
@@ -123,6 +127,9 @@ export default function Topbar({ onMenuToggle }: TopbarProps) {
       <div className="flex items-center gap-1.5">
         {/* Savings badge */}
         <SavingsBadge />
+
+        {/* Theme toggle */}
+        <ThemeToggle />
 
         {/* Notification bell */}
         <button className="relative p-2 rounded-xl hover:bg-white/5 transition" aria-label="Notifications">
@@ -163,20 +170,30 @@ export default function Topbar({ onMenuToggle }: TopbarProps) {
             <div className="absolute right-0 top-full mt-2 py-1.5 rounded-xl min-w-[180px] shadow-2xl" style={{ background: '#1C1917', border: '1px solid rgba(255,255,255,0.08)' }}>
               <div className="px-4 py-2 mb-1" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
                 <p className="text-sm font-medium text-white">{name}</p>
-                <p className="text-[11px] text-white/30">Free plan</p>
+                <p className="text-[11px] text-white/30">{t('misc.freePlan')}</p>
               </div>
               {[
-                { label: 'Settings', href: '/settings' },
-                { label: 'Wallet', href: '/wallet' },
-                { label: 'Terms', href: '/legal/terms' },
+                { label: t('sidebar.settings'), href: '/settings' },
+                { label: t('misc.wallet'), href: '/wallet' },
               ].map((item) => (
                 <Link key={item.href} href={item.href} className="block px-4 py-2 text-[13px] text-white/60 hover:bg-white/5 hover:text-white transition" onClick={() => setUserMenuOpen(false)}>
                   {item.label}
                 </Link>
               ))}
+              <div className="px-4 py-2 flex items-center gap-2 text-[13px] text-white/60">
+                <span className="text-white/30">Lang:</span>
+                {(['en', 'fr', 'es'] as Locale[]).map((l) => (
+                  <button key={l} onClick={() => setLocale(l)} className={locale === l ? 'text-amber-400 font-semibold' : 'hover:text-white'}>
+                    {l.toUpperCase()}
+                  </button>
+                ))}
+              </div>
+              <Link href="/legal/terms" className="block px-4 py-2 text-[13px] text-white/60 hover:bg-white/5 hover:text-white transition" onClick={() => setUserMenuOpen(false)}>
+                {t('misc.terms')}
+              </Link>
               <div className="my-1 mx-3" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }} />
               <button className="block w-full text-left px-4 py-2 text-[13px] text-red-400/70 hover:bg-white/5 hover:text-red-400 transition" onClick={() => { localStorage.removeItem('sv_user'); window.location.href = '/'; }}>
-                Log out
+                {t('auth.logOut')}
               </button>
             </div>
           )}
@@ -203,5 +220,37 @@ function SavingsBadge() {
       </svg>
       ${Math.round(totalSaved)} saved
     </div>
+  );
+}
+
+function SunIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="10" cy="10" r="3.5" />
+      <path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42" />
+    </svg>
+  );
+}
+
+function MoonIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17.5 10.5a7.5 7.5 0 01-10-10A7.5 7.5 0 1017.5 10.5z" />
+    </svg>
+  );
+}
+
+function ThemeToggle() {
+  const mode = useThemeStore((s) => s.mode);
+  const toggleMode = useThemeStore((s) => s.toggleMode);
+
+  return (
+    <button
+      onClick={toggleMode}
+      className="p-2 rounded-xl hover:bg-white/5 transition"
+      aria-label={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+    >
+      {mode === 'dark' ? <SunIcon /> : <MoonIcon />}
+    </button>
   );
 }

@@ -4,10 +4,11 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useUserStore } from '@/stores/user-store';
 import { useStreakStore } from '@/lib/store/streak-store';
+import { useLocale } from '@/lib/i18n';
 
 const navItems = [
   {
-    label: 'Dashboard',
+    labelKey: 'sidebar.dashboard',
     href: '/dashboard',
     icon: (
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -19,7 +20,7 @@ const navItems = [
     ),
   },
   {
-    label: 'Trip Builder',
+    labelKey: 'sidebar.tripBuilder',
     href: '/trip-builder',
     icon: (
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -28,7 +29,7 @@ const navItems = [
     ),
   },
   {
-    label: 'Flights',
+    labelKey: 'sidebar.flights',
     href: '/flights',
     icon: (
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -37,7 +38,7 @@ const navItems = [
     ),
   },
   {
-    label: 'Hotels',
+    labelKey: 'sidebar.hotels',
     href: '/hotels',
     icon: (
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -48,7 +49,7 @@ const navItems = [
     ),
   },
   {
-    label: 'Cars',
+    labelKey: 'sidebar.cars',
     href: '/cars',
     icon: (
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -57,7 +58,7 @@ const navItems = [
     ),
   },
   {
-    label: 'Group Trip',
+    labelKey: 'sidebar.groupTrip',
     href: '/group-trip',
     icon: (
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -66,7 +67,7 @@ const navItems = [
     ),
   },
   {
-    label: 'Missions',
+    labelKey: 'sidebar.missions',
     href: '/missions',
     icon: (
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -77,7 +78,7 @@ const navItems = [
     ),
   },
   {
-    label: 'Favorites',
+    labelKey: 'sidebar.favorites',
     href: '/favorites',
     icon: (
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -86,7 +87,7 @@ const navItems = [
     ),
   },
   {
-    label: 'Bookings',
+    labelKey: 'sidebar.bookings',
     href: '/bookings',
     icon: (
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -96,7 +97,16 @@ const navItems = [
     ),
   },
   {
-    label: 'Account',
+    labelKey: 'sidebar.rewards',
+    href: '/rewards',
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M10 2L12.2 7.2L18 7.8L13.8 11.6L15 17.2L10 14.2L5 17.2L6.2 11.6L2 7.8L7.8 7.2L10 2Z" />
+      </svg>
+    ),
+  },
+  {
+    labelKey: 'sidebar.account',
     href: '/account',
     icon: (
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -105,7 +115,7 @@ const navItems = [
     ),
   },
   {
-    label: 'Settings',
+    labelKey: 'sidebar.settings',
     href: '/settings',
     icon: (
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -124,6 +134,7 @@ type SidebarProps = {
 export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
   const name = useUserStore((s) => s.name);
+  const { t } = useLocale();
 
   return (
     <>
@@ -182,7 +193,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                 className={`sidebar-nav-item ${isActive ? 'active' : ''}`}
               >
                 {item.icon}
-                <span>{item.label}</span>
+                <span>{t(item.labelKey)}</span>
               </Link>
             );
           })}
@@ -202,7 +213,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" />
           </svg>
-          Log out
+          {t('auth.logOut')}
         </button>
 
         {/* User section */}

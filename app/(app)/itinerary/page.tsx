@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { toast } from 'sonner';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -159,18 +160,65 @@ export default function ItineraryPage() {
       {favorites.length > 0 && (
         <div className="text-center pt-4">
           <button
-            onClick={() => {
-              const text = `My trip to ${destination}:\n${flights.length} flights ($${totalFlightCost})\n${hotels.length} hotels ($${totalHotelCost})\nTotal: $${grandTotal}\n\nPlanned with Flyeas ✈️`;
-              if (navigator.share) {
-                navigator.share({ title: `Trip to ${destination}`, text, url: 'https://faregenie.vercel.app' });
-              } else {
-                navigator.clipboard.writeText(text);
-                alert('Itinerary copied to clipboard!');
+            onClick={async () => {
+              try {
+                const sharePayload = {
+                  title: destination ? `Trip to ${destination}` : 'My Trip',
+                  flights: flights
+                    .filter((f): f is Extract<typeof f, { kind: 'flight' }> => f.kind === 'flight')
+                    .map((f) => ({
+                      airline: f.airline,
+                      route: `${f.originCity || f.origin} → ${f.destinationCity || f.destination}`,
+                      price: f.price,
+                      date: f.departureTime?.split('T')[0] || '',
+                      deepLink: f.deepLink,
+                    })),
+                  hotels: hotels
+                    .filter((h): h is Extract<typeof h, { kind: 'hotel' }> => h.kind === 'hotel')
+                    .map((h) => ({
+                      name: h.name,
+                      address: h.address,
+                      pricePerNight: h.pricePerNight,
+                      nights: h.nights,
+                      totalPrice: h.totalPrice,
+                    })),
+                  cars: [],
+                  totalPrice: grandTotal,
+                  destination,
+                  destinationCoords:
+                    hotels.length > 0 && hotels[0].kind === 'hotel'
+                      ? { lat: hotels[0].lat, lng: hotels[0].lng }
+                      : undefined,
+                };
+
+                const res = await fetch('/api/trips/share', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(sharePayload),
+                });
+
+                if (!res.ok) throw new Error('Failed to create share link');
+                const { url } = await res.json();
+
+                await navigator.clipboard.writeText(url);
+                toast.success('Share link copied to clipboard!', {
+                  description: url,
+                  duration: 4000,
+                });
+              } catch {
+                toast.error('Failed to create share link. Please try again.');
               }
             }}
             className="glass rounded-xl px-6 py-3 text-sm text-white/60 hover:text-white transition inline-flex items-center gap-2"
           >
-            📤 Share Itinerary
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="18" cy="5" r="3" />
+              <circle cx="6" cy="12" r="3" />
+              <circle cx="18" cy="19" r="3" />
+              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+              <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+            </svg>
+            Share Trip
           </button>
         </div>
       )}

@@ -4,9 +4,11 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { getRecentSearches, type RecentSearch } from '@/lib/recent-searches';
 import { useSavingsStore } from '@/lib/store/savings-store';
+import { useStreakStore } from '@/lib/store/streak-store';
 import { ReferralCard } from '@/components/referral-card';
 import { StreakWidget } from '@/components/streak-widget';
 import { DashboardSkeleton } from '@/components/skeletons';
+import { Card } from '@/components/ui/card';
 
 export default function DashboardPage() {
   const [name, setName] = useState('Traveler');
@@ -306,6 +308,9 @@ export default function DashboardPage() {
           </div>
         </div>
 
+        {/* Your Travel Stats */}
+        <TravelStats recent={recent} />
+
         {/* Tip */}
         <div
           className="rounded-xl p-4 flex items-start gap-3"
@@ -553,6 +558,214 @@ function DashboardStats() {
           <p className="text-[11px] text-white/30 mt-0.5 truncate">{s.sub}</p>
         </div>
       ))}
+    </div>
+  );
+}
+
+/* ── Your Travel Stats ── */
+
+function getWeekLabel(weeksAgo: number): string {
+  if (weeksAgo === 0) return 'This week';
+  if (weeksAgo === 1) return 'Last week';
+  return `${weeksAgo}w ago`;
+}
+
+function TravelStats({ recent }: { recent: RecentSearch[] }) {
+  const { searchesCount, dealsFound, totalSaved } = useSavingsStore();
+  const { currentStreak } = useStreakStore();
+
+  // Group searches by week (last 4 weeks)
+  const now = Date.now();
+  const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+  const weekBuckets = [0, 0, 0, 0]; // index 0 = 3 weeks ago, 3 = this week
+  for (const r of recent) {
+    const weeksAgo = Math.floor((now - r.at) / WEEK_MS);
+    if (weeksAgo >= 0 && weeksAgo < 4) {
+      weekBuckets[3 - weeksAgo] += 1;
+    }
+  }
+  const maxBucket = Math.max(...weekBuckets, 1);
+
+  // Top destinations
+  const destCounts: Record<string, number> = {};
+  for (const r of recent) {
+    const dest = r.destination;
+    if (dest) destCounts[dest] = (destCounts[dest] || 0) + 1;
+  }
+  const topDests = Object.entries(destCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5);
+
+  // Average flight price & best deal
+  const prices = recent
+    .filter((r) => r.cheapestPrice != null)
+    .map((r) => r.cheapestPrice as number);
+  const avgPrice = prices.length > 0 ? Math.round(prices.reduce((a, b) => a + b, 0) / prices.length) : null;
+  const bestDeal = prices.length > 0 ? Math.min(...prices) : null;
+
+  if (recent.length === 0) return null;
+
+  return (
+    <div className="mb-10">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-base font-semibold text-white">Your Travel Stats</h2>
+        <span className="text-[11px] text-white/30">Based on your activity</span>
+      </div>
+
+      {/* Stats cards grid */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+        {[
+          {
+            label: 'Total Searches',
+            value: searchesCount.toLocaleString(),
+            color: '#F59E0B',
+            icon: (
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="9" cy="9" r="6" /><path d="M13.5 13.5L17 17" />
+              </svg>
+            ),
+          },
+          {
+            label: 'Deals Found',
+            value: dealsFound.toLocaleString(),
+            color: '#8B5CF6',
+            icon: (
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M10 2l2.5 5 5.5.8-4 3.9.9 5.3L10 14.5 5.1 17l.9-5.3-4-3.9 5.5-.8z" />
+              </svg>
+            ),
+          },
+          {
+            label: 'Total Saved',
+            value: totalSaved > 0 ? `$${Math.round(totalSaved).toLocaleString()}` : '$0',
+            color: '#10B981',
+            icon: (
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 16l4-4 3 3 7-8" /><path d="M14 7h4v4" />
+              </svg>
+            ),
+          },
+          {
+            label: 'Current Streak',
+            value: `${currentStreak} day${currentStreak !== 1 ? 's' : ''}`,
+            color: '#EF4444',
+            icon: (
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M13 2L3 14h7l-1 6 10-12h-7l1-6z" />
+              </svg>
+            ),
+          },
+        ].map((s) => (
+          <Card key={s.label} padding="sm" className="!p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <div
+                className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
+                style={{ background: `${s.color}15`, color: s.color }}
+              >
+                {s.icon}
+              </div>
+              <span className="text-[10px] uppercase tracking-wider text-white/40 font-semibold">
+                {s.label}
+              </span>
+            </div>
+            <p className="text-xl font-bold text-white">{s.value}</p>
+          </Card>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Search Activity Chart */}
+        <Card padding="md">
+          <div className="flex items-center gap-2 mb-4">
+            <div
+              className="w-7 h-7 rounded-lg flex items-center justify-center"
+              style={{ background: 'rgba(245,158,11,0.1)', color: '#F59E0B' }}
+            >
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="10" width="3" height="8" rx="1" />
+                <rect x="7" y="6" width="3" height="12" rx="1" />
+                <rect x="12" y="3" width="3" height="15" rx="1" />
+              </svg>
+            </div>
+            <h3 className="text-sm font-semibold text-white">Search Activity</h3>
+          </div>
+          <div className="flex items-end gap-2 h-28">
+            {weekBuckets.map((count, i) => (
+              <div key={i} className="flex-1 flex flex-col items-center gap-1">
+                <span className="text-[10px] text-white/50 font-medium">{count}</span>
+                <div
+                  className="w-full rounded-t-md transition-all"
+                  style={{
+                    height: `${Math.max((count / maxBucket) * 100, 4)}%`,
+                    background: 'linear-gradient(to top, var(--flyeas-accent, #F59E0B), #FBBF24)',
+                    opacity: count > 0 ? 1 : 0.2,
+                  }}
+                />
+                <span className="text-[9px] text-white/30">{getWeekLabel(3 - i)}</span>
+              </div>
+            ))}
+          </div>
+        </Card>
+
+        {/* Top Destinations & Price Stats */}
+        <Card padding="md">
+          <div className="flex items-center gap-2 mb-4">
+            <div
+              className="w-7 h-7 rounded-lg flex items-center justify-center"
+              style={{ background: 'rgba(16,185,129,0.1)', color: '#10B981' }}
+            >
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="10" cy="8" r="3" />
+                <path d="M10 18s-6-5.3-6-10a6 6 0 1112 0c0 4.7-6 10-6 10z" />
+              </svg>
+            </div>
+            <h3 className="text-sm font-semibold text-white">Top Destinations</h3>
+          </div>
+
+          {topDests.length > 0 ? (
+            <div className="space-y-2 mb-4">
+              {topDests.map(([dest, count], i) => (
+                <div key={dest} className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span
+                      className="text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded"
+                      style={{
+                        background: i === 0 ? 'rgba(245,158,11,0.15)' : 'rgba(255,255,255,0.05)',
+                        color: i === 0 ? '#F59E0B' : 'rgba(255,255,255,0.4)',
+                      }}
+                    >
+                      {i + 1}
+                    </span>
+                    <span className="text-sm text-white/80">{dest}</span>
+                  </div>
+                  <span className="text-[11px] text-white/40">{count} search{count !== 1 ? 'es' : ''}</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-xs text-white/30 mb-4">No destinations searched yet</p>
+          )}
+
+          {/* Price stats */}
+          <div
+            className="flex gap-4 pt-3"
+            style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}
+          >
+            <div className="flex-1">
+              <p className="text-[10px] uppercase tracking-wider text-white/35 mb-0.5">Avg Price</p>
+              <p className="text-sm font-semibold text-white">
+                {avgPrice != null ? `$${avgPrice}` : '--'}
+              </p>
+            </div>
+            <div className="flex-1">
+              <p className="text-[10px] uppercase tracking-wider text-white/35 mb-0.5">Best Deal</p>
+              <p className="text-sm font-semibold text-emerald-300">
+                {bestDeal != null ? `$${bestDeal}` : '--'}
+              </p>
+            </div>
+          </div>
+        </Card>
+      </div>
     </div>
   );
 }

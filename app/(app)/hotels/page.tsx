@@ -10,6 +10,7 @@ import { pushRecentSearch } from '@/lib/recent-searches';
 import { FavoriteButton } from '@/components/ui/favorite-button';
 import { type FavoriteHotel } from '@/lib/store/favorites-store';
 import { HotelMap } from '@/components/hotel-map';
+import { HotelDetailModal } from '@/components/hotel-detail-modal';
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                               */
@@ -137,6 +138,9 @@ export default function HotelsPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searched, setSearched] = useState(false);
+
+  /* Selected hotel for detail modal */
+  const [selectedHotel, setSelectedHotel] = useState<Hotel | null>(null);
 
   /* View toggle */
   const [view, setView] = useState<'grid' | 'list' | 'map'>('grid');
@@ -666,7 +670,8 @@ export default function HotelsPage() {
                     key={h.id}
                     hoverable
                     padding="none"
-                    className="overflow-hidden card-interactive stagger-item"
+                    className="overflow-hidden card-interactive stagger-item cursor-pointer"
+                    onClick={() => setSelectedHotel(h)}
                   >
                     {/* Real photo */}
                     <div
@@ -705,7 +710,7 @@ export default function HotelsPage() {
                         </div>
                       )}
                       {/* Favorite heart */}
-                      <div className="absolute top-2 right-2">
+                      <div className="absolute top-2 right-2" onClick={(e) => e.stopPropagation()}>
                         <FavoriteButton
                           item={{
                             kind: 'hotel',
@@ -797,9 +802,11 @@ export default function HotelsPage() {
                             </p>
                           )}
                         </div>
-                        <Button variant="primary" size="sm">
-                          Book
-                        </Button>
+                        <div onClick={(e) => e.stopPropagation()}>
+                          <Button variant="primary" size="sm">
+                            Book
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </Card>
@@ -820,7 +827,8 @@ export default function HotelsPage() {
                     key={h.id}
                     hoverable
                     padding="none"
-                    className="overflow-hidden"
+                    className="overflow-hidden cursor-pointer"
+                    onClick={() => setSelectedHotel(h)}
                   >
                     <div className="flex flex-col md:flex-row">
                       {/* Real photo */}
@@ -909,9 +917,11 @@ export default function HotelsPage() {
                               <p className="text-[10px] text-white/30">via {h.partner}</p>
                             )}
                           </div>
-                          <Button variant="primary" size="sm">
-                            Book
-                          </Button>
+                          <div onClick={(e) => e.stopPropagation()}>
+                            <Button variant="primary" size="sm">
+                              Book
+                            </Button>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -939,6 +949,13 @@ export default function HotelsPage() {
             )}
           </div>
         </div>
+      )}
+      {/* Hotel Detail Modal */}
+      {selectedHotel && (
+        <HotelDetailModal
+          hotel={selectedHotel}
+          onClose={() => setSelectedHotel(null)}
+        />
       )}
     </div>
   );

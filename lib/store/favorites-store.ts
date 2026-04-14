@@ -53,10 +53,14 @@ interface FavoritesState {
   isFavorite: (id: string) => boolean;
   toggle: (item: FavoriteItem) => void;
   clear: () => void;
+
+  /* Supabase sync --------------------------------------------------- */
+  syncToSupabase: (userId: string) => Promise<void>;
+  loadFromSupabase: (userId: string) => Promise<void>;
 }
 
 /* ------------------------------------------------------------------ */
-/*  Persistence                                                         */
+/*  localStorage persistence (unchanged)                                */
 /* ------------------------------------------------------------------ */
 
 const STORAGE_KEY = 'flyeas_favorites';
@@ -119,5 +123,84 @@ export const useFavoritesStore = create<FavoritesState>()((set, get) => ({
   clear: () => {
     set({ items: [] });
     save([]);
+  },
+
+  /* ---------------------------------------------------------------- */
+  /*  Supabase sync                                                     */
+  /* ---------------------------------------------------------------- */
+
+  /**
+   * Push the current local favorites to Supabase. This is a full sync
+   * that upserts every local item so the remote state matches local.
+   * Gracefully no-ops if the API is unreachable or Supabase is not
+   * configured.
+   */
+  syncToSupabase: async (userId: string) => {
+    const { items } = get();
+    try {
+      const res = await fetch('/api/user/favorites', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, items }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        console.warn('[favorites] sync to Supabase failed:', err);
+      }
+    } catch (err) {
+      // Network error or Supabase not configured -- silent fallback
+      console.warn('[favorites] sync to Supabase failed:', err);
+    }
+  },
+
+  /**
+   * Fetch favorites from Supabase and merge them with the current
+   * localStorage items. Remote items that are not present locally are
+   * added; local items that are not present remotely are kept. The
+   * merged set is saved back to localStorage.
+   */
+  loadFromSupabase: async (userId: string) => {
+    try {
+      const res = await fetch(
+        `/api/user/favorites?userId=${encodeURIComponent(userId)}`
+      );
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        console.warn('[favorites] load from Supabase failed:', err);
+        return;
+      }
+      const { favorites } = (await res.json()) as {
+        favorites: { id: string; item_data: FavoriteItem }[];
+      };
+      if (!Array.isArray(favorites)) return;
+
+      const remoteItems: FavoriteItem[] = favorites.map((row) => row.item_data);
+
+      // Merge: use a map keyed by id so we keep the most recent version
+      const localItems = get().items;
+      const merged = new Map<string, FavoriteItem>();
+
+      // Start with remote items
+      for (const item of remoteItems) {
+        merged.set(item.id, item);
+      }
+      // Layer local items on top (local wins on conflict by savedAt)
+      for (const item of localItems) {
+        const existing = merged.get(item.id);
+        if (!existing || item.savedAt > existing.savedAt) {
+          merged.set(item.id, item);
+        }
+      }
+
+      const mergedArray = Array.from(merged.values()).sort(
+        (a, b) => a.savedAt - b.savedAt
+      );
+
+      set({ items: mergedArray });
+      save(mergedArray);
+    } catch (err) {
+      // Network error or Supabase not configured -- silent fallback
+      console.warn('[favorites] load from Supabase failed:', err);
+    }
   },
 }));
