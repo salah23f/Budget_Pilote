@@ -1,14 +1,15 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { getRecentSearches, type RecentFlight } from '@/lib/recent-searches';
 
 /**
- * LiveDeals — horizontal strip of real flight prices for popular routes.
- * Fetches /api/deals on mount; the server caches 30 min so the strip is
- * essentially instant on repeat visits.
+ * LiveDeals — horizontal strip of real flight prices personalized to
+ * the user. Routes are built from recent searches and favorites, with
+ * a daily-rotating fallback for new users.
  *
- * This is the "instant wow" — investors land on the page and immediately
- * see real prices without typing anything.
+ * Fetches /api/deals with user context on mount; the server caches
+ * 30 min per route combination.
  */
 
 interface Deal {
@@ -52,7 +53,47 @@ export default function LiveDeals() {
 
   useEffect(() => {
     let cancelled = false;
-    fetch('/api/deals')
+
+    // Build personalized query params from user history
+    let url = '/api/deals';
+    try {
+      const recent = getRecentSearches();
+      const flights = recent.filter((r): r is RecentFlight => r.kind === 'flight');
+
+      // Also try to read favorites from localStorage
+      let favFlights: Array<{ origin?: string; destination?: string }> = [];
+      try {
+        const raw = localStorage.getItem('flyeas_favorites');
+        if (raw) {
+          const items = JSON.parse(raw);
+          favFlights = Array.isArray(items)
+            ? items.filter((i: any) => i.kind === 'flight')
+            : [];
+        }
+      } catch {}
+
+      // Collect unique origins and destinations
+      const originsSet = new Set<string>();
+      const destsSet = new Set<string>();
+
+      for (const f of flights) {
+        if (f.origin && f.origin.length <= 4) originsSet.add(f.origin.toUpperCase());
+        if (f.destination && f.destination.length <= 4) destsSet.add(f.destination.toUpperCase());
+      }
+      for (const f of favFlights) {
+        if (f.origin && (f.origin as string).length <= 4) originsSet.add((f.origin as string).toUpperCase());
+        if (f.destination && (f.destination as string).length <= 4) destsSet.add((f.destination as string).toUpperCase());
+      }
+
+      if (originsSet.size > 0 && destsSet.size > 0) {
+        const params = new URLSearchParams();
+        params.set('origins', [...originsSet].slice(0, 5).join(','));
+        params.set('destinations', [...destsSet].slice(0, 5).join(','));
+        url = `/api/deals?${params.toString()}`;
+      }
+    } catch {}
+
+    fetch(url)
       .then((r) => r.json())
       .then((data) => {
         if (cancelled) return;
@@ -113,10 +154,12 @@ function DealCard({ deal }: { deal: Deal }) {
         border: '1px solid rgba(255,255,255,0.06)',
       }}
     >
-      {/* Top row: emoji + route */}
+      {/* Top row: route */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2 min-w-0">
-          <span className="text-lg">{deal.emoji}</span>
+          <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(245,158,11,0.1)' }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--flyeas-accent, #F59E0B)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>
+          </div>
           <div className="min-w-0">
             <p className="text-[10px] text-white/35 uppercase tracking-wider font-semibold">
               {deal.originCity} → {deal.destinationCity}

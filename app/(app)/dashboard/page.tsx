@@ -73,14 +73,77 @@ export default function DashboardPage() {
     },
   ];
 
-  const trending = [
-    { city: 'Paris', country: 'France' },
-    { city: 'New York', country: 'USA' },
-    { city: 'Tokyo', country: 'Japan' },
-    { city: 'Barcelona', country: 'Spain' },
-    { city: 'Dubai', country: 'UAE' },
-    { city: 'Rome', country: 'Italy' },
-  ];
+  // Build personalized trending destinations from user behavior
+  const trending = (() => {
+    const DEFAULT_TRENDING = [
+      { city: 'Paris', country: 'France' },
+      { city: 'New York', country: 'USA' },
+      { city: 'Tokyo', country: 'Japan' },
+      { city: 'Barcelona', country: 'Spain' },
+      { city: 'Dubai', country: 'UAE' },
+      { city: 'Rome', country: 'Italy' },
+    ];
+
+    if (!recent || recent.length === 0) return DEFAULT_TRENDING;
+
+    // Count destination frequency from recent searches
+    const destCount = new Map<string, { city: string; country: string; count: number; price?: number }>();
+    for (const r of recent) {
+      const city = r.kind === 'flight' ? r.destination : r.destination;
+      if (!city) continue;
+      const existing = destCount.get(city);
+      if (existing) {
+        existing.count++;
+        if (r.cheapestPrice && (!existing.price || r.cheapestPrice < existing.price)) {
+          existing.price = r.cheapestPrice;
+        }
+      } else {
+        destCount.set(city, { city, country: '', count: 1, price: r.cheapestPrice });
+      }
+    }
+
+    // Also pull from favorites
+    try {
+      const raw = localStorage.getItem('flyeas_favorites');
+      if (raw) {
+        const items = JSON.parse(raw);
+        if (Array.isArray(items)) {
+          for (const item of items) {
+            if (item.kind === 'flight' && item.destinationCity) {
+              const city = item.destinationCity;
+              const existing = destCount.get(city);
+              if (existing) {
+                existing.count += 2; // favorites weigh more
+              } else {
+                destCount.set(city, { city, country: '', count: 2, price: item.price });
+              }
+            }
+            if (item.kind === 'hotel' && item.name) {
+              // Hotels don't have a city field directly but we can derive from name
+            }
+          }
+        }
+      }
+    } catch {}
+
+    // Sort by frequency, take top destinations
+    const sorted = [...destCount.values()]
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 6)
+      .map((d) => ({ city: d.city, country: d.country || '' }));
+
+    // Fill remaining slots with defaults (avoiding duplicates)
+    const seen = new Set(sorted.map((d) => d.city.toLowerCase()));
+    for (const d of DEFAULT_TRENDING) {
+      if (sorted.length >= 6) break;
+      if (!seen.has(d.city.toLowerCase())) {
+        sorted.push(d);
+        seen.add(d.city.toLowerCase());
+      }
+    }
+
+    return sorted.slice(0, 6);
+  })();
 
   function rerunLink(r: RecentSearch): string {
     return r.kind === 'flight' ? '/flights' : '/hotels';
@@ -344,17 +407,64 @@ export default function DashboardPage() {
 
 /* ── Stats Row (hoisted outside main component per React best practices) ── */
 
-/* ── Deal of the Day ── */
+/* ── Deal of the Day — personalized from user searches/favorites, rotates daily ── */
 
 function DealOfTheDay() {
   const [deal, setDeal] = useState<any>(null);
+  const [label, setLabel] = useState('Deal of the day');
 
   useEffect(() => {
-    fetch('/api/deals')
+    // Build personalized query from user history
+    let url = '/api/deals';
+    let isPersonalized = false;
+    try {
+      const recentRaw = localStorage.getItem('flyeas_recent_searches');
+      const favsRaw = localStorage.getItem('flyeas_favorites');
+      const origins = new Set<string>();
+      const destinations = new Set<string>();
+
+      if (recentRaw) {
+        const items = JSON.parse(recentRaw);
+        if (Array.isArray(items)) {
+          for (const r of items) {
+            if (r.kind === 'flight') {
+              if (r.origin && r.origin.length <= 4) origins.add(r.origin.toUpperCase());
+              if (r.destination && r.destination.length <= 4) destinations.add(r.destination.toUpperCase());
+            }
+          }
+        }
+      }
+      if (favsRaw) {
+        const items = JSON.parse(favsRaw);
+        if (Array.isArray(items)) {
+          for (const f of items) {
+            if (f.kind === 'flight') {
+              if (f.origin && f.origin.length <= 4) origins.add(f.origin.toUpperCase());
+              if (f.destination && f.destination.length <= 4) destinations.add(f.destination.toUpperCase());
+            }
+          }
+        }
+      }
+
+      if (origins.size > 0 && destinations.size > 0) {
+        const params = new URLSearchParams();
+        params.set('origins', [...origins].slice(0, 5).join(','));
+        params.set('destinations', [...destinations].slice(0, 5).join(','));
+        url = `/api/deals?${params.toString()}`;
+        isPersonalized = true;
+      }
+    } catch {}
+
+    fetch(url)
       .then((r) => r.json())
       .then((data) => {
         if (data.success && data.deals?.length > 0) {
-          setDeal(data.deals[0]); // cheapest
+          const deals = data.deals;
+          // Rotate which deal is shown based on day of year
+          const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000);
+          const idx = dayOfYear % deals.length;
+          setDeal(deals[idx]);
+          setLabel(isPersonalized ? 'Your deal of the day' : 'Deal of the day');
         }
       })
       .catch(() => {});
@@ -375,12 +485,12 @@ function DealOfTheDay() {
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
               <span className="text-[10px] uppercase tracking-wider font-semibold text-amber-300">
-                Deal of the day
+                {label}
               </span>
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
             </div>
             <h3 className="text-lg font-semibold text-white">
-              {deal.emoji} {deal.originCity} → {deal.destinationCity}
+              {deal.originCity} → {deal.destinationCity}
             </h3>
             <p className="text-xs text-white/40 mt-1">
               {deal.airline} · {deal.stops === 0 ? 'Non-stop' : `${deal.stops} stop${deal.stops > 1 ? 's' : ''}`}
@@ -415,49 +525,49 @@ function DealOfTheDay() {
 
 /* ── Recommended routes based on search history ── */
 
-const ROUTE_SUGGESTIONS: Record<string, Array<{ dest: string; emoji: string; reason: string }>> = {
-  paris: [
-    { dest: 'Rome', emoji: '🇮🇹', reason: '2h direct, 30% cheaper than avg' },
-    { dest: 'Barcelona', emoji: '🇪🇸', reason: 'Popular from Paris, deals daily' },
-    { dest: 'Marrakech', emoji: '🇲🇦', reason: '3h direct, great value' },
-  ],
-  london: [
-    { dest: 'Amsterdam', emoji: '🇳🇱', reason: '1h flight, weekend favorite' },
-    { dest: 'Lisbon', emoji: '🇵🇹', reason: 'Trending destination 2026' },
-    { dest: 'Dublin', emoji: '🇮🇪', reason: 'Quick getaway, lots of deals' },
-  ],
-  'new york': [
-    { dest: 'Miami', emoji: '🇺🇸', reason: '3h domestic, beach escape' },
-    { dest: 'Cancun', emoji: '🇲🇽', reason: 'Direct flights, resort deals' },
-    { dest: 'London', emoji: '🇬🇧', reason: 'Transatlantic classic' },
-  ],
-  default: [
-    { dest: 'Paris', emoji: '🇫🇷', reason: 'Most searched destination' },
-    { dest: 'Tokyo', emoji: '🇯🇵', reason: 'Trending for 2026' },
-    { dest: 'Bali', emoji: '🇮🇩', reason: 'Best value long-haul' },
-  ],
-};
-
+/* Recommended routes — built from real user search history, no fake data */
 function RecommendedRoutes({ recent }: { recent: RecentSearch[] }) {
-  // Derive recommendations from search history
-  const firstFlight = recent.find((r): r is import('@/lib/recent-searches').RecentFlight => r.kind === 'flight');
-  const lastOrigin = firstFlight?.origin?.toLowerCase() || '';
-  const key = Object.keys(ROUTE_SUGGESTIONS).find((k) => lastOrigin.includes(k)) || 'default';
-  const suggestions = ROUTE_SUGGESTIONS[key];
+  // Only show routes the user has actually searched
+  const flightSearches = recent.filter((r): r is import('@/lib/recent-searches').RecentFlight => r.kind === 'flight');
+
+  if (flightSearches.length === 0) {
+    return (
+      <div className="mb-8">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-base font-semibold text-white">Your Routes</h2>
+        </div>
+        <div className="rounded-xl p-6 text-center" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="mx-auto mb-3">
+            <path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z" />
+          </svg>
+          <p className="text-sm text-white/40">Search flights to see personalized route suggestions here.</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show unique destinations from real searches
+  const seen = new Set<string>();
+  const routes = flightSearches
+    .filter((f) => {
+      const key = `${f.origin}-${f.destination}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    })
+    .slice(0, 3);
 
   return (
     <div className="mb-8">
       <div className="flex items-center justify-between mb-3">
-        <h2 className="text-base font-semibold text-white">
-          {recent.length > 0 ? '✨ Recommended for you' : '✨ Popular routes'}
-        </h2>
-        <span className="text-[10px] text-white/30">Based on your searches</span>
+        <h2 className="text-base font-semibold text-white">Your Recent Routes</h2>
+        <span className="text-[10px] text-white/30">From your searches</span>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        {suggestions.map((s) => (
+        {routes.map((r) => (
           <Link
-            key={s.dest}
-            href={`/flights?destination=${encodeURIComponent(s.dest)}`}
+            key={`${r.origin}-${r.destination}`}
+            href={`/flights`}
             className="rounded-xl p-4 transition-all hover:scale-[1.02] group"
             style={{
               background: 'rgba(255,255,255,0.02)',
@@ -465,12 +575,19 @@ function RecommendedRoutes({ recent }: { recent: RecentSearch[] }) {
             }}
           >
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-lg">{s.emoji}</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--flyeas-accent, #F59E0B)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
+                <path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z" />
+              </svg>
               <span className="text-sm font-semibold text-white group-hover:text-amber-300 transition-colors">
-                {s.dest}
+                {r.origin} → {r.destination}
               </span>
             </div>
-            <p className="text-[11px] text-white/40">{s.reason}</p>
+            {r.cheapestPrice && (
+              <p className="text-[11px] text-white/40">From ${r.cheapestPrice}</p>
+            )}
+            {!r.cheapestPrice && (
+              <p className="text-[11px] text-white/40">Searched {new Date(r.at).toLocaleDateString()}</p>
+            )}
           </Link>
         ))}
       </div>

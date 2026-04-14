@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import TripPlannerHero from '@/components/trip-planner-hero';
@@ -80,37 +80,7 @@ const TIERS = [
   },
 ];
 
-/* ── Testimonials ─────────────────────────────── */
-const TESTIMONIALS = [
-  {
-    name: 'Sarah Mitchell',
-    country: 'United States',
-    avatar: 'SM',
-    rating: 5,
-    quote: 'Saved $340 on my NYC to Tokyo flight. The AI agent found a price drop at 3am that I would have never caught.',
-  },
-  {
-    name: 'Lucas Dubois',
-    country: 'France',
-    avatar: 'LD',
-    rating: 5,
-    quote: 'The auto-buy feature is a game changer. I set my budget, went to sleep, and woke up with a confirmed booking at 30% off.',
-  },
-  {
-    name: 'Amira Hassan',
-    country: 'UAE',
-    avatar: 'AH',
-    rating: 5,
-    quote: 'Finally a travel app that actually monitors prices in real time. Not fake "deals" — real live prices from real airlines.',
-  },
-  {
-    name: 'Thomas Weber',
-    country: 'Germany',
-    avatar: 'TW',
-    rating: 4,
-    quote: 'The mission cockpit is brilliant. I can see exactly why the AI recommends buying now vs waiting. Data-driven travel.',
-  },
-];
+/* (No fake testimonials — reviews come from real users only) */
 
 /* ── FAQ ─────────────────────────────── */
 const FAQ_ITEMS = [
@@ -235,7 +205,7 @@ export default function HomePage() {
           <a href="#features" className="text-sm text-white/50 transition hover:text-white">Features</a>
           <a href="#how" className="text-sm text-white/50 transition hover:text-white">How it Works</a>
           <a href="#pricing" className="text-sm text-white/50 transition hover:text-white">Pricing</a>
-          <a href="#testimonials" className="text-sm text-white/50 transition hover:text-white">Reviews</a>
+          <a href="#testimonials" className="text-sm text-white/50 transition hover:text-white">Why Flyeas</a>
           <Link href="/about" className="text-sm text-white/50 transition hover:text-white">About</Link>
         </div>
         <Link href="/onboarding" className="premium-button rounded-xl px-6 py-2.5 text-sm font-semibold">
@@ -274,15 +244,15 @@ export default function HomePage() {
             Real flights, real hotels, real prices — live from 400+ airlines and 150,000+ hotels worldwide.
           </p>
 
-          {/* Social proof counter */}
-          <div className="mt-5 flex items-center justify-center gap-6 text-xs text-white/35">
+          {/* Live status — real data only */}
+          <div className="mt-5 flex items-center justify-center gap-4 text-xs text-white/35">
             <span className="flex items-center gap-1.5">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              <AnimatedCounter target={12450} /> flights searched today
+              Live prices from 400+ airlines
             </span>
             <span className="hidden sm:flex items-center gap-1.5">
               <span className="h-1.5 w-1.5 rounded-full bg-amber-400 animate-pulse" />
-              <AnimatedCounter target={847} /> travelers saving right now
+              Updated every 30 minutes
             </span>
           </div>
         </div>
@@ -303,8 +273,7 @@ export default function HomePage() {
       {/* ═══ LIVE DEALS ═══ */}
       <LiveDeals />
 
-      {/* ═══ SOCIAL PROOF TICKER ═══ */}
-      <SocialProofTicker />
+      {/* (Social proof ticker removed — no fake data) */}
 
       {/* ═══ TRUSTED BY / PARTNERS ═══ */}
       <section className="relative z-10 mx-auto max-w-4xl px-6 pb-16 md:px-10">
@@ -366,31 +335,41 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ═══ TESTIMONIALS ═══ */}
-      <section id="testimonials" className="relative z-10 mx-auto max-w-6xl px-6 pb-24 md:px-10">
-        <h2 className="text-center hero-title text-2xl md:text-4xl font-semibold mb-4">What Travelers Say</h2>
-        <p className="text-center text-white/40 mb-14 text-sm">Real feedback from real users.</p>
+      {/* ═══ WHY FLYEAS ═══ */}
+      <section id="testimonials" className="relative z-10 mx-auto max-w-5xl px-6 pb-24 md:px-10">
+        <h2 className="text-center hero-title text-2xl md:text-4xl font-semibold mb-4">Why Travelers Choose Flyeas</h2>
+        <p className="text-center text-white/40 mb-14 text-sm">Real capabilities, no marketing fluff.</p>
 
-        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
-          {TESTIMONIALS.map((t) => (
-            <div key={t.name} className="glass rounded-2xl p-6 flex flex-col">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white" style={{ background: 'var(--flyeas-gradient, linear-gradient(135deg, #F59E0B, #EF4444))' }}>
-                  {t.avatar}
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-white">{t.name}</p>
-                  <p className="text-[11px] text-white/35">{t.country}</p>
-                </div>
+        <div className="grid gap-5 md:grid-cols-3">
+          {[
+            {
+              stat: '400+',
+              label: 'Airlines searched in real time',
+              desc: 'Live prices from Kiwi.com and Sky-Scrapper APIs. No cached or stale data — every search hits real availability.',
+              icon: <GlobeIcon />,
+            },
+            {
+              stat: '24/7',
+              label: 'AI monitoring on your missions',
+              desc: 'Set a budget and let the agent watch prices around the clock. It uses z-scores and trend analysis to find the optimal buy moment.',
+              icon: <PulseIcon />,
+            },
+            {
+              stat: '$0',
+              label: 'Charged until a deal is found',
+              desc: 'Your card is authorized but never charged until the agent finds a flight within your budget. Cancel anytime, full release.',
+              icon: <ShieldIcon />,
+            },
+          ].map((item) => (
+            <div key={item.label} className="glass rounded-2xl p-7 text-center">
+              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl" style={{ background: 'rgba(245,158,11,0.08)', color: 'var(--flyeas-accent, #F59E0B)' }}>
+                {item.icon}
               </div>
-              <div className="flex gap-0.5 mb-3">
-                {Array.from({ length: 5 }, (_, i) => (
-                  <svg key={i} width="14" height="14" viewBox="0 0 20 20" fill={i < t.rating ? '#F59E0B' : 'rgba(255,255,255,0.1)'}>
-                    <path d="M10 1l2.39 4.84 5.34.78-3.87 3.77.91 5.33L10 13.27l-4.77 2.51.91-5.33L2.27 6.62l5.34-.78L10 1z" />
-                  </svg>
-                ))}
-              </div>
-              <p className="text-sm text-white/55 leading-relaxed flex-1">&ldquo;{t.quote}&rdquo;</p>
+              <p className="text-3xl font-bold mb-1" style={{ background: 'var(--flyeas-gradient, linear-gradient(135deg, #F59E0B, #F97316))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                {item.stat}
+              </p>
+              <p className="text-sm font-semibold text-white/80 mb-3">{item.label}</p>
+              <p className="text-sm text-white/40 leading-relaxed">{item.desc}</p>
             </div>
           ))}
         </div>
@@ -576,85 +555,9 @@ export default function HomePage() {
 
 /* ── Small reusable components ──────────────────────────── */
 
-function AnimatedCounter({ target }: { target: number }) {
-  const [count, setCount] = useState(0);
-  useEffect(() => {
-    let frame: number;
-    const duration = 2000;
-    const start = Date.now();
-    function tick() {
-      const elapsed = Date.now() - start;
-      const progress = Math.min(1, elapsed / duration);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      setCount(Math.round(eased * target));
-      if (progress < 1) frame = requestAnimationFrame(tick);
-    }
-    frame = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frame);
-  }, [target]);
-  return <span className="font-semibold text-white/60">{count.toLocaleString()}</span>;
-}
+/* (AnimatedCounter removed — no fake counters) */
 
-/* ── Social Proof Ticker ────────────────────────────── */
-
-const PROOF_NAMES = [
-  'Sarah', 'Mohamed', 'Emma', 'Lucas', 'Fatima', 'Thomas', 'Sofia', 'Hugo',
-  'Lina', 'Noah', 'Amira', 'Leo', 'Yasmin', 'Alex', 'Camille', 'Adam',
-  'Julia', 'Omar', 'Clara', 'Nathan', 'Zara', 'Maxime', 'Leila', 'David',
-];
-const PROOF_ROUTES = [
-  'Paris \u2192 Tokyo', 'London \u2192 NYC', 'Madrid \u2192 Bali', 'Berlin \u2192 Bangkok',
-  'Amsterdam \u2192 Marrakech', 'Rome \u2192 Dubai', 'Geneva \u2192 Lisbon', 'Paris \u2192 Tunis',
-  'London \u2192 Barcelona', 'Milan \u2192 Istanbul', 'Munich \u2192 Phuket', 'Zurich \u2192 Montreal',
-];
-
-function SocialProofTicker() {
-  const [current, setCurrent] = useState(0);
-  const [visible, setVisible] = useState(true);
-
-  const proofs = useMemo(() => {
-    return PROOF_ROUTES.map((route, i) => {
-      const name = PROOF_NAMES[i % PROOF_NAMES.length];
-      const saved = 80 + ((i * 47 + 31) % 400);
-      const mins = 2 + ((i * 13) % 55);
-      return { name, route, saved, mins };
-    });
-  }, []);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setVisible(false);
-      setTimeout(() => {
-        setCurrent((p) => (p + 1) % proofs.length);
-        setVisible(true);
-      }, 400);
-    }, 3500);
-    return () => clearInterval(interval);
-  }, [proofs.length]);
-
-  const p = proofs[current];
-  return (
-    <div className="relative z-10 mx-auto max-w-6xl px-6 pb-8">
-      <div
-        className="mx-auto max-w-lg text-center transition-all duration-300"
-        style={{ opacity: visible ? 1 : 0, transform: visible ? 'translateY(0)' : 'translateY(-8px)' }}
-      >
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
-          <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="text-sm text-white/60">
-            <span className="text-white font-medium">{p.name}</span>
-            {' saved '}
-            <span className="text-emerald-300 font-semibold">${p.saved}</span>
-            {' on '}
-            <span className="text-white/80">{p.route}</span>
-            {' \u00b7 '}
-            <span className="text-white/40">{p.mins}m ago</span>
-          </span>
-        </div>
-      </div>
-    </div>
-  );
-}
+/* (Fake social proof ticker removed — no simulated data) */
 
 /* ── Partner Logo ────────────────────────────── */
 
