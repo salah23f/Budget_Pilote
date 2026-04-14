@@ -955,6 +955,8 @@ export default function HotelsPage() {
         <HotelDetailModal
           hotel={selectedHotel}
           onClose={() => setSelectedHotel(null)}
+          checkIn={checkIn}
+          checkOut={checkOut}
         />
       )}
     </div>

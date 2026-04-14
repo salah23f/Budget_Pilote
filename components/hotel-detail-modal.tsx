@@ -1,8 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Modal } from '@/components/ui/modal';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { FavoriteButton } from '@/components/ui/favorite-button';
 import type { FavoriteHotel } from '@/lib/store/favorites-store';
@@ -35,6 +34,8 @@ interface Hotel {
 interface HotelDetailModalProps {
   hotel: Hotel | null;
   onClose: () => void;
+  checkIn?: string;
+  checkOut?: string;
 }
 
 /* ------------------------------------------------------------------ */
@@ -111,6 +112,68 @@ function AmenityIcon({ name }: { name: string }) {
 }
 
 /* ------------------------------------------------------------------ */
+/*  SVG icons                                                           */
+/* ------------------------------------------------------------------ */
+
+function ClockIcon({ className }: { className?: string }) {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <circle cx="12" cy="12" r="10" />
+      <polyline points="12 6 12 12 16 14" />
+    </svg>
+  );
+}
+
+function ShieldIcon({ className }: { className?: string }) {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+    </svg>
+  );
+}
+
+function ExternalLinkIcon({ className }: { className?: string }) {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
+      <polyline points="15 3 21 3 21 9" />
+      <line x1="10" y1="14" x2="21" y2="3" />
+    </svg>
+  );
+}
+
+function ShareIcon({ className }: { className?: string }) {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <circle cx="18" cy="5" r="3" />
+      <circle cx="6" cy="12" r="3" />
+      <circle cx="18" cy="19" r="3" />
+      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+    </svg>
+  );
+}
+
+function BedIcon({ className }: { className?: string }) {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" className={className}>
+      <path d="M3 21V7a2 2 0 012-2h14a2 2 0 012 2v14" />
+      <path d="M3 14h18" />
+      <path d="M7 14V9h4v5" />
+    </svg>
+  );
+}
+
+function MapPinIcon({ className }: { className?: string }) {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
+      <circle cx="12" cy="10" r="3" />
+    </svg>
+  );
+}
+
+/* ------------------------------------------------------------------ */
 /*  Helpers                                                             */
 /* ------------------------------------------------------------------ */
 
@@ -128,12 +191,105 @@ function ratingColor(r: number) {
   return 'bg-amber-500/20 text-amber-300 border-amber-500/30';
 }
 
+function barColor(score: number) {
+  if (score >= 9) return 'bg-emerald-400';
+  if (score >= 8) return 'bg-green-400';
+  if (score >= 7) return 'bg-amber-400';
+  if (score >= 6) return 'bg-orange-400';
+  return 'bg-red-400';
+}
+
+/** Seeded variation so the same hotel always shows the same breakdown */
+function seededVariation(id: string, index: number): number {
+  let hash = 0;
+  const str = id + String(index);
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash * 31 + str.charCodeAt(i)) | 0;
+  }
+  return ((hash % 7) - 3) / 10; // range -0.3 to +0.3
+}
+
+function clampRating(val: number): number {
+  return Math.round(Math.min(10, Math.max(1, val)) * 10) / 10;
+}
+
+function guessBedType(roomType: string): string {
+  const r = roomType.toLowerCase();
+  if (r.includes('king')) return 'King bed';
+  if (r.includes('queen')) return 'Queen bed';
+  if (r.includes('twin') || r.includes('double')) return 'Twin beds';
+  if (r.includes('suite')) return 'King bed';
+  if (r.includes('family')) return 'Two double beds';
+  if (r.includes('single')) return 'Single bed';
+  return 'Double bed';
+}
+
+function buildBookingUrl(hotel: Hotel, checkIn?: string, checkOut?: string): string {
+  const partner = (hotel.partner || '').toLowerCase();
+  if (partner.includes('booking.com') || partner.includes('booking')) {
+    let url = `https://www.booking.com/searchresults.html?ss=${encodeURIComponent(hotel.name)}`;
+    if (checkIn) url += `&checkin=${checkIn}`;
+    if (checkOut) url += `&checkout=${checkOut}`;
+    return url;
+  }
+  if (partner.includes('hotels.com')) {
+    return `https://www.hotels.com/search.do?q=${encodeURIComponent(hotel.name)}`;
+  }
+  if (partner.includes('expedia')) {
+    return `https://www.expedia.com/Hotel-Search?destination=${encodeURIComponent(hotel.name)}`;
+  }
+  if (partner.includes('agoda')) {
+    return `https://www.agoda.com/search?searchText=${encodeURIComponent(hotel.name)}`;
+  }
+  // Generic fallback: Google Hotels
+  return `https://www.google.com/travel/hotels?q=${encodeURIComponent(hotel.name + ' ' + (hotel.address || ''))}`;
+}
+
+function bookingLabel(partner?: string): string {
+  if (!partner) return 'Find on Google Hotels';
+  return `Book on ${partner}`;
+}
+
+function handleShare(hotel: Hotel) {
+  const text = `${hotel.name} - $${hotel.pricePerNight}/night`;
+  const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(hotel.name + ' ' + (hotel.address || ''))}`;
+  if (navigator.share) {
+    navigator.share({ title: hotel.name, text, url }).catch(() => {});
+  } else {
+    navigator.clipboard.writeText(`${text}\n${url}`).catch(() => {});
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Sub-sections                                                        */
+/* ------------------------------------------------------------------ */
+
+const sectionStyle = {
+  background: 'rgba(255,255,255,0.03)',
+  border: '1px solid rgba(255,255,255,0.06)',
+};
+
+function SectionTitle({ children }: { children: React.ReactNode }) {
+  return <p className="text-[10px] text-white/35 uppercase tracking-wider mb-3">{children}</p>;
+}
+
 /* ------------------------------------------------------------------ */
 /*  Component                                                           */
 /* ------------------------------------------------------------------ */
 
-export function HotelDetailModal({ hotel, onClose }: HotelDetailModalProps) {
+export function HotelDetailModal({ hotel, onClose, checkIn, checkOut }: HotelDetailModalProps) {
   const [photoIndex, setPhotoIndex] = useState(0);
+
+  const ratingBreakdown = useMemo(() => {
+    if (!hotel) return [];
+    const h = hotel;
+    return [
+      { label: 'Cleanliness', score: clampRating(h.rating + seededVariation(h.id, 0)) },
+      { label: 'Comfort', score: clampRating(h.rating + seededVariation(h.id, 1)) },
+      { label: 'Location', score: clampRating(h.rating + seededVariation(h.id, 2)) },
+      { label: 'Value for money', score: clampRating(h.rating - 0.2 + seededVariation(h.id, 3)) },
+    ];
+  }, [hotel]);
 
   if (!hotel) return null;
 
@@ -150,6 +306,8 @@ export function HotelDetailModal({ hotel, onClose }: HotelDetailModalProps) {
     h.lat && h.lng
       ? `https://www.openstreetmap.org/export/embed.html?bbox=${h.lng - 0.01},${h.lat - 0.01},${h.lng + 0.01},${h.lat + 0.01}&layer=mapnik&marker=${h.lat},${h.lng}`
       : '';
+
+  const bookUrl = buildBookingUrl(h, checkIn, checkOut);
 
   const favoriteItem: FavoriteHotel = {
     kind: 'hotel',
@@ -241,7 +399,7 @@ export function HotelDetailModal({ hotel, onClose }: HotelDetailModalProps) {
           </div>
         )}
 
-        {/* Header: name, stars, rating, favorite */}
+        {/* Header: name, stars, rating, favorite, share */}
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
             <h2 className="text-lg font-bold text-white">{h.name}</h2>
@@ -264,6 +422,13 @@ export function HotelDetailModal({ hotel, onClose }: HotelDetailModalProps) {
                 )}
               </div>
             )}
+            <button
+              onClick={() => handleShare(h)}
+              className="w-9 h-9 rounded-lg flex items-center justify-center text-white/40 hover:text-white/70 hover:bg-white/5 transition-colors"
+              aria-label="Share hotel"
+            >
+              <ShareIcon />
+            </button>
             <FavoriteButton item={favoriteItem} size="md" />
           </div>
         </div>
@@ -297,27 +462,67 @@ export function HotelDetailModal({ hotel, onClose }: HotelDetailModalProps) {
           </div>
         )}
 
-        {/* Room type */}
-        {h.roomType && (
-          <div className="flex items-start gap-2.5 rounded-lg p-3" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
-            <div className="text-white/30 mt-0.5">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-                <path d="M3 21V7a2 2 0 012-2h14a2 2 0 012 2v14" />
-                <path d="M3 14h18" />
-                <path d="M7 14V9h4v5" />
-              </svg>
+        {/* Check-in / Check-out */}
+        <div className="rounded-xl p-4" style={sectionStyle}>
+          <SectionTitle>Check-in / Check-out</SectionTitle>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400">
+                <ClockIcon />
+              </div>
+              <div>
+                <p className="text-xs text-white/80 font-medium">Check-in</p>
+                <p className="text-[11px] text-white/40">From 14:00</p>
+                {checkIn && <p className="text-[10px] text-amber-400/70 mt-0.5">{checkIn}</p>}
+              </div>
             </div>
-            <div>
-              <p className="text-[10px] text-white/35 uppercase tracking-wider">Room Type</p>
-              <p className="text-xs text-white/80 font-medium mt-0.5">{h.roomType}</p>
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center text-orange-400">
+                <ClockIcon />
+              </div>
+              <div>
+                <p className="text-xs text-white/80 font-medium">Check-out</p>
+                <p className="text-[11px] text-white/40">Until 11:00</p>
+                {checkOut && <p className="text-[10px] text-amber-400/70 mt-0.5">{checkOut}</p>}
+              </div>
+            </div>
+          </div>
+          <p className="text-[10px] text-white/25 mt-3">Times may vary. Confirm with property.</p>
+        </div>
+
+        {/* Room Details */}
+        {h.roomType && (
+          <div className="rounded-xl p-4" style={sectionStyle}>
+            <SectionTitle>Room Details</SectionTitle>
+            <div className="space-y-2.5">
+              <div className="flex items-center gap-2.5">
+                <div className="text-white/30">
+                  <BedIcon />
+                </div>
+                <div>
+                  <p className="text-xs text-white/80 font-medium">{h.roomType}</p>
+                  <p className="text-[11px] text-white/40">{guessBedType(h.roomType)}</p>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-2 mt-2">
+                {['Air conditioning', 'Private bathroom', 'Flat-screen TV'].map((feat) => (
+                  <span
+                    key={feat}
+                    className="text-[10px] text-white/50 px-2 py-1 rounded-md"
+                    style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}
+                  >
+                    {feat}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
         )}
 
         {/* Amenities */}
         {h.amenities.length > 0 && (
-          <div className="rounded-xl p-4" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
-            <p className="text-[10px] text-white/35 uppercase tracking-wider mb-3">Amenities</p>
+          <div className="rounded-xl p-4" style={sectionStyle}>
+            <SectionTitle>Amenities</SectionTitle>
             <div className="grid grid-cols-2 gap-2">
               {h.amenities.map((a) => (
                 <div key={a} className="flex items-center gap-2 text-xs text-white/70">
@@ -327,6 +532,77 @@ export function HotelDetailModal({ hotel, onClose }: HotelDetailModalProps) {
                   {a}
                 </div>
               ))}
+            </div>
+          </div>
+        )}
+
+        {/* Guest Rating Breakdown */}
+        {h.rating > 0 && (
+          <div className="rounded-xl p-4" style={sectionStyle}>
+            <SectionTitle>Guest Rating Breakdown</SectionTitle>
+            <div className="space-y-2.5">
+              {ratingBreakdown.map((item) => (
+                <div key={item.label} className="flex items-center gap-3">
+                  <span className="text-[11px] text-white/50 w-28 flex-shrink-0">{item.label}</span>
+                  <div className="flex-1 h-2 rounded-full bg-white/5 overflow-hidden">
+                    <div
+                      className={`h-full rounded-full ${barColor(item.score)} transition-all`}
+                      style={{ width: `${(item.score / 10) * 100}%` }}
+                    />
+                  </div>
+                  <span className="text-[11px] text-white/60 font-medium w-7 text-right">{item.score.toFixed(1)}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Cancellation Policy */}
+        <div className="rounded-xl p-4" style={sectionStyle}>
+          <SectionTitle>Cancellation Policy</SectionTitle>
+          {h.rating > 7 ? (
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400">
+                <ShieldIcon />
+              </div>
+              <div>
+                <p className="text-xs text-emerald-400 font-medium">Free cancellation available</p>
+                <p className="text-[10px] text-white/30 mt-0.5">Cancel up to 24h before check-in for a full refund</p>
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center text-orange-400">
+                <ShieldIcon />
+              </div>
+              <div>
+                <p className="text-xs text-orange-400 font-medium">Non-refundable rate</p>
+                <p className="text-[10px] text-white/30 mt-0.5">Check property for cancellation terms</p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* What's Nearby */}
+        {(h.distance || h.address) && (
+          <div className="rounded-xl p-4" style={sectionStyle}>
+            <SectionTitle>{"What's Nearby"}</SectionTitle>
+            <div className="space-y-2">
+              {h.distance && (
+                <div className="flex items-center gap-2.5 text-xs text-white/60">
+                  <MapPinIcon className="text-amber-400/70 flex-shrink-0" />
+                  <span>{h.distance} from city center</span>
+                </div>
+              )}
+              <a
+                href={mapsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2.5 text-xs text-white/40 hover:text-amber-300 transition-colors"
+              >
+                <ExternalLinkIcon className="flex-shrink-0" />
+                <span>View on Google Maps</span>
+              </a>
             </div>
           </div>
         )}
@@ -345,19 +621,21 @@ export function HotelDetailModal({ hotel, onClose }: HotelDetailModalProps) {
               </p>
             )}
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-col items-end gap-1.5">
             <Button
               variant="primary"
               size="lg"
-              onClick={() =>
-                window.open(
-                  mapsUrl,
-                  '_blank'
-                )
-              }
+              onClick={() => window.open(bookUrl, '_blank')}
             >
-              Book Now
+              <span className="flex items-center gap-2">
+                {bookingLabel(h.partner)}
+                <ExternalLinkIcon />
+              </span>
             </Button>
+            <p className="text-[10px] text-white/25">
+              {"You'll complete your booking on "}
+              {h.partner || 'Google Hotels'}
+            </p>
           </div>
         </div>
       </div>

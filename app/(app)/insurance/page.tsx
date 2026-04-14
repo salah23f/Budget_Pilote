@@ -5,6 +5,8 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { InsuranceDetailModal } from '@/components/insurance-detail-modal';
+import type { InsurancePlan } from '@/components/insurance-detail-modal';
 
 /* ------------------------------------------------------------------ */
 /*  Insurance plans with real coverage details                          */
@@ -107,6 +109,7 @@ export default function InsurancePage() {
   const [travelers, setTravelers] = useState(1);
   const [age, setAge] = useState(30);
   const [configured, setConfigured] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<InsurancePlan | null>(null);
 
   const days = useMemo(() => {
     if (!departDate || !returnDate) return 7;
@@ -151,12 +154,21 @@ export default function InsurancePage() {
           const perPerson = Math.round(plan.priceBase + plan.pricePerDay * days);
           const link = buildAffiliateLink(plan, { destination, departDate, returnDate, travelers, age });
 
+          const modalPlan: InsurancePlan = {
+            id: plan.name.toLowerCase(),
+            name: plan.name,
+            price: configured ? totalPrice : plan.priceBase,
+            features: plan.features.filter((f) => f.included).map((f) => f.text),
+            color: plan.color,
+          };
+
           return (
             <Card
               key={plan.name}
               hoverable
               padding="none"
-              className={`overflow-hidden card-interactive ${plan.popular ? 'ring-2 ring-amber-500/30' : ''}`}
+              className={`overflow-hidden card-interactive cursor-pointer ${plan.popular ? 'ring-2 ring-amber-500/30' : ''}`}
+              onClick={() => setSelectedPlan(modalPlan)}
             >
               {plan.popular && (
                 <div className="text-center py-1.5 text-[10px] font-bold uppercase tracking-wider" style={{ background: 'var(--flyeas-gradient)', color: 'white' }}>
@@ -167,7 +179,12 @@ export default function InsurancePage() {
                 {/* Plan header */}
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-xl">{plan.icon}</span>
+                    <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: `${plan.color}18` }}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={plan.color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M12 2l8 4v6c0 5.5-3.8 10.7-8 12-4.2-1.3-8-6.5-8-12V6l8-4z" />
+                        <path d="M9 12l2 2 4-4" />
+                      </svg>
+                    </div>
                     <h3 className="text-lg font-bold text-white">{plan.name}</h3>
                   </div>
                   <div className="flex items-baseline gap-1.5 mt-3">
@@ -187,16 +204,39 @@ export default function InsurancePage() {
                 <div className="space-y-2">
                   {plan.features.map((f) => (
                     <div key={f.text} className="flex items-start gap-2 text-xs">
-                      <span className={`mt-0.5 ${f.included ? 'text-emerald-400' : 'text-white/15'}`}>
-                        {f.included ? '✓' : '✕'}
-                      </span>
+                      {f.included ? (
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 text-emerald-400 flex-shrink-0">
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                      ) : (
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 text-white/15 flex-shrink-0">
+                          <line x1="18" y1="6" x2="6" y2="18" />
+                          <line x1="6" y1="6" x2="18" y2="18" />
+                        </svg>
+                      )}
                       <span className={f.included ? 'text-white/60' : 'text-white/20'}>{f.text}</span>
                     </div>
                   ))}
                 </div>
 
+                {/* View details */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedPlan(modalPlan);
+                  }}
+                  className="flex items-center justify-center gap-1.5 w-full text-[11px] text-amber-400/70 hover:text-amber-400 transition-colors py-1"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="16" x2="12" y2="12" />
+                    <line x1="12" y1="8" x2="12.01" y2="8" />
+                  </svg>
+                  View full coverage details
+                </button>
+
                 {/* CTA */}
-                <a href={link} target="_blank" rel="noopener noreferrer" className="block">
+                <a href={link} target="_blank" rel="noopener noreferrer" className="block" onClick={(e) => e.stopPropagation()}>
                   <Button
                     variant={plan.popular ? 'primary' : 'secondary'}
                     size="md"
@@ -241,6 +281,16 @@ export default function InsurancePage() {
       <p className="text-[10px] text-white/15 text-center">
         Insurance provided by VisitorsCoverage and partner underwriters. Prices are estimates — final pricing determined on provider&apos;s site. Flyeas earns a referral commission at no extra cost to you.
       </p>
+
+      {/* Detail modal */}
+      <InsuranceDetailModal
+        plan={selectedPlan}
+        onClose={() => setSelectedPlan(null)}
+        destination={destination}
+        departDate={departDate}
+        returnDate={returnDate}
+        travelers={travelers}
+      />
     </div>
   );
 }

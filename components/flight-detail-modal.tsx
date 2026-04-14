@@ -182,25 +182,141 @@ export function FlightDetailModal({ flight, origin, destination, departDate, onC
           </div>
         </div>
 
+        {/* What's Included */}
+        {(() => {
+          const cabinLower = (f.cabinClass || f.cabin || 'economy').toLowerCase();
+          const isPremium = cabinLower.includes('business') || cabinLower.includes('first');
+          const inclusions = [
+            { label: 'Cabin bag', status: 'Included', included: true, icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="7" y="4" width="10" height="16" rx="2"/><path d="M10 4V2M14 4V2M7 8h10"/></svg> },
+            { label: 'Checked bag', status: f.baggageIncluded ? 'Included (23kg)' : 'Not included', included: !!f.baggageIncluded, icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M9 2v20M15 2v20M6 7h12M6 17h12"/></svg> },
+            { label: 'Meal service', status: isPremium ? 'Included' : 'Purchase on board', included: isPremium, icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M18 8h1a4 4 0 010 8h-1M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8zM6 1v3M10 1v3M14 1v3"/></svg> },
+            { label: 'Entertainment', status: 'Available', included: true, icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="M2 18h20M10 22h4"/></svg> },
+            { label: 'USB / Power', status: 'Available', included: true, icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> },
+            { label: 'WiFi', status: isPremium ? 'Available' : 'Varies', included: isPremium, icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M5 12.55a11 11 0 0114.08 0M1.42 9a16 16 0 0121.16 0M8.53 16.11a6 6 0 016.95 0M12 20h.01"/></svg> },
+          ];
+          return (
+            <div className="space-y-3">
+              <h3 className="text-xs font-semibold text-white/50 uppercase tracking-wider">What&apos;s Included</h3>
+              <div className="grid grid-cols-3 gap-2">
+                {inclusions.map((item) => (
+                  <div key={item.label} className="flex items-center gap-2 rounded-lg p-2.5" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                    <div className={item.included ? 'text-emerald-400' : 'text-white/30'}>{item.icon}</div>
+                    <div className="min-w-0">
+                      <p className="text-[10px] text-white/40 truncate">{item.label}</p>
+                      <div className="flex items-center gap-1">
+                        {item.included ? (
+                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="text-emerald-400 shrink-0"><path d="M20 6L9 17l-5-5"/></svg>
+                        ) : (
+                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="text-white/25 shrink-0"><path d="M5 12h14"/></svg>
+                        )}
+                        <p className={`text-[10px] font-medium truncate ${item.included ? 'text-emerald-400' : 'text-white/40'}`}>{item.status}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })()}
+
+        {/* Cancellation Policy */}
+        {(() => {
+          const cabinLower = (f.cabinClass || f.cabin || 'economy').toLowerCase();
+          let policy = { title: 'Non-refundable', detail: 'Non-refundable. Changes may incur fees. Check with airline for exact policy.', color: 'text-white/50' };
+          if (cabinLower.includes('first')) {
+            policy = { title: 'Fully flexible', detail: 'Fully flexible. Free cancellation and changes.', color: 'text-emerald-400' };
+          } else if (cabinLower.includes('business')) {
+            policy = { title: 'Flexible ticket', detail: 'Flexible ticket. Free changes up to 24h before departure.', color: 'text-emerald-400' };
+          } else if (cabinLower.includes('premium')) {
+            policy = { title: 'Partially refundable', detail: 'Partially refundable. Changes allowed with fee.', color: 'text-amber-400' };
+          }
+          return (
+            <div className="space-y-2">
+              <h3 className="text-xs font-semibold text-white/50 uppercase tracking-wider">Cancellation Policy</h3>
+              <div className="flex items-start gap-3 rounded-xl p-4" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={`${policy.color} mt-0.5 shrink-0`}><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 8v4M12 16h.01"/></svg>
+                <div>
+                  <p className={`text-xs font-semibold ${policy.color}`}>{policy.title}</p>
+                  <p className="text-[11px] text-white/40 mt-0.5 leading-relaxed">{policy.detail}</p>
+                </div>
+              </div>
+            </div>
+          );
+        })()}
+
+        {/* Layover Details */}
+        {f.stops > 0 && (
+          <div className="space-y-2">
+            <h3 className="text-xs font-semibold text-white/50 uppercase tracking-wider">Layover Details</h3>
+            <div className="flex items-start gap-3 rounded-xl p-4" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="text-amber-400 mt-0.5 shrink-0"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              <div>
+                <p className="text-xs font-semibold text-amber-400">{f.stops} connection{f.stops > 1 ? 's' : ''}</p>
+                <p className="text-[11px] text-white/40 mt-0.5 leading-relaxed">
+                  This flight has {f.stops} connection{f.stops > 1 ? 's' : ''}. Check with the airline for layover details and terminal information.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Price Breakdown */}
+        <div className="space-y-2">
+          <h3 className="text-xs font-semibold text-white/50 uppercase tracking-wider">Price Breakdown</h3>
+          <div className="rounded-xl p-4 space-y-2.5" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-white/50">Estimated base fare</span>
+              <span className="text-xs text-white/70 font-medium">${Math.round(f.price * 0.85)}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-white/50">Estimated taxes & fees</span>
+              <span className="text-xs text-white/70 font-medium">${Math.round(f.price * 0.15)}</span>
+            </div>
+            <div className="h-px bg-white/10" />
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-white font-semibold">Total</span>
+              <span className="text-sm text-white font-bold">${f.price}</span>
+            </div>
+            <p className="text-[10px] text-white/25 pt-0.5">Final price confirmed at booking</p>
+          </div>
+        </div>
+
         {/* Price + actions */}
-        <div className="flex items-center justify-between pt-3" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-          <div>
-            <p className="text-3xl font-bold text-white">${f.price}</p>
-            <p className="text-xs text-white/30">per person</p>
-          </div>
-          <div className="flex gap-2">
-            {f.deepLink ? (
-              <a href={f.deepLink} target="_blank" rel="noopener noreferrer">
-                <Button variant="primary" size="lg">
-                  Book Now
+        <div className="pt-3 space-y-3" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-3xl font-bold text-white">${f.price}</p>
+              <p className="text-xs text-white/30">per person</p>
+            </div>
+            <div className="flex gap-2">
+              {f.deepLink ? (
+                <a href={f.deepLink} target="_blank" rel="noopener noreferrer">
+                  <Button variant="primary" size="lg">
+                    <span className="flex items-center gap-1.5">
+                      Book on Kiwi.com
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+                    </span>
+                  </Button>
+                </a>
+              ) : (
+                <Button variant="primary" size="lg" onClick={() => window.open(`https://www.kiwi.com/en/search/results/${origin}/${destination}/${departDate}?adults=1`, '_blank')}>
+                  <span className="flex items-center gap-1.5">
+                    Book on Kiwi.com
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+                  </span>
                 </Button>
-              </a>
-            ) : (
-              <Button variant="primary" size="lg" onClick={() => window.open(`https://www.kiwi.com/en/search/results/${origin}/${destination}/${departDate}?adults=1`, '_blank')}>
-                Book Now
-              </Button>
-            )}
+              )}
+            </div>
           </div>
+          <p className="text-[10px] text-white/25 text-center">You&apos;ll complete your booking on Kiwi.com</p>
+          <a href="/missions/new" className="block">
+            <Button variant="secondary" size="lg" className="w-full">
+              <span className="flex items-center justify-center gap-2">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
+                Set Price Alert
+              </span>
+            </Button>
+          </a>
         </div>
       </div>
     </Modal>

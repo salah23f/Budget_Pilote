@@ -5,6 +5,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { CarDetailModal } from '@/components/car-detail-modal';
 
 /* ------------------------------------------------------------------ */
 /*  Types (mirrors lib/amadeus/cars.ts CarResult)                       */
@@ -58,6 +59,7 @@ export default function CarsPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searched, setSearched] = useState(false);
+  const [selectedCar, setSelectedCar] = useState<CarResult | null>(null);
 
   // Filters
   const [typeFilter, setTypeFilter] = useState<string>('all');
@@ -208,7 +210,7 @@ export default function CarsPage() {
           {/* Car cards */}
           <div className="space-y-3">
             {filtered.map((car) => (
-              <Card key={car.id} hoverable padding="none" className="overflow-hidden card-interactive stagger-item">
+              <Card key={car.id} hoverable padding="none" className="overflow-hidden card-interactive stagger-item cursor-pointer" onClick={() => setSelectedCar(car)}>
                 <div className="p-5 flex flex-col sm:flex-row sm:items-center gap-4">
                   {/* Car image or icon */}
                   <div className="w-16 h-16 rounded-xl glass flex items-center justify-center flex-shrink-0">
@@ -274,6 +276,15 @@ export default function CarsPage() {
           <p className="text-white/50 text-sm">No cars found for this location and dates. Try a different city.</p>
         </Card>
       )}
+
+      {/* Car detail modal */}
+      <CarDetailModal
+        car={selectedCar}
+        onClose={() => setSelectedCar(null)}
+        pickupLocation={location}
+        pickupDate={pickupDate}
+        returnDate={dropoffDate}
+      />
     </div>
   );
 }
