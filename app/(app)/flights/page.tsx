@@ -1102,10 +1102,18 @@ export default function FlightsPage() {
             <PriceHistory
               currentPrice={flights.reduce((m, f) => Math.min(m, f.price), Infinity)}
               route={`${origin.toUpperCase()} → ${destination.toUpperCase()}`}
+              origin={origin}
+              destination={destination}
             />
             <PriceComparator
               flightPrice={flights.reduce((m, f) => Math.min(m, f.price), Infinity)}
               route={`${origin.toUpperCase()} → ${destination.toUpperCase()}`}
+              origin={origin}
+              destination={destination}
+              departDate={departDate}
+              returnDate={returnDate}
+              passengers={passengers}
+              cabin={cabin}
               airline={flights[0]?.airline || ''}
               deepLink={flights[0]?.deepLink}
             />

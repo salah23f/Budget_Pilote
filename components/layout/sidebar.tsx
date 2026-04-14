@@ -19,13 +19,11 @@ const navItems = [
     ),
   },
   {
-    label: 'Missions',
-    href: '/missions',
+    label: 'Trip Builder',
+    href: '/trip-builder',
     icon: (
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="10" cy="10" r="8" />
-        <circle cx="10" cy="10" r="5" />
-        <circle cx="10" cy="10" r="2" />
+        <path d="M10 2l2 4 4.5.7-3.3 3.2.8 4.6L10 12.4 5.9 14.5l.8-4.6-3.3-3.2L8 6z" />
       </svg>
     ),
   },
@@ -50,6 +48,26 @@ const navItems = [
     ),
   },
   {
+    label: 'Cars',
+    href: '/cars',
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M3 10l2-5h10l2 5" /><rect x="2" y="10" width="16" height="5" rx="1.5" /><circle cx="6" cy="15" r="1.5" /><circle cx="14" cy="15" r="1.5" />
+      </svg>
+    ),
+  },
+  {
+    label: 'Missions',
+    href: '/missions',
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="10" cy="10" r="8" />
+        <circle cx="10" cy="10" r="5" />
+        <circle cx="10" cy="10" r="2" />
+      </svg>
+    ),
+  },
+  {
     label: 'Favorites',
     href: '/favorites',
     icon: (
@@ -65,108 +83,6 @@ const navItems = [
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <path d="M4 2v16l3-2 3 2 3-2 3 2V2H4z" />
         <path d="M7 6h6M7 10h4" />
-      </svg>
-    ),
-  },
-  {
-    label: 'Wallet',
-    href: '/wallet',
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="2" y="4" width="16" height="13" rx="2" />
-        <path d="M2 8h16" />
-        <circle cx="14" cy="12" r="1" fill="currentColor" />
-      </svg>
-    ),
-  },
-  {
-    label: 'Trip Builder',
-    href: '/trip-builder',
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M3 3l6 3-3 6-6-3zM14 8l3 6-6 3-3-6z" /><circle cx="10" cy="10" r="1.5" fill="currentColor" />
-      </svg>
-    ),
-  },
-  {
-    label: 'Multi-City',
-    href: '/multi-city',
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M2 10h3l2-4 3 8 2-4h3" /><circle cx="17" cy="10" r="1.5" />
-      </svg>
-    ),
-  },
-  {
-    label: 'Itinerary',
-    href: '/itinerary',
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M4 2v16l3-2 3 2 3-2 3 2V2H4z" /><path d="M7 6h6M7 10h4M7 14h5" />
-      </svg>
-    ),
-  },
-  {
-    label: 'Cars',
-    href: '/cars',
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M3 10l2-5h10l2 5" /><rect x="2" y="10" width="16" height="5" rx="1.5" /><circle cx="6" cy="15" r="1.5" /><circle cx="14" cy="15" r="1.5" />
-      </svg>
-    ),
-  },
-  {
-    label: 'Insurance',
-    href: '/insurance',
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M10 2l7 3v5c0 4-3 7-7 8-4-1-7-4-7-8V5l7-3z" /><path d="M7 10l2 2 4-4" />
-      </svg>
-    ),
-  },
-  {
-    label: 'Group Trip',
-    href: '/group-trip',
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="7" cy="6" r="3" /><circle cx="14" cy="8" r="2.5" /><path d="M2 17c0-3 2.5-5 5-5s5 2 5 5" /><path d="M12 17c0-2.5 1.5-4 3.5-4s3.5 1.5 3.5 4" />
-      </svg>
-    ),
-  },
-  {
-    label: 'Invite Friends',
-    href: '/dashboard#referral',
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M15 12a3 3 0 100-6 3 3 0 000 6zM5 18a3 3 0 100-6 3 3 0 000 6zM15 18a3 3 0 100-6 3 3 0 000 6zM10 5a3 3 0 100-6 3 3 0 000 6z" />
-      </svg>
-    ),
-  },
-  {
-    label: 'Pricing',
-    href: '/pricing',
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M10 2l2 4 4.5.7-3.3 3.2.8 4.6L10 12.4 5.9 14.5l.8-4.6-3.3-3.2L8 6z" />
-      </svg>
-    ),
-  },
-  {
-    label: 'Blog',
-    href: '/blog',
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M4 2h12a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V4a2 2 0 012-2z" />
-        <path d="M6 6h8M6 10h5M6 14h7" />
-      </svg>
-    ),
-  },
-  {
-    label: 'About',
-    href: '/about',
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="10" cy="10" r="8" /><path d="M10 7v1M10 11v4" />
       </svg>
     ),
   },
