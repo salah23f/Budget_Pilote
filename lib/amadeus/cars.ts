@@ -132,15 +132,17 @@ async function searchViaScrapper(params: CarSearchParams, days: number): Promise
 
   if (!entityId) throw new Error('No entityId for location');
 
-  // Search cars
+  // Search cars — params must match Sky-Scrapper API exactly
   const searchRes = await fetch(
     `${BASE_URL}/api/v1/cars/searchCars?` +
-    `entityId=${encodeURIComponent(entityId)}` +
+    `pickUpEntityId=${encodeURIComponent(entityId)}` +
     `&pickUpDate=${params.pickupDate}` +
     `&dropOffDate=${params.dropoffDate}` +
-    `&pickUpTime=${params.pickupTime || '10:00'}` +
-    `&dropOffTime=${params.dropoffTime || '10:00'}` +
-    `&driverAge=${params.driverAge || 30}`,
+    `&pickUpTime=${encodeURIComponent(params.pickupTime || '10:00')}` +
+    `&dropOffTime=${encodeURIComponent(params.dropoffTime || '10:00')}` +
+    `&currency=USD` +
+    `&countryCode=US` +
+    `&market=en-US`,
     { headers: headers(), signal: AbortSignal.timeout(15000) }
   );
 
