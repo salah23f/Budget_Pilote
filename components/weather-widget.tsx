@@ -1,95 +1,29 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useState, useEffect } from 'react';
 
 /* ------------------------------------------------------------------ */
-/*  Weather data (seeded by destination + date)                         */
+/*  Types                                                               */
 /* ------------------------------------------------------------------ */
 
 interface WeatherDay {
   date: string;
   tempHigh: number;
   tempLow: number;
-  condition: 'sunny' | 'partly-cloudy' | 'cloudy' | 'rainy' | 'stormy' | 'snowy';
+  condition: string;
   humidity: number;
   wind: number;
+  icon?: string;
 }
 
-const CONDITIONS = {
-  sunny: { icon: '☀️', label: 'Sunny', color: '#F59E0B' },
-  'partly-cloudy': { icon: '⛅', label: 'Partly Cloudy', color: '#94A3B8' },
-  cloudy: { icon: '☁️', label: 'Cloudy', color: '#64748B' },
-  rainy: { icon: '🌧️', label: 'Rainy', color: '#3B82F6' },
-  stormy: { icon: '⛈️', label: 'Stormy', color: '#6366F1' },
-  snowy: { icon: '🌨️', label: 'Snow', color: '#E2E8F0' },
+const CONDITIONS: Record<string, { icon: string; label: string }> = {
+  sunny: { icon: '☀️', label: 'Sunny' },
+  'partly-cloudy': { icon: '⛅', label: 'Partly Cloudy' },
+  cloudy: { icon: '☁️', label: 'Cloudy' },
+  rainy: { icon: '🌧️', label: 'Rainy' },
+  stormy: { icon: '⛈️', label: 'Stormy' },
+  snowy: { icon: '🌨️', label: 'Snow' },
 };
-
-// City climate profiles (average temps & weather patterns)
-const CLIMATES: Record<string, { baseTemp: number; variation: number; rainChance: number; snowChance: number }> = {
-  paris: { baseTemp: 15, variation: 12, rainChance: 0.3, snowChance: 0.05 },
-  london: { baseTemp: 13, variation: 8, rainChance: 0.4, snowChance: 0.03 },
-  rome: { baseTemp: 18, variation: 10, rainChance: 0.2, snowChance: 0.01 },
-  barcelona: { baseTemp: 19, variation: 8, rainChance: 0.15, snowChance: 0 },
-  'new york': { baseTemp: 14, variation: 15, rainChance: 0.25, snowChance: 0.1 },
-  tokyo: { baseTemp: 16, variation: 12, rainChance: 0.3, snowChance: 0.05 },
-  dubai: { baseTemp: 33, variation: 8, rainChance: 0.02, snowChance: 0 },
-  bangkok: { baseTemp: 30, variation: 4, rainChance: 0.35, snowChance: 0 },
-  bali: { baseTemp: 28, variation: 3, rainChance: 0.4, snowChance: 0 },
-  sydney: { baseTemp: 20, variation: 8, rainChance: 0.2, snowChance: 0 },
-  istanbul: { baseTemp: 15, variation: 12, rainChance: 0.25, snowChance: 0.05 },
-  lisbon: { baseTemp: 18, variation: 7, rainChance: 0.2, snowChance: 0 },
-  amsterdam: { baseTemp: 12, variation: 8, rainChance: 0.4, snowChance: 0.05 },
-  berlin: { baseTemp: 11, variation: 12, rainChance: 0.3, snowChance: 0.1 },
-  madrid: { baseTemp: 17, variation: 12, rainChance: 0.15, snowChance: 0.02 },
-  default: { baseTemp: 20, variation: 8, rainChance: 0.2, snowChance: 0.02 },
-};
-
-function seededRandom(seed: string) {
-  let h = 0;
-  for (let i = 0; i < seed.length; i++) h = Math.imul(31, h) + seed.charCodeAt(i) | 0;
-  return function () { h |= 0; h = Math.imul(h ^ (h >>> 16), 0x45d9f3b); h ^= h >>> 16; return ((h >>> 0) % 10000) / 10000; };
-}
-
-function generateWeather(destination: string, startDate: string, days: number): WeatherDay[] {
-  const city = destination.toLowerCase().trim();
-  const climate = CLIMATES[city] || CLIMATES.default;
-  const rng = seededRandom(city + startDate);
-  const result: WeatherDay[] = [];
-  const start = new Date(startDate);
-
-  for (let i = 0; i < days; i++) {
-    const d = new Date(start);
-    d.setDate(d.getDate() + i);
-    const month = d.getMonth();
-    // Seasonal adjustment (northern hemisphere)
-    const seasonFactor = Math.cos(((month - 6) / 6) * Math.PI);
-    const baseTemp = climate.baseTemp + seasonFactor * climate.variation * 0.5;
-
-    const tempHigh = Math.round(baseTemp + rng() * 6 - 1);
-    const tempLow = Math.round(tempHigh - 4 - rng() * 6);
-    const humidity = Math.round(40 + rng() * 40);
-    const wind = Math.round(5 + rng() * 20);
-
-    const r = rng();
-    let condition: WeatherDay['condition'];
-    if (tempHigh < 2 && climate.snowChance > 0 && r < 0.4) condition = 'snowy';
-    else if (r < climate.rainChance * 0.3) condition = 'stormy';
-    else if (r < climate.rainChance) condition = 'rainy';
-    else if (r < climate.rainChance + 0.25) condition = 'cloudy';
-    else if (r < climate.rainChance + 0.45) condition = 'partly-cloudy';
-    else condition = 'sunny';
-
-    result.push({
-      date: d.toISOString().split('T')[0],
-      tempHigh,
-      tempLow,
-      condition,
-      humidity,
-      wind,
-    });
-  }
-  return result;
-}
 
 /* ------------------------------------------------------------------ */
 /*  Component                                                           */
@@ -103,12 +37,58 @@ interface WeatherWidgetProps {
 }
 
 export function WeatherWidget({ destination, startDate, days = 7, className = '' }: WeatherWidgetProps) {
-  const weather = useMemo(
-    () => generateWeather(destination, startDate, Math.min(days, 14)),
-    [destination, startDate, days]
-  );
+  const [weather, setWeather] = useState<WeatherDay[]>([]);
+  const [cityName, setCityName] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [isReal, setIsReal] = useState(false);
+
+  useEffect(() => {
+    if (!destination) return;
+
+    let cancelled = false;
+    setLoading(true);
+
+    // Try real API first
+    fetch(`/api/weather?city=${encodeURIComponent(destination)}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (cancelled) return;
+        if (data.forecast && data.forecast.length > 0) {
+          setWeather(data.forecast);
+          setCityName(data.city || destination);
+          setIsReal(true);
+        } else {
+          // Fallback to estimates
+          setWeather(generateFallback(destination, startDate, days));
+          setCityName(destination);
+          setIsReal(false);
+        }
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setWeather(generateFallback(destination, startDate, days));
+        setCityName(destination);
+        setIsReal(false);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => { cancelled = true; };
+  }, [destination, startDate, days]);
 
   if (!destination || !startDate) return null;
+  if (loading) {
+    return (
+      <div className={`glass rounded-2xl p-5 ${className}`}>
+        <div className="flex items-center gap-2 text-sm text-white/40">
+          <div className="w-4 h-4 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
+          Loading weather...
+        </div>
+      </div>
+    );
+  }
+  if (weather.length === 0) return null;
 
   const avg = Math.round(weather.reduce((s, d) => s + d.tempHigh, 0) / weather.length);
 
@@ -118,20 +98,20 @@ export function WeatherWidget({ destination, startDate, days = 7, className = ''
         <div>
           <h3 className="text-sm font-semibold text-white flex items-center gap-2">
             <span className="text-base">🌤️</span>
-            Weather Forecast
+            Weather {isReal ? 'Forecast' : 'Estimate'}
           </h3>
-          <p className="text-[11px] text-white/35 mt-0.5">{destination} · avg {avg}°C</p>
+          <p className="text-[11px] text-white/35 mt-0.5">{cityName} · avg {avg}°C</p>
         </div>
         <div className="text-right">
           <p className="text-2xl font-bold text-white">{weather[0]?.tempHigh}°</p>
-          <p className="text-[10px] text-white/30">{CONDITIONS[weather[0]?.condition]?.label}</p>
+          <p className="text-[10px] text-white/30">{CONDITIONS[weather[0]?.condition]?.label || weather[0]?.condition}</p>
         </div>
       </div>
 
       {/* Daily forecast */}
       <div className="flex gap-1 overflow-x-auto pb-1 -mx-1 px-1">
         {weather.map((day, i) => {
-          const info = CONDITIONS[day.condition];
+          const info = CONDITIONS[day.condition] || { icon: '⛅', label: day.condition };
           const d = new Date(day.date);
           return (
             <div
@@ -165,8 +145,53 @@ export function WeatherWidget({ destination, startDate, days = 7, className = ''
       </div>
 
       <p className="text-[9px] text-white/15 text-center">
-        Estimates based on seasonal averages · Not a live forecast
+        {isReal ? 'Live forecast via OpenWeatherMap' : 'Estimates based on seasonal averages'}
       </p>
     </div>
   );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Fallback: seasonal estimates if API unavailable                      */
+/* ------------------------------------------------------------------ */
+
+function generateFallback(destination: string, startDate: string, days: number): WeatherDay[] {
+  const CLIMATES: Record<string, { baseTemp: number; variation: number; rainChance: number }> = {
+    paris: { baseTemp: 15, variation: 12, rainChance: 0.3 },
+    london: { baseTemp: 13, variation: 8, rainChance: 0.4 },
+    rome: { baseTemp: 18, variation: 10, rainChance: 0.2 },
+    barcelona: { baseTemp: 19, variation: 8, rainChance: 0.15 },
+    'new york': { baseTemp: 14, variation: 15, rainChance: 0.25 },
+    tokyo: { baseTemp: 16, variation: 12, rainChance: 0.3 },
+    dubai: { baseTemp: 33, variation: 8, rainChance: 0.02 },
+    bangkok: { baseTemp: 30, variation: 4, rainChance: 0.35 },
+    default: { baseTemp: 20, variation: 8, rainChance: 0.2 },
+  };
+
+  const city = destination.toLowerCase().trim();
+  const climate = CLIMATES[city] || CLIMATES.default;
+  const result: WeatherDay[] = [];
+  const start = new Date(startDate);
+
+  let seed = 0;
+  for (let i = 0; i < city.length; i++) seed += city.charCodeAt(i);
+
+  for (let i = 0; i < Math.min(days, 7); i++) {
+    const d = new Date(start);
+    d.setDate(d.getDate() + i);
+    const month = d.getMonth();
+    const seasonFactor = Math.cos(((month - 6) / 6) * Math.PI);
+    const baseTemp = climate.baseTemp + seasonFactor * climate.variation * 0.5;
+    const r = ((seed * (i + 1) * 7) % 100) / 100;
+
+    result.push({
+      date: d.toISOString().split('T')[0],
+      tempHigh: Math.round(baseTemp + r * 6 - 1),
+      tempLow: Math.round(baseTemp - 4 - r * 6),
+      condition: r < climate.rainChance ? 'rainy' : r < climate.rainChance + 0.3 ? 'partly-cloudy' : 'sunny',
+      humidity: Math.round(40 + r * 40),
+      wind: Math.round(5 + r * 20),
+    });
+  }
+  return result;
 }
