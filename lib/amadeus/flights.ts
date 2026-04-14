@@ -259,8 +259,19 @@ export async function searchFlights(
     destEntityId?: string;
   }
 ): Promise<Offer[]> {
-  const cabin = params.cabinClass || 'economy';
-  const adults = params.adults || 1;
+  // Sky-Scrapper cabin class mapping — must be exact values the API accepts
+  const CABIN_NORMALIZE: Record<string, string> = {
+    economy: 'economy',
+    premium_economy: 'premium_economy',
+    business: 'business',
+    first: 'first',
+    // Common UI aliases
+    'premium economy': 'premium_economy',
+    'first class': 'first',
+    'business class': 'business',
+  };
+  const cabin = CABIN_NORMALIZE[(params.cabinClass || 'economy').toLowerCase()] || 'economy';
+  const adults = Math.max(1, Math.min(9, Number(params.adults) || 1));
 
   // Build candidate lists for origin and destination.
   // If the caller provided explicit skyId/entityId (from autocomplete), trust it as first choice.
@@ -421,6 +432,38 @@ export async function searchFlights(
       } catch (kiwiErr: any) {
         console.warn('[flights] Kiwi also failed:', kiwiErr?.message);
       }
+    }
+
+    // BACKUP 1.5: If non-economy cabin returned nothing, retry Kiwi with economy
+    // (many routes only have economy fares; show something rather than nothing)
+    if (cabin !== 'economy' && isKiwiConfigured()) {
+      try {
+        const kiwiOrigin2 = originCandidates[0]?.skyId || params.origin;
+        const kiwiDest2 = destCandidates[0]?.skyId || params.destination;
+        console.log('[flights] retrying Kiwi with economy fallback');
+        const fallbackOffers = await searchFlightsKiwi({
+          origin: kiwiOrigin2,
+          destination: kiwiDest2,
+          originIata: kiwiOrigin2,
+          destinationIata: kiwiDest2,
+          departDate: params.departDate,
+          returnDate: params.returnDate,
+          adults: adults,
+          cabinClass: 'economy',
+          nonStop: params.nonStop,
+          maxPrice: params.maxPrice,
+        });
+        if (fallbackOffers.length > 0) {
+          console.log(`[flights] Kiwi economy fallback: ${fallbackOffers.length} offers`);
+          // Mark them so user knows these are economy
+          for (const o of fallbackOffers) {
+            o.cabinClass = 'economy' as any;
+            o.explanation = `No ${cabin} fares found — showing economy prices`;
+          }
+          cacheSet(primaryKey, fallbackOffers);
+          return fallbackOffers;
+        }
+      } catch {}
     }
 
     // BACKUP 2: Amadeus (if configured — optional second fallback)

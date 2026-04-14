@@ -148,7 +148,10 @@ export default function TripBuilderPage() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-3">
-          <span className="text-2xl">✨</span> Trip Builder
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: 'var(--flyeas-gradient)' }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          </div>
+          Trip Builder
         </h1>
         <p className="text-sm text-white/40 mt-1">Build your perfect trip step by step</p>
       </div>

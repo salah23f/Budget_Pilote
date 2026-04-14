@@ -350,7 +350,7 @@ export default function HotelsPage() {
               min={1}
               max={10}
               value={guests}
-              onChange={(e) => setGuests(Number(e.target.value))}
+              onChange={(e) => setGuests(Math.max(1, Number(e.target.value) || 1))}
             />
           </div>
           <div className="md:col-span-1">
@@ -360,7 +360,7 @@ export default function HotelsPage() {
               min={1}
               max={5}
               value={rooms}
-              onChange={(e) => setRooms(Number(e.target.value))}
+              onChange={(e) => setRooms(Math.max(1, Number(e.target.value) || 1))}
             />
           </div>
           <div className="md:col-span-2 flex items-end">

@@ -123,7 +123,10 @@ export default function InsurancePage() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-3">
-          <span>🛡️</span> Travel Insurance
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: 'rgba(139,92,246,0.12)' }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2l8 4v6c0 5.5-3.8 10.7-8 12-4.2-1.3-8-6.5-8-12V6l8-4z"/><path d="M9 12l2 2 4-4"/></svg>
+          </div>
+          Travel Insurance
         </h1>
         <p className="text-sm text-white/40 mt-1">Protect your trip — coverage from VisitorsCoverage</p>
       </div>

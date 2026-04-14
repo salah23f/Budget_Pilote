@@ -506,7 +506,7 @@ export default function FlightsPage() {
               min={1}
               max={9}
               value={passengers}
-              onChange={(e) => setPassengers(Number(e.target.value))}
+              onChange={(e) => setPassengers(Math.max(1, Number(e.target.value) || 1))}
             />
           </div>
 
