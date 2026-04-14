@@ -21,6 +21,7 @@
  */
 
 import { searchFlights } from '../amadeus/flights';
+import { searchCars } from '../amadeus/cars';
 import {
   recordSample,
   getSamples,
@@ -46,6 +47,9 @@ export interface WatchResult {
   prediction: Prediction | null;
   /** Whether this observation was recorded into the time-series store */
   recorded: boolean;
+  /** Best car rental price found (for package missions) */
+  bestCarPrice?: number;
+  bestCarProvider?: string;
   /** Error that prevented the scan from completing, if any */
   error?: string;
 }
@@ -174,6 +178,54 @@ export async function watchMission(mission: Mission): Promise<WatchResult> {
       allSamples,
     });
 
+    // --- Car rental search (package missions) -------------------
+    let bestCarPrice: number | undefined;
+    let bestCarProvider: string | undefined;
+
+    if (
+      mission.packageIncludes?.includes('car') &&
+      mission.carPickupLocation &&
+      mission.carPickupDate &&
+      mission.carDropoffDate
+    ) {
+      try {
+        const carResults = await searchCars({
+          pickupLocation: mission.carPickupLocation,
+          pickupDate: mission.carPickupDate,
+          dropoffDate: mission.carDropoffDate,
+        });
+
+        if (carResults.length > 0) {
+          // Filter by car type preference if specified
+          let filteredCars = carResults;
+          if (mission.carType) {
+            const typePref = filteredCars.filter(
+              (c) => c.carType.toLowerCase() === mission.carType!.toLowerCase()
+            );
+            if (typePref.length > 0) filteredCars = typePref;
+          }
+          // Filter by max daily price if specified
+          if (mission.carMaxPerDay && mission.carMaxPerDay > 0) {
+            const withinBudget = filteredCars.filter(
+              (c) => c.pricePerDay <= mission.carMaxPerDay!
+            );
+            if (withinBudget.length > 0) filteredCars = withinBudget;
+          }
+
+          filteredCars.sort((a, b) => a.priceTotal - b.priceTotal);
+          if (filteredCars.length > 0) {
+            bestCarPrice = filteredCars[0].priceTotal;
+            bestCarProvider = filteredCars[0].provider;
+          }
+        }
+      } catch (carErr: any) {
+        console.warn('[watcher] car search failed', {
+          missionId: mission.id,
+          error: carErr?.message,
+        });
+      }
+    }
+
     return {
       checkedAt,
       routeKey: key,
@@ -182,6 +234,8 @@ export async function watchMission(mission: Mission): Promise<WatchResult> {
       filteredCount: filtered.length,
       prediction,
       recorded: true,
+      bestCarPrice,
+      bestCarProvider,
     };
   } catch (err: any) {
     console.error('[watcher] scan failed', {

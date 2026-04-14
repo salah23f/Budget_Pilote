@@ -45,6 +45,13 @@ interface FormState {
   stopsPreference: string;
   ecoPreference: string;
   preferredAirlines: string;
+  // Car rental (package)
+  includeCar: boolean;
+  carType: string;
+  carMaxPerDay: number;
+  // Insurance (package)
+  includeInsurance: boolean;
+  insurancePlan: string;
   // Step 3
   maxBudget: number;
   autoBuyEnabled: boolean;
@@ -145,6 +152,11 @@ export default function NewMissionPage() {
     autoBuyEnabled: false,
     autoBuyThreshold: 0,
     budgetPoolDeposit: 0,
+    includeCar: false,
+    carType: 'economy',
+    carMaxPerDay: 0,
+    includeInsurance: false,
+    insurancePlan: 'standard',
     monitoringFrequency: 'every_3h',
     emailAlerts: true,
   });
@@ -332,6 +344,34 @@ export default function NewMissionPage() {
         payload.checkIn = form.checkIn;
         payload.checkOut = form.checkOut;
         payload.rooms = form.rooms;
+      }
+
+      // Car rental (package missions)
+      if (form.includeCar) {
+        payload.packageIncludes = [...(payload.packageIncludes || []), 'car'];
+        payload.carPickupLocation = form.destination || form.hotelDestination;
+        payload.carPickupDate = form.departDate || form.checkIn;
+        payload.carDropoffDate = form.returnDate || form.checkOut;
+        payload.carType = form.carType;
+        payload.carMaxPerDay = form.carMaxPerDay || undefined;
+      }
+
+      // Insurance
+      if (form.includeInsurance) {
+        payload.packageIncludes = [...(payload.packageIncludes || []), 'insurance'];
+        payload.insurancePlan = form.insurancePlan;
+        payload.insuranceIncluded = true;
+      }
+
+      // Set packageIncludes for flight/hotel base
+      if (form.type === 'package' || form.includeCar || form.includeInsurance) {
+        const includes: string[] = [];
+        if (form.type === 'flight' || form.type === 'package') includes.push('flight');
+        if (form.type === 'hotel' || form.type === 'package') includes.push('hotel');
+        if (form.includeCar) includes.push('car');
+        if (form.includeInsurance) includes.push('insurance');
+        payload.packageIncludes = includes;
+        if (includes.length > 1) payload.type = 'package';
       }
 
       // Route through the payment-enabled create endpoint. This one
@@ -578,6 +618,93 @@ export default function NewMissionPage() {
                   </div>
                 </div>
               )}
+
+              {/* Car rental add-on */}
+              <div className="rounded-xl p-4 space-y-3" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={form.includeCar}
+                    onChange={(e) => update({ includeCar: e.target.checked })}
+                    className="w-5 h-5 rounded accent-amber-400"
+                  />
+                  <div>
+                    <span className="text-sm font-semibold text-white flex items-center gap-2">
+                      🚗 Add car rental
+                    </span>
+                    <p className="text-xs text-white/35">Monitor car prices at your destination</p>
+                  </div>
+                </label>
+                {form.includeCar && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
+                    <div>
+                      <label className="block text-xs text-white/50 mb-1.5">Car type</label>
+                      <select
+                        value={form.carType}
+                        onChange={(e) => update({ carType: e.target.value })}
+                        className="glass-input w-full rounded-xl py-2.5 px-3 text-sm"
+                      >
+                        <option value="economy">Economy</option>
+                        <option value="compact">Compact</option>
+                        <option value="intermediate">Intermediate</option>
+                        <option value="suv">SUV</option>
+                        <option value="premium">Premium</option>
+                        <option value="minivan">Minivan</option>
+                      </select>
+                    </div>
+                    <Input
+                      label="Max price per day (USD)"
+                      type="number"
+                      placeholder="e.g. 40"
+                      min={0}
+                      value={form.carMaxPerDay || ''}
+                      onChange={(e) => update({ carMaxPerDay: Number(e.target.value) })}
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Insurance add-on */}
+              <div className="rounded-xl p-4 space-y-3" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={form.includeInsurance}
+                    onChange={(e) => update({ includeInsurance: e.target.checked })}
+                    className="w-5 h-5 rounded accent-amber-400"
+                  />
+                  <div>
+                    <span className="text-sm font-semibold text-white flex items-center gap-2">
+                      🛡️ Add travel insurance
+                    </span>
+                    <p className="text-xs text-white/35">Protect your trip with VisitorsCoverage</p>
+                  </div>
+                </label>
+                {form.includeInsurance && (
+                  <div className="grid grid-cols-3 gap-2 pt-2">
+                    {[
+                      { value: 'basic', label: 'Basic', price: '$29', desc: 'Medical $50K' },
+                      { value: 'standard', label: 'Standard', price: '$49', desc: 'Medical $100K + car' },
+                      { value: 'premium', label: 'Premium', price: '$79', desc: 'Full coverage' },
+                    ].map((plan) => (
+                      <button
+                        key={plan.value}
+                        type="button"
+                        onClick={() => update({ insurancePlan: plan.value })}
+                        className={`rounded-xl p-3 text-center transition-all ${
+                          form.insurancePlan === plan.value
+                            ? 'bg-amber-500/10 border border-amber-500/30 text-white'
+                            : 'bg-white/2 border border-white/6 text-white/50 hover:text-white/70'
+                        }`}
+                      >
+                        <p className="text-xs font-semibold">{plan.label}</p>
+                        <p className="text-sm font-bold text-amber-400 mt-1">{plan.price}</p>
+                        <p className="text-[9px] text-white/30 mt-0.5">{plan.desc}</p>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
