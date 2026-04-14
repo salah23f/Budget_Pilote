@@ -21,6 +21,7 @@ import { type FavoriteFlight } from '@/lib/store/favorites-store';
 import { PriceHistory } from '@/components/price-history';
 import { PriceComparator } from '@/components/price-comparator';
 import { WeatherWidget } from '@/components/weather-widget';
+import { FlightDetailModal } from '@/components/flight-detail-modal';
 import { DestinationGuide } from '@/components/destination-guide';
 import { CurrencyConverter } from '@/components/currency-converter';
 
@@ -195,6 +196,7 @@ export default function FlightsPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searched, setSearched] = useState(false);
+  const [selectedFlight, setSelectedFlight] = useState<any | null>(null);
 
   /* -- Sort -- */
   const [sortBy, setSortBy] = useState('best');
@@ -842,7 +844,7 @@ export default function FlightsPage() {
             )}
 
             {results.map((f) => (
-              <Card key={f.id} hoverable padding="none" className="overflow-hidden card-interactive stagger-item">
+              <Card key={f.id} hoverable padding="none" className="overflow-hidden card-interactive stagger-item cursor-pointer" onClick={() => setSelectedFlight(f)}>
                 <div className="p-5 md:p-6">
                   <div className="flex flex-col md:flex-row md:items-center gap-5">
                     {/* Airline + flight info */}
@@ -1126,6 +1128,17 @@ export default function FlightsPage() {
           </div>
           <DestinationGuide destination={destination} />
         </>
+      )}
+
+      {/* Flight detail modal */}
+      {selectedFlight && (
+        <FlightDetailModal
+          flight={selectedFlight}
+          origin={origin}
+          destination={destination}
+          departDate={departDate}
+          onClose={() => setSelectedFlight(null)}
+        />
       )}
     </div>
   );

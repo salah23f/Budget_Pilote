@@ -186,23 +186,24 @@ export function DestinationGuide({ destination, className = '' }: DestinationGui
 
   if (!info) return null;
 
+  const svgIcon = (d: string) => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d={d}/></svg>;
   const items = [
-    { icon: '🛂', label: 'Visa', value: info.visa },
-    { icon: '💵', label: 'Currency', value: info.currency },
-    { icon: '🗣️', label: 'Language', value: info.language },
-    { icon: '🔌', label: 'Power Plug', value: info.plug },
-    { icon: '💰', label: 'Tipping', value: info.tipping },
-    { icon: '🚨', label: 'Emergency', value: info.emergency },
-    { icon: '🕐', label: 'Timezone', value: info.timezone },
-    { icon: '🚗', label: 'Driving', value: `${info.drivingSide === 'left' ? 'Left' : 'Right'} side of the road` },
-    { icon: '🚰', label: 'Tap Water', value: info.waterSafe ? 'Safe to drink' : 'Not safe — drink bottled water' },
+    { icon: svgIcon('M12 2l8 4v6c0 5.5-3.8 10.7-8 12-4.2-1.3-8-6.5-8-12V6l8-4z'), label: 'Visa', value: info.visa },
+    { icon: svgIcon('M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6'), label: 'Currency', value: info.currency },
+    { icon: svgIcon('M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z'), label: 'Language', value: info.language },
+    { icon: svgIcon('M13 2L3 14h9l-1 8 10-12h-9l1-8z'), label: 'Power', value: info.plug },
+    { icon: svgIcon('M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6'), label: 'Tipping', value: info.tipping },
+    { icon: svgIcon('M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72'), label: 'Emergency', value: info.emergency },
+    { icon: svgIcon('M12 6v6l4 2'), label: 'Timezone', value: info.timezone },
+    { icon: svgIcon('M5 17H3a2 2 0 01-2-2V9a1 1 0 011-1h1l2-4h10l2 4h1a1 1 0 011 1v6a2 2 0 01-2 2h-2'), label: 'Driving', value: `${info.drivingSide === 'left' ? 'Left' : 'Right'} side of the road` },
+    { icon: svgIcon('M12 2a10 10 0 0110 10c0 5-4 8-10 10C6 20 2 17 2 12A10 10 0 0112 2z'), label: 'Tap Water', value: info.waterSafe ? 'Safe to drink' : 'Not safe — drink bottled water' },
   ];
 
   return (
     <div className={`glass rounded-2xl p-5 space-y-4 ${className}`}>
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-          <span className="text-base">📋</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
           Travel Guide — {country}
         </h3>
       </div>
@@ -214,7 +215,7 @@ export function DestinationGuide({ destination, className = '' }: DestinationGui
             className="flex items-start gap-2.5 rounded-xl p-3"
             style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}
           >
-            <span className="text-base flex-shrink-0 mt-0.5">{item.icon}</span>
+            <span className="text-white/30 flex-shrink-0 mt-0.5">{item.icon}</span>
             <div className="min-w-0">
               <p className="text-[10px] text-white/35 font-medium uppercase tracking-wider">{item.label}</p>
               <p className="text-xs text-white/70 leading-relaxed mt-0.5">{item.value}</p>
@@ -226,7 +227,10 @@ export function DestinationGuide({ destination, className = '' }: DestinationGui
       {/* Pro tips */}
       {info.tips.length > 0 && (
         <div className="pt-3" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-          <p className="text-[10px] text-white/30 font-medium uppercase tracking-wider mb-2">💡 Local Tips</p>
+          <p className="text-[10px] text-white/30 font-medium uppercase tracking-wider mb-2 flex items-center gap-1.5">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 017 7c0 2.4-1.2 4.5-3 5.7V17a1 1 0 01-1 1h-6a1 1 0 01-1-1v-2.3C6.2 13.5 5 11.4 5 9a7 7 0 017-7z"/></svg>
+            Local Tips
+          </p>
           <ul className="space-y-1.5">
             {info.tips.map((tip, i) => (
               <li key={i} className="text-xs text-white/50 flex items-start gap-2">

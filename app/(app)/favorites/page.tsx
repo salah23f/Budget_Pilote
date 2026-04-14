@@ -72,8 +72,10 @@ export default function FavoritesPage() {
       {/* Empty state */}
       {filtered.length === 0 && (
         <Card padding="lg" className="text-center py-16">
-          <div className="text-4xl mb-4">
-            {filter === 'flight' ? '✈️' : filter === 'hotel' ? '🏨' : '❤️'}
+          <div className="w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center" style={{ background: 'rgba(245,158,11,0.1)' }}>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
+            </svg>
           </div>
           <h3 className="text-lg font-semibold text-white mb-2">No favorites yet</h3>
           <p className="text-sm text-white/40 max-w-sm mx-auto mb-6">

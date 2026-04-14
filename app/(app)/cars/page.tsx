@@ -37,10 +37,14 @@ interface CarResult {
 /*  Car type icons                                                      */
 /* ------------------------------------------------------------------ */
 
-const CAR_ICONS: Record<string, string> = {
-  economy: '🚗', compact: '🚙', intermediate: '🚘', 'full-size': '🚘',
-  suv: '🚜', premium: '🏎️', minivan: '🚐', luxury: '💎', standard: '🚘',
-};
+function CarIcon({ className = '' }: { className?: string }) {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M5 17h14M5 17a2 2 0 01-2-2V9a1 1 0 011-1h1l2-4h10l2 4h1a1 1 0 011 1v6a2 2 0 01-2 2M5 17a2 2 0 002 2h10a2 2 0 002-2" />
+      <circle cx="7.5" cy="15.5" r="1.5" /><circle cx="16.5" cy="15.5" r="1.5" />
+    </svg>
+  );
+}
 
 /* ------------------------------------------------------------------ */
 /*  Component                                                           */
@@ -194,7 +198,7 @@ export default function CarsPage() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {bestPerType.slice(0, 4).map((car) => (
               <div key={car.carType} className="glass rounded-xl p-3 text-center">
-                <span className="text-2xl">{CAR_ICONS[car.carType.toLowerCase()] || '🚗'}</span>
+                <span className="text-2xl">{<CarIcon className="text-amber-400" />}</span>
                 <p className="text-xs font-medium text-white mt-1">{car.carType}</p>
                 <p className="text-sm font-bold text-amber-400">from ${car.pricePerDay}/day</p>
               </div>
@@ -212,7 +216,7 @@ export default function CarsPage() {
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={car.carImage} alt={car.carName} className="w-full h-full object-contain rounded-xl" />
                     ) : (
-                      <span className="text-3xl">{CAR_ICONS[car.carType.toLowerCase()] || '🚗'}</span>
+                      <span className="text-3xl">{<CarIcon className="text-amber-400" />}</span>
                     )}
                   </div>
 
