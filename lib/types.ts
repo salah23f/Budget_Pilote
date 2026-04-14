@@ -80,6 +80,26 @@ export interface Mission {
   returnDate?: string;
   passengers: number;
   maxBudgetUsd: number;
+
+  // ------------------------------------------------------------------
+  // Package/combo fields — for 'package' type missions
+  // ------------------------------------------------------------------
+  /** Which components to monitor in a package mission */
+  packageIncludes?: ('flight' | 'hotel' | 'car' | 'insurance')[];
+  // Hotel fields (for package missions)
+  hotelCheckIn?: string;
+  hotelCheckOut?: string;
+  hotelRooms?: number;
+  hotelMaxPerNight?: number;
+  // Car rental fields (for package missions)
+  carPickupLocation?: string;
+  carPickupDate?: string;
+  carDropoffDate?: string;
+  carType?: string; // Economy, SUV, etc.
+  carMaxPerDay?: number;
+  // Insurance
+  insurancePlan?: 'basic' | 'standard' | 'premium';
+  insuranceIncluded?: boolean;
   /**
    * Price threshold under which the agent auto-buys without asking the
    * user. Must be <= maxBudgetUsd. If null/undefined, the user gets a

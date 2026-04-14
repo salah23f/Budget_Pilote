@@ -80,6 +80,15 @@ const navItems = [
     ),
   },
   {
+    label: 'Trip Builder',
+    href: '/trip-builder',
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M3 3l6 3-3 6-6-3zM14 8l3 6-6 3-3-6z" /><circle cx="10" cy="10" r="1.5" fill="currentColor" />
+      </svg>
+    ),
+  },
+  {
     label: 'Multi-City',
     href: '/multi-city',
     icon: (
