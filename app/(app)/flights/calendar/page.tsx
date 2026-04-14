@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { AirportInput, type AirportSelection } from '@/components/ui/airport-input';
@@ -134,6 +134,14 @@ function CalendarSkeleton() {
 /* ------------------------------------------------------------------ */
 
 export default function FlightCalendarPage() {
+  return (
+    <Suspense fallback={<div className="mx-auto max-w-5xl px-4 py-8"><div className="h-8 w-48 bg-white/5 rounded animate-pulse mb-6" /><div className="h-96 bg-white/5 rounded-2xl animate-pulse" /></div>}>
+      <FlightCalendarContent />
+    </Suspense>
+  );
+}
+
+function FlightCalendarContent() {
   const searchParams = useSearchParams();
 
   /* -- Route inputs -- */
