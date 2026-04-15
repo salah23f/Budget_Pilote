@@ -25,6 +25,7 @@ import { FlightDetailModal } from '@/components/flight-detail-modal';
 import { FlightComparisonModal } from '@/components/flight-comparison-modal';
 import { DestinationGuide } from '@/components/destination-guide';
 import { CurrencyConverter } from '@/components/currency-converter';
+import { Breadcrumb } from '@/components/ui/breadcrumb';
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                               */
@@ -203,6 +204,10 @@ export default function FlightsPage() {
   const [compareSet, setCompareSet] = useState<Set<string>>(new Set());
   const [showComparison, setShowComparison] = useState(false);
 
+  /* -- Explore Everywhere state -- */
+  const [exploreResults, setExploreResults] = useState<Array<{ destination: string; destinationCity: string; price: number; airline: string; deepLink: string | null }>>([]);
+  const [exploreLoading, setExploreLoading] = useState(false);
+
   /* -- Sort -- */
   const [sortBy, setSortBy] = useState('best');
 
@@ -256,6 +261,28 @@ export default function FlightsPage() {
     setOrigin(destination); setOriginSkyId(destSkyId); setOriginEntityId(destEntityId);
     setDestination(tmp); setDestSkyId(tmpSky); setDestEntityId(tmpEnt);
   }
+
+  /* -- Explore handler -- */
+  const handleExplore = useCallback(async () => {
+    if (!origin) return;
+    setExploreLoading(true);
+    setExploreResults([]);
+    try {
+      const res = await fetch('/api/flights/explore', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ origin: originSkyId || origin, departDate }),
+      });
+      const data = await res.json();
+      if (data.success && data.destinations) {
+        setExploreResults(data.destinations);
+      }
+    } catch {
+      // silently fail — explore is supplementary
+    } finally {
+      setExploreLoading(false);
+    }
+  }, [origin, originSkyId, departDate]);
 
   /* -- Search handler -- */
   const handleSearch = useCallback(async () => {
@@ -405,6 +432,63 @@ export default function FlightsPage() {
     sortBy,
   ]);
 
+  /* -- Hacker Fare detection -- */
+  const hackerFare = useMemo(() => {
+    // Only relevant for round-trip searches with results
+    if (!returnDate || flights.length < 2) return null;
+
+    // Group flights by airline
+    const byAirline = new Map<string, Flight[]>();
+    for (const f of flights) {
+      const list = byAirline.get(f.airline) || [];
+      list.push(f);
+      byAirline.set(f.airline, list);
+    }
+
+    // Find cheapest single-airline round-trip (cheapest outbound + cheapest return from same airline)
+    // Since the API returns one-way results, we consider the cheapest flight as outbound
+    // and the second cheapest from the same airline as return
+    let cheapestSameAirline = Infinity;
+    let sameAirlineName = '';
+    for (const [airline, airlineFlights] of byAirline) {
+      if (airlineFlights.length >= 2) {
+        const sorted = [...airlineFlights].sort((a, b) => a.price - b.price);
+        const total = sorted[0].price + sorted[1].price;
+        if (total < cheapestSameAirline) {
+          cheapestSameAirline = total;
+          sameAirlineName = airline;
+        }
+      }
+    }
+
+    // Find cheapest mix: cheapest outbound from any airline + cheapest return from a different airline
+    const sortedAll = [...flights].sort((a, b) => a.price - b.price);
+    if (sortedAll.length < 2) return null;
+
+    const outbound = sortedAll[0];
+    const returnFlight = sortedAll.find((f) => f.airline !== outbound.airline);
+    if (!returnFlight) return null;
+
+    const hackerTotal = outbound.price + returnFlight.price;
+
+    // Only show if mixing airlines actually saves money
+    if (cheapestSameAirline === Infinity || hackerTotal >= cheapestSameAirline) return null;
+
+    const savings = cheapestSameAirline - hackerTotal;
+    if (savings < 5) return null; // minimum $5 savings threshold
+
+    return {
+      outboundAirline: outbound.airline,
+      returnAirline: returnFlight.airline,
+      outboundPrice: outbound.price,
+      returnPrice: returnFlight.price,
+      total: hackerTotal,
+      savings,
+      sameAirlineTotal: cheapestSameAirline,
+      sameAirlineName,
+    };
+  }, [flights, returnDate]);
+
   /* -- Checkbox toggle helpers -- */
   function toggleSet<T>(set: Set<T>, value: T, setter: (s: Set<T>) => void) {
     const next = new Set(set);
@@ -422,6 +506,7 @@ export default function FlightsPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-6 md:px-8 md:py-8 space-y-6 fade-in">
+      <Breadcrumb items={[{ label: 'Home', href: '/dashboard' }, { label: 'Flights' }]} />
       {/* ---- Search Form ---- */}
       <Card padding="lg">
         <form onSubmit={(e) => { e.preventDefault(); handleSearch(); }}>
@@ -564,6 +649,25 @@ export default function FlightsPage() {
             >
               {loading ? 'Searching...' : 'Search Flights'}
             </Button>
+            {origin && !destination && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="lg"
+                fullWidth
+                onClick={handleExplore}
+                disabled={exploreLoading}
+                className="mt-2"
+              >
+                <span className="inline-flex items-center gap-1.5">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
+                  </svg>
+                  {exploreLoading ? 'Exploring...' : `Explore from ${origin}`}
+                </span>
+              </Button>
+            )}
             {origin && destination && (
               <Button
                 type="button"
@@ -573,13 +677,70 @@ export default function FlightsPage() {
                 onClick={loadCalendar}
                 className="mt-2"
               >
-                📅 Price Calendar
+                <span className="inline-flex items-center gap-1.5">
+                  <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="4" width="14" height="14" rx="2" />
+                    <path d="M3 8h14M7 2v4M13 2v4" />
+                  </svg>
+                  Price Calendar
+                </span>
               </Button>
             )}
           </div>
         </div>
         </form>
       </Card>
+
+      {/* ---- Explore Everywhere Results ---- */}
+      {exploreLoading && (
+        <Card padding="lg">
+          <div className="flex items-center gap-3">
+            <div className="w-5 h-5 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
+            <p className="text-sm text-white/60">Exploring cheapest destinations from {origin}...</p>
+          </div>
+        </Card>
+      )}
+      {exploreResults.length > 0 && !exploreLoading && (
+        <Card padding="lg">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-bold text-white flex items-center gap-2">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
+              </svg>
+              Explore from {origin}
+            </h2>
+            <button
+              className="text-xs text-white/40 hover:text-white/70 transition"
+              onClick={() => setExploreResults([])}
+            >
+              Close
+            </button>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+            {exploreResults.map((d: any) => (
+              <button
+                key={d.destination}
+                type="button"
+                className="glass rounded-xl p-4 text-left hover:bg-white/5 transition-all group border border-white/5 hover:border-amber-500/20"
+                onClick={() => {
+                  setDestination(d.destination);
+                  setDestSkyId('');
+                  setDestEntityId('');
+                  setExploreResults([]);
+                }}
+              >
+                <p className="text-sm font-semibold text-white group-hover:text-amber-300 transition-colors">
+                  {d.destinationCity}
+                </p>
+                <p className="text-[10px] text-white/40 mt-0.5">{d.destination}</p>
+                <p className="text-lg font-bold text-amber-400 mt-2">${d.price}</p>
+                <p className="text-[10px] text-white/40 mt-0.5">{d.airline}</p>
+              </button>
+            ))}
+          </div>
+        </Card>
+      )}
 
       {/* ---- Price Calendar Modal ---- */}
       <Modal isOpen={calendarOpen} onClose={() => setCalendarOpen(false)} title="Price Calendar">
@@ -826,6 +987,31 @@ export default function FlightsPage() {
             </div>
           </div>
 
+          {/* ---- Hacker Fare Banner ---- */}
+          {hackerFare && (
+            <div className="rounded-xl p-4 mb-4" style={{ background: 'rgba(16,185,129,0.06)', border: '1px solid rgba(16,185,129,0.15)' }}>
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(16,185,129,0.12)' }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="6" cy="6" r="3" />
+                    <circle cx="6" cy="18" r="3" />
+                    <line x1="20" y1="4" x2="8.12" y2="15.88" />
+                    <line x1="14.47" y1="14.48" x2="20" y2="20" />
+                    <line x1="8.12" y1="8.12" x2="12" y2="12" />
+                  </svg>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-emerald-300">
+                    Hacker Fare — Save ${hackerFare.savings}
+                  </p>
+                  <p className="text-xs text-white/40 mt-0.5">
+                    Combine {hackerFare.outboundAirline} outbound (${hackerFare.outboundPrice}) + {hackerFare.returnAirline} return (${hackerFare.returnPrice}) for ${hackerFare.total} instead of ${hackerFare.sameAirlineTotal} on {hackerFare.sameAirlineName}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* ---- Results List ---- */}
           <div className="space-y-4">
             {/* Results header */}
@@ -1023,10 +1209,61 @@ export default function FlightsPage() {
                     {/* Price + action */}
                     <div className="flex flex-row md:flex-col items-center md:items-end gap-3 md:gap-2 md:min-w-[140px]">
                       <div className="text-right">
-                        <p className="text-2xl font-bold text-white">
-                          ${f.price}
-                        </p>
+                        <div className="flex items-center justify-end gap-2">
+                          <p className="text-2xl font-bold text-white">
+                            ${f.price}
+                          </p>
+                          {/* Price level badge */}
+                          {f.score >= 75 ? (
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/20">
+                              <svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <polyline points="14 10 10 6 7 9 2 4" />
+                                <polyline points="10 10 14 10 14 6" />
+                              </svg>
+                              Low
+                            </span>
+                          ) : f.score >= 40 ? (
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-white/8 text-white/50 border border-white/10">
+                              Typical
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-orange-500/15 text-orange-300 border border-orange-500/20">
+                              <svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <polyline points="14 6 10 10 7 7 2 12" />
+                                <polyline points="10 6 14 6 14 10" />
+                              </svg>
+                              High
+                            </span>
+                          )}
+                        </div>
                         <p className="text-xs text-white/40">per person</p>
+                        {/* Price volatility indicator */}
+                        {f.dealQuality.toLowerCase() === 'excellent' && (
+                          <p className="text-[10px] text-amber-400 mt-0.5 flex items-center justify-end gap-1">
+                            <svg width="8" height="8" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M8 12V4M5 7l3-3 3 3" />
+                            </svg>
+                            Price likely to increase
+                          </p>
+                        )}
+                        {f.dealQuality.toLowerCase() === 'good' && (
+                          <p className="text-[10px] text-emerald-400 mt-0.5 flex items-center justify-end gap-1">
+                            Good time to book
+                          </p>
+                        )}
+                        {f.dealQuality.toLowerCase() === 'fair' && (
+                          <p className="text-[10px] text-blue-400 mt-0.5 flex items-center justify-end gap-1">
+                            <svg width="8" height="8" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M8 4v8M5 9l3 3 3-3" />
+                            </svg>
+                            Price may drop
+                          </p>
+                        )}
+                        {f.dealQuality.toLowerCase() === 'poor' && (
+                          <p className="text-[10px] text-white/40 mt-0.5 flex items-center justify-end gap-1">
+                            Wait for better price
+                          </p>
+                        )}
                       </div>
 
                       {/* Score bar */}

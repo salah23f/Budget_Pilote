@@ -260,10 +260,15 @@ export default function HomePage() {
         <TripPlannerHero />
 
         <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Link href="/onboarding" className="w-full sm:w-auto premium-button rounded-2xl px-8 py-3.5 text-sm font-semibold inline-flex items-center justify-center gap-2">
-            Create Free Account
-            <ArrowRight />
-          </Link>
+          <div className="flex flex-col items-center">
+            <span className="inline-block text-[10px] text-emerald-400 font-medium mb-2">
+              + 50 bonus points on signup
+            </span>
+            <Link href="/onboarding" className="w-full sm:w-auto premium-button rounded-2xl px-8 py-3.5 text-sm font-semibold inline-flex items-center justify-center gap-2">
+              Create Free Account
+              <ArrowRight />
+            </Link>
+          </div>
           <a href="#features" className="w-full sm:w-auto inline-flex items-center justify-center rounded-2xl px-8 py-3.5 text-sm font-semibold text-white/70 transition hover:text-white hover:bg-white/5" style={{ border: '1px solid rgba(255,255,255,0.1)' }}>
             See features
           </a>
@@ -284,6 +289,54 @@ export default function HomePage() {
           <PartnerLogo name="Supabase" />
           <PartnerLogo name="Vercel" />
           <PartnerLogo name="Resend" />
+        </div>
+      </section>
+
+      {/* ═══ TRUST BADGES ═══ */}
+      <section className="relative z-10 mx-auto max-w-4xl px-6 pb-12 md:px-10">
+        <div className="flex flex-wrap items-center justify-center gap-6 md:gap-10">
+          {[
+            {
+              label: 'Stripe Verified Payments',
+              icon: (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+                </svg>
+              ),
+            },
+            {
+              label: '256-bit SSL Encryption',
+              icon: (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                  <path d="M7 11V7a5 5 0 0110 0v4" />
+                </svg>
+              ),
+            },
+            {
+              label: 'GDPR Compliant',
+              icon: (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M8 12h2l1-3h2l1 3h2" />
+                  <path d="M9 15h6" />
+                </svg>
+              ),
+            },
+            {
+              label: 'No Hidden Fees',
+              icon: (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              ),
+            },
+          ].map((badge) => (
+            <div key={badge.label} className="flex items-center gap-1.5 text-white/15">
+              {badge.icon}
+              <span className="text-[11px] text-white/25">{badge.label}</span>
+            </div>
+          ))}
         </div>
       </section>
 
@@ -372,6 +425,63 @@ export default function HomePage() {
               <p className="text-sm text-white/40 leading-relaxed">{item.desc}</p>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* ═══ HOW FLYEAS COMPARES ═══ */}
+      <section className="relative z-10 mx-auto max-w-5xl px-6 pb-24 md:px-10">
+        <h2 className="text-center hero-title text-2xl md:text-4xl font-semibold mb-4">How Flyeas Compares</h2>
+        <p className="text-center text-white/40 mb-14 text-sm">Feature-by-feature against the industry leaders</p>
+
+        <div className="glass rounded-2xl overflow-hidden overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-white/5">
+                <th className="px-5 py-4 text-left text-xs font-semibold text-white/40 uppercase tracking-wider">Feature</th>
+                {['Flyeas', 'Skyscanner', 'Kiwi', 'Google Flights', 'Hopper'].map((name) => (
+                  <th
+                    key={name}
+                    className={`px-4 py-4 text-center text-xs font-semibold uppercase tracking-wider ${name === 'Flyeas' ? 'text-white' : 'text-white/40'}`}
+                    style={name === 'Flyeas' ? { background: 'linear-gradient(180deg, rgba(245,158,11,0.12) 0%, rgba(249,115,22,0.06) 100%)' } : undefined}
+                  >
+                    {name}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {([
+                { feature: 'AI Agent 24/7', values: ['check', 'dash', 'dash', 'dash', 'dash'] },
+                { feature: 'Auto-Buy', values: ['check', 'dash', 'dash', 'dash', 'dash'] },
+                { feature: 'Price Predictions', values: ['check', 'dash', 'dash', 'basic', 'basic'] },
+                { feature: 'Transparent AI', values: ['check', 'dash', 'dash', 'dash', 'dash'] },
+                { feature: 'Crypto Payments', values: ['check', 'dash', 'dash', 'dash', 'dash'] },
+                { feature: 'Flights + Hotels', values: ['check', 'check', 'check', 'check', 'check'] },
+                { feature: 'No Redirect Booking', values: ['dash', 'dash', 'check', 'dash', 'check'] },
+              ] as const).map((row, i) => (
+                <tr key={row.feature} className={i < 6 ? 'border-b border-white/5' : ''}>
+                  <td className="px-5 py-3.5 text-white/60 font-medium">{row.feature}</td>
+                  {row.values.map((val, j) => (
+                    <td
+                      key={j}
+                      className="px-4 py-3.5 text-center"
+                      style={j === 0 ? { background: 'linear-gradient(180deg, rgba(245,158,11,0.08) 0%, rgba(249,115,22,0.03) 100%)' } : undefined}
+                    >
+                      {val === 'check' ? (
+                        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="#10B981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline-block">
+                          <path d="M4 10l4 4 8-8" />
+                        </svg>
+                      ) : val === 'basic' ? (
+                        <span className="text-xs font-medium text-amber-400">Basic</span>
+                      ) : (
+                        <span className="text-white/20">&mdash;</span>
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </section>
 
@@ -468,7 +578,7 @@ export default function HomePage() {
       {/* ═══ FOOTER ═══ */}
       <footer className="relative z-10 border-t border-white/5 px-6 py-12 md:px-10">
         <div className="mx-auto max-w-7xl">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-10">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-10">
             {/* Brand */}
             <div className="col-span-2 md:col-span-1">
               <div className="flex items-center gap-2 mb-4">
@@ -507,6 +617,19 @@ export default function HomePage() {
                 <li><Link href="/about" className="text-xs text-white/30 hover:text-white/60 transition">About</Link></li>
                 <li><Link href="/blog" className="text-xs text-white/30 hover:text-white/60 transition">Blog</Link></li>
                 <li><a href="mailto:hello@flyeas.app" className="text-xs text-white/30 hover:text-white/60 transition">Contact</a></li>
+              </ul>
+            </div>
+
+            {/* Popular Routes */}
+            <div>
+              <h4 className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-4">Popular Routes</h4>
+              <ul className="space-y-2.5">
+                <li><Link href="/flights" className="text-xs text-white/30 hover:text-white/60 transition">Flights from Paris</Link></li>
+                <li><Link href="/flights" className="text-xs text-white/30 hover:text-white/60 transition">Flights from London</Link></li>
+                <li><Link href="/hotels" className="text-xs text-white/30 hover:text-white/60 transition">Hotels in Dubai</Link></li>
+                <li><Link href="/hotels" className="text-xs text-white/30 hover:text-white/60 transition">Hotels in Barcelona</Link></li>
+                <li><Link href="/flights" className="text-xs text-white/30 hover:text-white/60 transition">Cheap flights to Tokyo</Link></li>
+                <li><Link href="/flights" className="text-xs text-white/30 hover:text-white/60 transition">Cheap flights to New York</Link></li>
               </ul>
             </div>
 

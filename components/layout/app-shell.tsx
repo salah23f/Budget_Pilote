@@ -15,6 +15,7 @@ const OnboardingTutorial = lazy(() => import('@/components/onboarding-tutorial')
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
   const setName = useUserStore((s) => s.setName);
 
   // Load user name from localStorage + initialize theme
@@ -28,6 +29,13 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     } catch {}
     initializeTheme();
   }, [setName]);
+
+  // Show scroll-to-top button when scrolled down
+  useEffect(() => {
+    const handleScroll = () => setShowScrollTop(window.scrollY > 500);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
     <div className="min-h-screen flex">
@@ -52,6 +60,24 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         <SavingsCelebration />
         <OnboardingTutorial />
       </Suspense>
+
+      {/* Scroll to top button */}
+      <button
+        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        className="fixed bottom-24 right-6 z-40 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300"
+        style={{
+          background: 'linear-gradient(135deg, #F59E0B, #F97316)',
+          boxShadow: '0 4px 16px rgba(245,158,11,0.3)',
+          opacity: showScrollTop ? 1 : 0,
+          pointerEvents: showScrollTop ? 'auto' : 'none',
+          transform: showScrollTop ? 'translateY(0)' : 'translateY(16px)',
+        }}
+        aria-label="Scroll to top"
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M18 15L12 9L6 15" />
+        </svg>
+      </button>
     </div>
   );
 }

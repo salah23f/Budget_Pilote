@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Card } from '@/components/ui/card';
 import { useStreakStore, ALL_BADGES, type Badge } from '@/lib/store/streak-store';
 import { usePointsStore, formatPoints, pointsToUsd } from '@/lib/store/cashback-store';
+import { Breadcrumb } from '@/components/ui/breadcrumb';
 
 /* ------------------------------------------------------------------ */
 /*  SVG Badge Icons                                                    */
@@ -195,6 +196,7 @@ export default function RewardsPage() {
 
   return (
     <div className="min-h-screen pb-20">
+      <Breadcrumb items={[{ label: 'Home', href: '/dashboard' }, { label: 'Rewards' }]} />
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-2">

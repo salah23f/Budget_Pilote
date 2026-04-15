@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { CarDetailModal } from '@/components/car-detail-modal';
+import { Breadcrumb } from '@/components/ui/breadcrumb';
 
 /* ------------------------------------------------------------------ */
 /*  Types (mirrors lib/amadeus/cars.ts CarResult)                       */
@@ -127,6 +128,7 @@ export default function CarsPage() {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-6 md:px-8 md:py-8 space-y-6">
+      <Breadcrumb items={[{ label: 'Home', href: '/dashboard' }, { label: 'Car Rental' }]} />
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-3">

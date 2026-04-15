@@ -11,6 +11,7 @@ import { FavoriteButton } from '@/components/ui/favorite-button';
 import { type FavoriteHotel } from '@/lib/store/favorites-store';
 import { HotelMap } from '@/components/hotel-map';
 import { HotelDetailModal } from '@/components/hotel-detail-modal';
+import { Breadcrumb } from '@/components/ui/breadcrumb';
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                               */
@@ -306,6 +307,7 @@ export default function HotelsPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-6 md:px-8 md:py-8 space-y-6 fade-in">
+      <Breadcrumb items={[{ label: 'Home', href: '/dashboard' }, { label: 'Hotels' }]} />
       {/* Search Form */}
       <Card padding="lg">
         <form onSubmit={(e) => { e.preventDefault(); handleSearch(); }}>

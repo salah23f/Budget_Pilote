@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { supabaseBrowser } from '@/lib/supabase';
 import ConnectWalletButton from '@/components/connect-wallet-button';
 import { useWallet } from '@/components/wallet-provider';
+import { useStreakStore } from '@/lib/store/streak-store';
 
 const greetings = [
   { text: 'Welcome', lang: 'English' },
@@ -235,6 +236,13 @@ export default function OnboardingPage() {
       }
 
       localStorage.setItem('sv_user', JSON.stringify(userData));
+
+      // Award 50 welcome bonus points on first signup
+      const { totalPoints, addPoints } = useStreakStore.getState();
+      if (totalPoints === 0) {
+        addPoints(50, 'Welcome bonus');
+      }
+
       setSuccess(true);
       setTimeout(() => router.push('/dashboard'), 1800);
     } catch (e: unknown) {
@@ -432,7 +440,13 @@ export default function OnboardingPage() {
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12l5 5L20 7" /></svg>
                   </div>
                   <h2 className="text-lg font-semibold text-white">Welcome, {firstName}!</h2>
-                  <p className="mt-1.5 text-[13px] text-white/35">Redirecting...</p>
+                  <div className="mt-2 flex items-center gap-2 px-3 py-1.5 rounded-full" style={{ background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.2)' }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 2L14.9 8.6L22 9.3L16.8 14L18.2 21L12 17.5L5.8 21L7.2 14L2 9.3L9.1 8.6L12 2Z" />
+                    </svg>
+                    <span className="text-[13px] font-semibold text-amber-400">You earned 50 bonus points!</span>
+                  </div>
+                  <p className="mt-2 text-[13px] text-white/35">Redirecting...</p>
                   <div className="mt-4 h-1 w-32 overflow-hidden rounded-full" style={{ background: 'rgba(255,255,255,0.05)' }}>
                     <div className="h-full rounded-full" style={{ background: 'linear-gradient(90deg,#F59E0B,#F97316)', animation: 'grow 1.8s ease forwards' }} />
                   </div>
