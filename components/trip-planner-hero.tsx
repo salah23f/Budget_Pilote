@@ -259,24 +259,12 @@ export default function TripPlannerHero() {
     <div className="w-full max-w-3xl mx-auto">
       {/* Prompt box */}
       <div
-        className="relative rounded-2xl overflow-hidden transition-all"
-        style={{
-          background: 'rgba(255,255,255,0.03)',
-          border: '1px solid rgba(245,158,11,0.25)',
-          boxShadow: '0 20px 60px rgba(245,158,11,0.08), 0 0 0 1px rgba(245,158,11,0.1)',
-        }}
+        className="relative rounded-2xl overflow-hidden transition-all bg-[#111113] border border-white/[0.08] shadow-xl"
       >
         <div className="flex items-center gap-3 px-5 pt-5">
-          <div
-            className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
-            style={{ background: 'linear-gradient(135deg, #E8A317, #F97316)' }}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-            </svg>
-          </div>
-          <p className="text-xs uppercase tracking-widest text-amber-300/80 font-semibold">
-            Describe your dream trip — real prices in seconds
+          <div className="w-2 h-2 rounded-full bg-accent shrink-0" />
+          <p className="text-[11px] uppercase tracking-[0.1em] text-white/30 font-medium">
+            Describe your trip — live prices in seconds
           </p>
         </div>
 
@@ -292,8 +280,8 @@ export default function TripPlannerHero() {
           placeholder={typed || EXAMPLE_PROMPTS[0]}
           rows={2}
           disabled={loading}
-          className="w-full bg-transparent px-5 pt-3 pb-5 text-base md:text-lg text-white placeholder:text-white/30 outline-none resize-none"
-          style={{ fontFamily: 'inherit' }}
+          className="w-full bg-transparent px-5 pt-4 pb-4 text-base md:text-lg text-white/90 placeholder:text-white/20 outline-none resize-none font-light tracking-wide"
+          style={{ fontFamily: 'inherit', lineHeight: '1.6' }
         />
 
         <div className="flex items-center justify-between px-5 pb-5 flex-wrap gap-3">
@@ -353,8 +341,7 @@ export default function TripPlannerHero() {
             <button
               onClick={() => handlePlan()}
               disabled={loading || !prompt.trim()}
-              className="premium-button rounded-xl px-6 h-11 text-sm font-semibold inline-flex items-center gap-2 disabled:opacity-40"
-              style={{ background: 'linear-gradient(135deg, #E8A317, #F97316, #EF4444)' }}
+              className="rounded-xl px-6 h-11 text-sm font-semibold inline-flex items-center gap-2 disabled:opacity-40 bg-accent text-white hover:bg-accent-light transition-colors"
             >
               {loading ? (
                 <>
@@ -388,11 +375,9 @@ export default function TripPlannerHero() {
             <button
               key={ex}
               onClick={() => handlePlan(ex)}
-              className="text-[11px] px-3 py-1.5 rounded-full transition hover:bg-amber-500/15"
+              className="text-[11px] px-3 py-1.5 rounded-full transition hover:bg-white/[0.06] bg-white/[0.02] border border-white/[0.06]"
               style={{
-                background: 'rgba(245,158,11,0.06)',
-                border: '1px solid rgba(245,158,11,0.15)',
-                color: '#FCD34D',
+                color: 'rgba(255,255,255,0.4)',
               }}
             >
               "{ex}"
@@ -406,8 +391,7 @@ export default function TripPlannerHero() {
         <div ref={resultsRef} className="mt-8 space-y-5">
           {!result.success && result.error && (
             <div
-              className="rounded-2xl p-5"
-              style={{ background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.2)' }}
+              className="rounded-2xl p-5 bg-amber-500/[0.04] border border-amber-500/15"
             >
               <p className="text-sm text-amber-200">{result.error}</p>
             </div>
@@ -417,11 +401,7 @@ export default function TripPlannerHero() {
             <>
               {/* Summary card */}
               <div
-                className="rounded-2xl p-6"
-                style={{
-                  background: 'linear-gradient(135deg, rgba(16,185,129,0.06), rgba(245,158,11,0.06))',
-                  border: '1px solid rgba(16,185,129,0.2)',
-                }}
+                className="rounded-2xl p-6 bg-emerald-500/[0.04] border border-emerald-500/15"
               >
                 <div className="flex items-start justify-between gap-4 flex-wrap">
                   <div>

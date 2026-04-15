@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import TripPlannerHero from '@/components/trip-planner-hero';
 import LiveDeals from '@/components/live-deals';
+import { Accordion, AccordionItem } from '@/components/ui/accordion';
 import {
   Eye,
   Zap,
@@ -16,7 +17,7 @@ import {
   Activity,
   CheckCircle,
   ArrowRight,
-  ChevronDown,
+
   Plane,
   Check,
 } from 'lucide-react';
@@ -138,7 +139,7 @@ export default function HomePage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [greetingIndex, setGreetingIndex] = useState(0);
   const [fade, setFade] = useState(true);
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
+  // FAQ state removed — now using Accordion component
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
   const [subscribing, setSubscribing] = useState(false);
@@ -512,27 +513,14 @@ export default function HomePage() {
         <h2 className="text-center font-display text-2xl md:text-4xl font-semibold mb-4 text-text-primary tracking-tight">Frequently Asked Questions</h2>
         <p className="text-center text-text-muted mb-14 text-sm">Everything you need to know.</p>
 
-        <div className="space-y-3">
-          {FAQ_ITEMS.map((item, i) => (
-            <div key={i} className="bg-surface-card border border-border-subtle rounded-xl overflow-hidden">
-              <button
-                onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                className="w-full flex items-center justify-between px-6 py-4 text-left min-h-[52px]"
-              >
-                <span className="text-sm font-semibold text-text-primary/80 pr-4">{item.q}</span>
-                <ChevronDown
-                  className={`w-[18px] h-[18px] text-text-muted flex-shrink-0 transition-transform duration-200 ${openFaq === i ? 'rotate-180' : ''}`}
-                  strokeWidth={1.8}
-                />
-              </button>
-              <div
-                className="overflow-hidden transition-all duration-300"
-                style={{ maxHeight: openFaq === i ? '300px' : '0px', opacity: openFaq === i ? 1 : 0 }}
-              >
-                <p className="px-6 pb-5 text-sm text-text-secondary leading-relaxed">{item.a}</p>
-              </div>
-            </div>
-          ))}
+        <div className="bg-surface-card border border-border-subtle rounded-2xl px-6">
+          <Accordion>
+            {FAQ_ITEMS.map((item, i) => (
+              <AccordionItem key={i} title={item.q}>
+                {item.a}
+              </AccordionItem>
+            ))}
+          </Accordion>
         </div>
       </section>
 

@@ -19,7 +19,9 @@ import {
   UserCircle,
   Settings,
   LogOut,
+  ChevronRight,
 } from 'lucide-react';
+import { Avatar } from '@/components/ui/avatar';
 
 const navSections = [
   {
@@ -66,7 +68,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       {/* Mobile overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-40 bg-black/60 lg:hidden"
           onClick={onClose}
         />
       )}
@@ -74,30 +76,33 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       <aside
         className={`
           fixed top-0 left-0 z-50 h-full w-[260px] flex flex-col
-          bg-surface-primary border-r border-border-subtle
-          transition-transform duration-300 ease-in-out
+          bg-[#0a0a0c] border-r border-white/[0.06]
+          transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]
           lg:translate-x-0
           ${isOpen ? 'translate-x-0' : '-translate-x-full'}
         `}
       >
         {/* Logo */}
-        <div className="flex items-center gap-2.5 px-5 py-5">
-          <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-accent-light to-accent-dark">
-            <Plane className="w-4 h-4 text-white" />
+        <div className="flex items-center gap-3 px-5 h-16 shrink-0">
+          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-accent-light to-accent-dark">
+            <Plane className="w-3.5 h-3.5 text-white" strokeWidth={2.2} />
           </div>
-          <span className="text-lg font-bold font-display gradient-text">
+          <span className="text-[15px] font-bold font-display tracking-tight gradient-text">
             Flyeas
           </span>
         </div>
 
+        {/* Separator */}
+        <div className="mx-4 h-px bg-white/[0.06]" />
+
         {/* Navigation */}
-        <nav className="flex-1 px-3 py-1 overflow-y-auto">
-          {navSections.map((section) => (
-            <div key={section.label} className="mb-3">
-              <p className="px-3 mb-1.5 text-[10px] font-semibold uppercase tracking-[0.1em] text-text-muted">
+        <nav className="flex-1 px-3 pt-4 pb-2 overflow-y-auto">
+          {navSections.map((section, sectionIdx) => (
+            <div key={section.label} className={sectionIdx > 0 ? 'mt-6' : ''}>
+              <p className="px-3 mb-2 text-[11px] font-medium uppercase tracking-[0.08em] text-white/25">
                 {section.label}
               </p>
-              <div className="space-y-0.5">
+              <div className="space-y-px">
                 {section.items.map((item) => {
                   const isActive =
                     pathname === item.href || pathname?.startsWith(item.href + '/');
@@ -107,10 +112,21 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                       key={item.href}
                       href={item.href}
                       onClick={onClose}
-                      className={`sidebar-nav-item ${isActive ? 'active' : ''}`}
+                      className={`
+                        group relative flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium
+                        transition-all duration-150 cursor-pointer
+                        ${isActive
+                          ? 'text-text-primary bg-white/[0.06]'
+                          : 'text-white/40 hover:text-white/70 hover:bg-white/[0.03]'
+                        }
+                      `}
                     >
-                      <Icon className="w-[18px] h-[18px]" strokeWidth={1.8} />
-                      <span>{t(item.labelKey)}</span>
+                      {/* Active indicator — left bar */}
+                      {isActive && (
+                        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 rounded-r-full bg-accent" />
+                      )}
+                      <Icon className="w-[16px] h-[16px] shrink-0" strokeWidth={isActive ? 2 : 1.6} />
+                      <span className="truncate">{t(item.labelKey)}</span>
                     </Link>
                   );
                 })}
@@ -119,30 +135,37 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           ))}
         </nav>
 
-        {/* Logout */}
-        <button
-          type="button"
-          className="mx-3 mb-2 flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-text-muted hover:text-red-400 hover:bg-red-500/5 transition-colors"
-          onClick={() => {
-            if (confirm('Log out of Flyeas?')) {
-              localStorage.clear();
-              window.location.href = '/';
-            }
-          }}
-        >
-          <LogOut className="w-3.5 h-3.5" strokeWidth={2} />
-          {t('auth.logOut')}
-        </button>
-
         {/* User section */}
-        <div className="mx-3 mb-3 rounded-xl p-3 flex items-center gap-3 bg-surface-card border border-border-subtle">
-          <div className="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold text-white flex-shrink-0 bg-gradient-to-br from-accent-light to-accent-dark">
-            {name.charAt(0).toUpperCase()}
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="text-[13px] font-medium text-text-primary truncate">{name}</div>
-            <SidebarBadge />
-          </div>
+        <div className="mx-3 mb-2 shrink-0">
+          <div className="h-px bg-white/[0.06] mb-3" />
+
+          {/* Account card */}
+          <Link
+            href="/account"
+            className="flex items-center gap-3 px-2.5 py-2.5 rounded-lg hover:bg-white/[0.03] transition-colors group"
+          >
+            <Avatar size="sm" fallback={name.charAt(0).toUpperCase()} />
+            <div className="flex-1 min-w-0">
+              <div className="text-[13px] font-medium text-white/80 truncate leading-tight">{name}</div>
+              <SidebarBadge />
+            </div>
+            <ChevronRight className="w-3.5 h-3.5 text-white/15 group-hover:text-white/30 transition-colors shrink-0" />
+          </Link>
+
+          {/* Logout */}
+          <button
+            type="button"
+            className="w-full flex items-center gap-2.5 px-3 py-2 mt-1 mb-1 rounded-lg text-[12px] text-white/25 hover:text-red-400/80 hover:bg-red-500/[0.04] transition-colors"
+            onClick={() => {
+              if (confirm('Log out of Flyeas?')) {
+                localStorage.clear();
+                window.location.href = '/';
+              }
+            }}
+          >
+            <LogOut className="w-3.5 h-3.5" strokeWidth={1.8} />
+            {t('auth.logOut')}
+          </button>
         </div>
       </aside>
     </>
@@ -156,18 +179,18 @@ function SidebarBadge() {
 
   if (top) {
     return (
-      <div className="text-[11px] text-text-muted flex items-center gap-1">
+      <div className="text-[11px] text-white/30 flex items-center gap-1 leading-tight">
         <span>{top.emoji}</span>
-        <span className="text-accent-light/70">{top.name}</span>
-        {streak > 0 && <span className="text-text-muted/50">· {streak}🔥</span>}
+        <span className="text-accent/60">{top.name}</span>
+        {streak > 0 && <span className="text-white/15">· {streak}🔥</span>}
       </div>
     );
   }
 
   return (
-    <div className="text-[11px] text-text-muted flex items-center gap-1">
+    <div className="text-[11px] text-white/20 leading-tight">
       Free plan
-      {streak > 0 && <span>· {streak}🔥</span>}
+      {streak > 0 && <span className="ml-1">· {streak}🔥</span>}
     </div>
   );
 }
