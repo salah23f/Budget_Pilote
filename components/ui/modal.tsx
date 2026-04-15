@@ -2,12 +2,13 @@
 
 import React, { useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
+import { X } from 'lucide-react';
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
 /* ------------------------------------------------------------------ */
 
-type ModalSize = 'sm' | 'md' | 'lg' | 'xl';
+type ModalSize = 'sm' | 'md' | 'lg' | 'xl' | 'full';
 
 export interface ModalProps {
   isOpen: boolean;
@@ -27,6 +28,7 @@ const sizeClasses: Record<ModalSize, string> = {
   md: 'max-w-md',
   lg: 'max-w-lg',
   xl: 'max-w-xl',
+  full: 'max-w-full mx-0 my-0 rounded-none h-full',
 };
 
 /* ------------------------------------------------------------------ */
@@ -43,8 +45,8 @@ function ensureAnimStyles() {
   style.textContent = `
     @keyframes bp-modal-backdrop-in { from { opacity: 0; } to { opacity: 1; } }
     @keyframes bp-modal-backdrop-out { from { opacity: 1; } to { opacity: 0; } }
-    @keyframes bp-modal-panel-in  { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
-    @keyframes bp-modal-panel-out { from { opacity: 1; transform: scale(1) translateY(0); } to { opacity: 0; transform: scale(0.95) translateY(10px); } }
+    @keyframes bp-modal-panel-in  { from { opacity: 0; transform: scale(0.97) translateY(8px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+    @keyframes bp-modal-panel-out { from { opacity: 1; transform: scale(1) translateY(0); } to { opacity: 0; transform: scale(0.97) translateY(8px); } }
     .bp-modal-enter  .bp-modal-backdrop { animation: bp-modal-backdrop-in  0.2s ease-out forwards; }
     .bp-modal-exit   .bp-modal-backdrop { animation: bp-modal-backdrop-out 0.15s ease-in  forwards; }
     .bp-modal-enter  .bp-modal-panel   { animation: bp-modal-panel-in  0.25s cubic-bezier(0.16,1,0.3,1) forwards; }
@@ -75,14 +77,13 @@ export function Modal({
   useEffect(() => {
     if (isOpen) {
       setMounted(true);
-      // Trigger enter on next frame so the DOM is painted first
       requestAnimationFrame(() => setPhase('enter'));
     } else if (mounted) {
       setPhase('exit');
       const t = setTimeout(() => {
         setMounted(false);
         setPhase('idle');
-      }, 180); // match exit duration
+      }, 180);
       return () => clearTimeout(t);
     }
   }, [isOpen]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -113,9 +114,11 @@ export function Modal({
 
   if (!mounted) return null;
 
+  const isFullscreen = size === 'full';
+
   return createPortal(
     <div
-      className={`fixed inset-0 z-50 flex items-center justify-center p-4 ${
+      className={`fixed inset-0 z-50 flex items-center justify-center ${isFullscreen ? '' : 'p-4'} ${
         phase === 'enter'
           ? 'bp-modal-enter'
           : phase === 'exit'
@@ -132,39 +135,37 @@ export function Modal({
       {/* Panel */}
       <div
         className={[
-          'bp-modal-panel relative w-full glass rounded-2xl shadow-2xl',
+          'bp-modal-panel relative w-full rounded-2xl shadow-xl',
+          'bg-surface-elevated border border-border-default',
           sizeClasses[size],
         ].join(' ')}
         role="dialog"
         aria-modal="true"
       >
-        {/* Close button — always visible */}
+        {/* Close button */}
         <button
           onClick={onClose}
           aria-label="Close"
-          className="absolute top-4 right-4 z-10 p-2 rounded-xl text-white/50 hover:text-white hover:bg-white/[0.08] transition-colors"
+          className="absolute top-4 right-4 z-10 p-2 rounded-xl text-text-muted hover:text-text-primary hover:bg-white/[0.06] transition-colors"
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18" />
-            <line x1="6" y1="6" x2="18" y2="18" />
-          </svg>
+          <X className="w-5 h-5" strokeWidth={2} />
         </button>
 
         {/* Title */}
         {title && (
           <div className="px-6 pt-6 pb-2 pr-14">
-            <h2 className="text-lg font-semibold text-white tracking-tight">
+            <h2 className="text-lg font-semibold font-display text-text-primary tracking-tight">
               {title}
             </h2>
           </div>
         )}
 
         {/* Body — scrollable */}
-        <div className="px-6 py-4 text-sm text-white/80 overflow-y-auto max-h-[80vh]">{children}</div>
+        <div className="px-6 py-4 text-sm text-text-secondary overflow-y-auto max-h-[80vh]">{children}</div>
 
         {/* Footer */}
         {footer && (
-          <div className="px-6 pb-6 pt-2 flex items-center justify-end gap-3 border-t border-white/[0.07]">
+          <div className="px-6 pb-6 pt-2 flex items-center justify-end gap-3 border-t border-border-subtle">
             {footer}
           </div>
         )}

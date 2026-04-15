@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
           flexDirection: 'column',
           justifyContent: 'center',
           alignItems: 'center',
-          background: 'linear-gradient(135deg, #0C0A09 0%, #1C1917 50%, #0C0A09 100%)',
+          background: 'linear-gradient(135deg, #09090B 0%, #1C1917 50%, #09090B 100%)',
           fontFamily: 'Inter, system-ui, sans-serif',
           position: 'relative',
           overflow: 'hidden',
@@ -64,7 +64,7 @@ export async function GET(req: NextRequest) {
               width: '48px',
               height: '48px',
               borderRadius: '14px',
-              background: 'linear-gradient(135deg, #F59E0B, #F97316, #EF4444)',
+              background: 'linear-gradient(135deg, #E8A317, #F97316, #EF4444)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -77,7 +77,7 @@ export async function GET(req: NextRequest) {
             style={{
               fontSize: '28px',
               fontWeight: '800',
-              background: 'linear-gradient(135deg, #F59E0B, #F97316, #EF4444)',
+              background: 'linear-gradient(135deg, #E8A317, #F97316, #EF4444)',
               backgroundClip: 'text',
               color: 'transparent',
             }}
@@ -137,7 +137,7 @@ export async function GET(req: NextRequest) {
               style={{
                 fontSize: '40px',
                 fontWeight: '800',
-                color: '#F59E0B',
+                color: '#E8A317',
               }}
             >
               ${price}

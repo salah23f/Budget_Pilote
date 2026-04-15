@@ -6,20 +6,33 @@ import React from 'react';
 /*  Types                                                              */
 /* ------------------------------------------------------------------ */
 
+type InputSize = 'sm' | 'md' | 'lg';
+
 export interface InputProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'> {
   label?: string;
   error?: string;
   helperText?: string;
   icon?: React.ReactNode;
+  inputSize?: InputSize;
 }
+
+/* ------------------------------------------------------------------ */
+/*  Style maps                                                         */
+/* ------------------------------------------------------------------ */
+
+const sizeClasses: Record<InputSize, string> = {
+  sm: 'text-xs px-3 py-2 rounded-lg min-h-[36px]',
+  md: 'text-sm px-4 py-2.5 rounded-xl min-h-[44px]',
+  lg: 'text-base px-4 py-3 rounded-xl min-h-[48px]',
+};
 
 /* ------------------------------------------------------------------ */
 /*  Component                                                          */
 /* ------------------------------------------------------------------ */
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, helperText, icon, className = '', id, ...rest }, ref) => {
+  ({ label, error, helperText, icon, inputSize = 'md', className = '', id, ...rest }, ref) => {
     const inputId = id || (label ? label.toLowerCase().replace(/\s+/g, '-') : undefined);
 
     return (
@@ -28,7 +41,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className="text-sm font-medium text-white/70"
+            className="text-sm font-medium text-text-secondary"
           >
             {label}
           </label>
@@ -37,7 +50,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {/* Input wrapper */}
         <div className="relative">
           {icon && (
-            <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40 pointer-events-none">
+            <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none">
               {icon}
             </span>
           )}
@@ -45,12 +58,13 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             ref={ref}
             id={inputId}
             className={[
-              'w-full rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/35',
-              'bg-white/[0.06] backdrop-blur-md border transition-colors duration-150',
-              'focus:outline-none focus:ring-2 focus:ring-amber-400/40 focus:border-amber-400/30',
+              'w-full text-text-primary placeholder-white/40',
+              'bg-surface-card border transition-colors duration-150',
+              'focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent/30',
               error
-                ? 'border-red-500/50 focus:ring-red-400/40 focus:border-red-400/30'
-                : 'border-white/[0.09] hover:border-white/[0.15]',
+                ? 'border-red-500/50 focus:ring-red-400/30 focus:border-red-400/30'
+                : 'border-border-default hover:border-white/[0.15]',
+              sizeClasses[inputSize],
               icon ? 'pl-10' : '',
               className,
             ]
@@ -65,7 +79,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           <p className="text-xs text-red-400 mt-0.5">{error}</p>
         )}
         {!error && helperText && (
-          <p className="text-xs text-white/45 mt-0.5">{helperText}</p>
+          <p className="text-xs text-text-muted mt-0.5">{helperText}</p>
         )}
       </div>
     );

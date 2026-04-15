@@ -7,6 +7,7 @@ import BottomNav from './bottom-nav';
 import PageTransition from './page-transition';
 import { useUserStore } from '@/stores/user-store';
 import { initializeTheme } from '@/lib/store/theme-store';
+import { ChevronUp } from 'lucide-react';
 
 // Lazy-load heavy components for faster initial page load
 const ChatPanel = lazy(() => import('@/components/chat/chat-panel'));
@@ -43,10 +44,10 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       {/* Main content area */}
-      <div className="flex-1 flex flex-col lg:ml-[240px] min-h-screen">
+      <div className="flex-1 flex flex-col lg:ml-[260px] min-h-screen">
         <Topbar onMenuToggle={() => setSidebarOpen((prev) => !prev)} />
 
-        <main className="flex-1 p-4 lg:p-6 pb-bottom-nav">
+        <main className="flex-1 px-4 py-6 lg:px-8 lg:py-8 pb-bottom-nav">
           <PageTransition>{children}</PageTransition>
         </main>
       </div>
@@ -64,19 +65,12 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       {/* Scroll to top button */}
       <button
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        className="fixed bottom-24 right-6 z-40 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300"
-        style={{
-          background: 'linear-gradient(135deg, #F59E0B, #F97316)',
-          boxShadow: '0 4px 16px rgba(245,158,11,0.3)',
-          opacity: showScrollTop ? 1 : 0,
-          pointerEvents: showScrollTop ? 'auto' : 'none',
-          transform: showScrollTop ? 'translateY(0)' : 'translateY(16px)',
-        }}
+        className={`fixed bottom-24 right-6 z-40 w-10 h-10 rounded-full flex items-center justify-center bg-gradient-to-br from-accent-light to-accent-dark shadow-glow transition-all duration-300 ${
+          showScrollTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'
+        }`}
         aria-label="Scroll to top"
       >
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M18 15L12 9L6 15" />
-        </svg>
+        <ChevronUp className="w-[18px] h-[18px] text-white" strokeWidth={2.5} />
       </button>
     </div>
   );

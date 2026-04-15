@@ -35,7 +35,7 @@ const PLANS = [
     name: 'Standard',
     priceBase: 49,
     pricePerDay: 5.5,
-    color: '#F59E0B',
+    color: '#E8A317',
     icon: '🛡️✨',
     popular: true,
     provider: 'VisitorsCoverage',

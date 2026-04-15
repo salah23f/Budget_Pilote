@@ -4,7 +4,7 @@ export default function NotFound() {
   return (
     <div className="min-h-screen flex items-center justify-center px-6" style={{ background: '#0c0a09' }}>
       <div className="text-center max-w-sm">
-        <p className="text-8xl font-bold mb-4" style={{ background: 'var(--flyeas-gradient, linear-gradient(135deg, #F59E0B, #EF4444))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+        <p className="text-8xl font-bold mb-4" style={{ background: 'var(--flyeas-gradient, linear-gradient(135deg, #E8A317, #EF4444))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
           404
         </p>
         <h1 className="text-xl font-semibold text-white mb-2">Page not found</h1>
@@ -15,7 +15,7 @@ export default function NotFound() {
           <Link
             href="/"
             className="px-5 py-2.5 rounded-xl text-sm font-semibold text-white"
-            style={{ background: 'var(--flyeas-gradient, linear-gradient(135deg, #F59E0B, #EF4444))' }}
+            style={{ background: 'var(--flyeas-gradient, linear-gradient(135deg, #E8A317, #EF4444))' }}
           >
             Go home
           </Link>

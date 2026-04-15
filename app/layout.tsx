@@ -1,5 +1,5 @@
 import './globals.css';
-import { Inter } from 'next/font/google';
+import { Inter, Plus_Jakarta_Sans } from 'next/font/google';
 import { Toaster } from 'sonner';
 import WalletProvider from '@/components/wallet-provider';
 import PWAInstallPrompt from '@/components/pwa-install-prompt';
@@ -7,6 +7,7 @@ import { CookieBanner } from '@/components/cookie-banner';
 import { WebsiteSchema } from '@/components/structured-data';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
+const jakarta = Plus_Jakarta_Sans({ subsets: ['latin'], variable: '--font-display', weight: ['500', '600', '700', '800'] });
 
 export const metadata = {
   title: {
@@ -64,12 +65,12 @@ export const metadata = {
 export const viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#0C0A09',
+  themeColor: '#09090B',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en" className={`${inter.variable} ${jakarta.variable}`}>
       <head>
         {/* Travelpayouts affiliate verification */}
         <script
@@ -93,9 +94,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             position="top-right"
             toastOptions={{
               style: {
-                background: 'rgba(12, 10, 9, 0.95)',
-                border: '1px solid rgba(255,255,255,0.1)',
-                color: 'white',
+                background: 'rgba(9, 9, 11, 0.95)',
+                border: '1px solid rgba(255,255,255,0.08)',
+                color: '#FAFAF9',
                 backdropFilter: 'blur(12px)',
               },
             }}

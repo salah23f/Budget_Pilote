@@ -200,7 +200,7 @@ export default function SettingsPage() {
                         cursor: 'pointer',
                         flexShrink: 0,
                         background: isOn
-                          ? 'linear-gradient(135deg, #F59E0B, #F97316)'
+                          ? 'linear-gradient(135deg, #E8A317, #F97316)'
                           : 'rgba(255,255,255,0.12)',
                         transition: 'background 0.2s ease',
                       }}

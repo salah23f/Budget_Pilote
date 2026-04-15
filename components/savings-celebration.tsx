@@ -88,7 +88,7 @@ export function SavingsCelebration() {
               key={i}
               className="absolute w-1.5 h-1.5 rounded-full"
               style={{
-                background: ['#F59E0B', '#EF4444', '#10B981', '#8B5CF6', '#3B82F6'][i % 5],
+                background: ['#E8A317', '#EF4444', '#10B981', '#8B5CF6', '#3B82F6'][i % 5],
                 left: `${10 + Math.random() * 80}%`,
                 top: `-5%`,
                 animation: `confettiFall ${1.5 + Math.random() * 2}s ease-out ${Math.random() * 0.5}s forwards`,

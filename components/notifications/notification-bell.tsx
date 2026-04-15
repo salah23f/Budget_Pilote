@@ -87,7 +87,7 @@ function getTypeIcon(type: Notification['type']) {
       );
     case 'price_drop':
       return (
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--flyeas-accent, #F59E0B)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--flyeas-accent, #E8A317)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M12 3L8 10 4 3" />
           <path d="M4 13h8" />
         </svg>
@@ -129,13 +129,13 @@ function getTypeIcon(type: Notification['type']) {
 function getTypeColor(type: Notification['type']) {
   switch (type) {
     case 'price_drop':
-      return 'color-mix(in srgb, var(--flyeas-accent, #F59E0B) 12%, transparent)';
+      return 'color-mix(in srgb, var(--flyeas-accent, #E8A317) 12%, transparent)';
     case 'booking':
     case 'booking_confirmed':
       return 'rgba(34,197,94,0.12)';
     case 'mission':
     case 'mission_created':
-      return 'color-mix(in srgb, var(--flyeas-accent, #F59E0B) 12%, transparent)';
+      return 'color-mix(in srgb, var(--flyeas-accent, #E8A317) 12%, transparent)';
     case 'proposal':
       return 'rgba(96,165,250,0.12)';
     case 'wallet':
@@ -319,7 +319,7 @@ export default function NotificationBell() {
               <button
                 onClick={markAllRead}
                 className="text-xs font-medium transition-colors hover:text-amber-300"
-                style={{ color: 'var(--flyeas-accent, #F59E0B)' }}
+                style={{ color: 'var(--flyeas-accent, #E8A317)' }}
               >
                 Mark all as read
               </button>
@@ -342,7 +342,7 @@ export default function NotificationBell() {
                   className="flex w-full items-start gap-3 px-4 py-3 text-left transition-colors hover:bg-white/[0.03]"
                   style={{
                     borderBottom: '1px solid rgba(255,255,255,0.04)',
-                    background: n.read ? 'transparent' : 'color-mix(in srgb, var(--flyeas-accent, #F59E0B) 3%, transparent)',
+                    background: n.read ? 'transparent' : 'color-mix(in srgb, var(--flyeas-accent, #E8A317) 3%, transparent)',
                   }}
                 >
                   {/* Type icon */}
@@ -368,7 +368,7 @@ export default function NotificationBell() {
                       {!n.read && (
                         <span
                           className="h-2 w-2 flex-shrink-0 rounded-full"
-                          style={{ background: 'var(--flyeas-accent, #F59E0B)' }}
+                          style={{ background: 'var(--flyeas-accent, #E8A317)' }}
                         />
                       )}
                     </div>

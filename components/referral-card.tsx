@@ -93,7 +93,7 @@ export function ReferralCard() {
             style={{
               background: copied
                 ? 'rgba(16,185,129,0.2)'
-                : 'linear-gradient(135deg, #8B5CF6, #F59E0B)',
+                : 'linear-gradient(135deg, #8B5CF6, #E8A317)',
               border: copied ? '1px solid rgba(16,185,129,0.3)' : 'none',
             }}
           >

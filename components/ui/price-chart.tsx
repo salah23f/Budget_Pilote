@@ -45,7 +45,7 @@ export function PriceChart({
   data,
   width = 400,
   height = 200,
-  color = '#F59E0B',
+  color = '#E8A317',
   className = '',
 }: PriceChartProps) {
   const svgRef = useRef<SVGSVGElement>(null);

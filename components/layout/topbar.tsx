@@ -9,6 +9,18 @@ import { useThemeStore } from '@/lib/store/theme-store';
 import { useLocale } from '@/lib/i18n';
 import type { Locale } from '@/lib/i18n';
 import Link from 'next/link';
+import {
+  Menu,
+  Search,
+  Bell,
+  Sun,
+  Moon,
+  TrendingUp,
+  Plane,
+  Building2,
+  Target,
+  Wallet,
+} from 'lucide-react';
 
 type TopbarProps = {
   onMenuToggle: () => void;
@@ -68,58 +80,60 @@ export default function Topbar({ onMenuToggle }: TopbarProps) {
   }
 
   const quickLinks = [
-    { label: t('pages.searchFlights'), href: '/flights', icon: '✈️' },
-    { label: t('pages.searchHotels'), href: '/hotels', icon: '🏨' },
-    { label: t('misc.newMission'), href: '/missions/new', icon: '🎯' },
-    { label: t('misc.wallet'), href: '/wallet', icon: '💰' },
+    { label: t('pages.searchFlights'), href: '/flights', icon: Plane },
+    { label: t('pages.searchHotels'), href: '/hotels', icon: Building2 },
+    { label: t('misc.newMission'), href: '/missions/new', icon: Target },
+    { label: t('misc.wallet'), href: '/wallet', icon: Wallet },
   ];
 
   return (
-    <header className="sticky top-0 z-30 flex items-center gap-2 px-3 py-2.5 lg:px-5 lg:py-3" style={{ background: 'rgba(12,10,9,0.85)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+    <header className="sticky top-0 z-30 flex items-center gap-2 px-3 py-2.5 lg:px-5 lg:py-3 bg-surface-primary/85 backdrop-blur-md border-b border-border-subtle">
       {/* Hamburger */}
-      <button onClick={onMenuToggle} className="lg:hidden p-2 rounded-xl hover:bg-white/5 transition" aria-label="Menu">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="1.5" strokeLinecap="round">
-          <path d="M3 5h14M3 10h14M3 15h14" />
-        </svg>
+      <button onClick={onMenuToggle} className="lg:hidden p-2.5 rounded-xl hover:bg-white/5 transition" aria-label="Menu">
+        <Menu className="w-5 h-5 text-text-secondary" strokeWidth={1.8} />
       </button>
 
       {/* Search bar */}
       <div ref={searchRef} className="flex-1 max-w-lg relative">
         <form onSubmit={handleSearch}>
           <div className="relative">
-            <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="rgba(255,255,255,0.25)" strokeWidth="1.5" strokeLinecap="round">
-              <circle cx="7" cy="7" r="5" /><path d="M11 11l3.5 3.5" />
-            </svg>
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none w-4 h-4 text-text-muted" strokeWidth={1.8} />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => setSearchFocused(true)}
               placeholder={t('topbar.searchPlaceholder')}
-              className="w-full rounded-xl py-2.5 pl-10 pr-4 text-sm text-white outline-none transition-all"
-              style={{
-                background: searchFocused ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.04)',
-                border: searchFocused ? '1px solid rgba(245,158,11,0.3)' : '1px solid rgba(255,255,255,0.06)',
-              }}
+              className={`w-full rounded-xl py-2.5 pl-10 pr-4 text-sm text-text-primary outline-none transition-all border ${
+                searchFocused
+                  ? 'bg-white/[0.06] border-accent/30'
+                  : 'bg-surface-card border-border-subtle'
+              }`}
             />
+            <kbd className="hidden lg:flex absolute right-3 top-1/2 -translate-y-1/2 items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium text-text-muted bg-white/[0.04] border border-border-subtle">
+              ⌘K
+            </kbd>
           </div>
         </form>
 
         {/* Quick links dropdown */}
         {searchFocused && !searchQuery && (
-          <div className="absolute top-full left-0 right-0 mt-2 rounded-xl overflow-hidden shadow-2xl" style={{ background: '#1C1917', border: '1px solid rgba(255,255,255,0.08)' }}>
-            <p className="px-4 pt-3 pb-1.5 text-[10px] font-medium text-white/30 uppercase tracking-wider">{t('misc.quickAccess')}</p>
-            {quickLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setSearchFocused(false)}
-                className="flex items-center gap-3 px-4 py-2.5 text-sm text-white/70 hover:bg-white/5 hover:text-white transition"
-              >
-                <span className="text-base">{link.icon}</span>
-                {link.label}
-              </Link>
-            ))}
+          <div className="absolute top-full left-0 right-0 mt-2 rounded-xl overflow-hidden shadow-xl bg-surface-elevated border border-border-default">
+            <p className="px-4 pt-3 pb-1.5 text-[10px] font-semibold text-text-muted uppercase tracking-[0.1em]">{t('misc.quickAccess')}</p>
+            {quickLinks.map((link) => {
+              const Icon = link.icon;
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setSearchFocused(false)}
+                  className="flex items-center gap-3 px-4 py-2.5 text-sm text-text-secondary hover:bg-white/5 hover:text-text-primary transition"
+                >
+                  <Icon className="w-4 h-4 text-text-muted" strokeWidth={1.8} />
+                  {link.label}
+                </Link>
+              );
+            })}
           </div>
         )}
       </div>
@@ -132,13 +146,10 @@ export default function Topbar({ onMenuToggle }: TopbarProps) {
         <ThemeToggle />
 
         {/* Notification bell */}
-        <button className="relative p-2 rounded-xl hover:bg-white/5 transition" aria-label="Notifications">
-          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M10 2a5 5 0 00-5 5c0 4-2 5-2 5h14s-2-1-2-5a5 5 0 00-5-5z" />
-            <path d="M8.5 17a1.5 1.5 0 003 0" />
-          </svg>
+        <button className="relative p-2.5 rounded-xl hover:bg-white/5 transition" aria-label="Notifications">
+          <Bell className="w-[18px] h-[18px] text-text-secondary" strokeWidth={1.8} />
           {unreadNotifications > 0 && (
-            <span className="absolute top-1 right-1 flex items-center justify-center min-w-[15px] h-[15px] rounded-full text-[9px] font-bold text-white px-0.5" style={{ background: '#EF4444' }}>
+            <span className="absolute top-1.5 right-1.5 flex items-center justify-center min-w-[15px] h-[15px] rounded-full text-[9px] font-bold text-white px-0.5 bg-red-500">
               {unreadNotifications}
             </span>
           )}
@@ -146,7 +157,7 @@ export default function Topbar({ onMenuToggle }: TopbarProps) {
 
         {/* Wallet chip */}
         {shortAddress && (
-          <button onClick={copyAddress} className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-mono transition hover:bg-white/5" style={{ color: 'rgba(255,255,255,0.45)', border: '1px solid rgba(255,255,255,0.06)' }}>
+          <button onClick={copyAddress} className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-mono text-text-muted border border-border-subtle transition hover:bg-white/5">
             {copied ? (
               <span className="text-emerald-400">Copied!</span>
             ) : (
@@ -161,37 +172,37 @@ export default function Topbar({ onMenuToggle }: TopbarProps) {
         {/* User avatar */}
         <div className="relative" ref={userRef}>
           <button onClick={() => setUserMenuOpen(!userMenuOpen)} className="flex items-center p-0.5 rounded-xl hover:bg-white/5 transition">
-            <div className="w-8 h-8 rounded-xl flex items-center justify-center text-xs font-bold text-white" style={{ background: 'var(--flyeas-gradient, linear-gradient(135deg, #F59E0B, #EF4444))' }}>
+            <div className="w-8 h-8 rounded-xl flex items-center justify-center text-xs font-bold text-white bg-gradient-to-br from-accent-light to-accent-dark">
               {name.charAt(0).toUpperCase()}
             </div>
           </button>
 
           {userMenuOpen && (
-            <div className="absolute right-0 top-full mt-2 py-1.5 rounded-xl min-w-[180px] shadow-2xl" style={{ background: '#1C1917', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <div className="px-4 py-2 mb-1" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                <p className="text-sm font-medium text-white">{name}</p>
-                <p className="text-[11px] text-white/30">{t('misc.freePlan')}</p>
+            <div className="absolute right-0 top-full mt-2 py-1.5 rounded-xl min-w-[180px] shadow-xl bg-surface-elevated border border-border-default">
+              <div className="px-4 py-2 mb-1 border-b border-border-subtle">
+                <p className="text-sm font-medium text-text-primary">{name}</p>
+                <p className="text-[11px] text-text-muted">{t('misc.freePlan')}</p>
               </div>
               {[
                 { label: t('sidebar.settings'), href: '/settings' },
                 { label: t('misc.wallet'), href: '/wallet' },
               ].map((item) => (
-                <Link key={item.href} href={item.href} className="block px-4 py-2 text-[13px] text-white/60 hover:bg-white/5 hover:text-white transition" onClick={() => setUserMenuOpen(false)}>
+                <Link key={item.href} href={item.href} className="block px-4 py-2 text-[13px] text-text-secondary hover:bg-white/5 hover:text-text-primary transition" onClick={() => setUserMenuOpen(false)}>
                   {item.label}
                 </Link>
               ))}
-              <div className="px-4 py-2 flex items-center gap-2 text-[13px] text-white/60">
-                <span className="text-white/30">Lang:</span>
+              <div className="px-4 py-2 flex items-center gap-2 text-[13px] text-text-secondary">
+                <span className="text-text-muted">Lang:</span>
                 {(['en', 'fr', 'es'] as Locale[]).map((l) => (
-                  <button key={l} onClick={() => setLocale(l)} className={locale === l ? 'text-amber-400 font-semibold' : 'hover:text-white'}>
+                  <button key={l} onClick={() => setLocale(l)} className={locale === l ? 'text-accent font-semibold' : 'hover:text-text-primary transition'}>
                     {l.toUpperCase()}
                   </button>
                 ))}
               </div>
-              <Link href="/legal/terms" className="block px-4 py-2 text-[13px] text-white/60 hover:bg-white/5 hover:text-white transition" onClick={() => setUserMenuOpen(false)}>
+              <Link href="/legal/terms" className="block px-4 py-2 text-[13px] text-text-secondary hover:bg-white/5 hover:text-text-primary transition" onClick={() => setUserMenuOpen(false)}>
                 {t('misc.terms')}
               </Link>
-              <div className="my-1 mx-3" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }} />
+              <div className="my-1 mx-3 border-t border-border-subtle" />
               <button className="block w-full text-left px-4 py-2 text-[13px] text-red-400/70 hover:bg-white/5 hover:text-red-400 transition" onClick={() => { localStorage.removeItem('sv_user'); window.location.href = '/'; }}>
                 {t('auth.logOut')}
               </button>
@@ -207,36 +218,10 @@ function SavingsBadge() {
   const totalSaved = useSavingsStore((s) => s.totalSaved);
   if (totalSaved <= 0) return null;
   return (
-    <div
-      className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-medium"
-      style={{
-        background: 'rgba(16,185,129,0.08)',
-        border: '1px solid rgba(16,185,129,0.2)',
-        color: '#6ee7b7',
-      }}
-    >
-      <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M2 13l4-4 3 3 5-6" /><path d="M10 6h4v4" />
-      </svg>
+    <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-medium bg-emerald-500/8 border border-emerald-500/20 text-emerald-300">
+      <TrendingUp className="w-3 h-3" strokeWidth={2} />
       ${Math.round(totalSaved)} saved
     </div>
-  );
-}
-
-function SunIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="10" cy="10" r="3.5" />
-      <path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42" />
-    </svg>
-  );
-}
-
-function MoonIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M17.5 10.5a7.5 7.5 0 01-10-10A7.5 7.5 0 1017.5 10.5z" />
-    </svg>
   );
 }
 
@@ -247,10 +232,14 @@ function ThemeToggle() {
   return (
     <button
       onClick={toggleMode}
-      className="p-2 rounded-xl hover:bg-white/5 transition"
+      className="p-2.5 rounded-xl hover:bg-white/5 transition"
       aria-label={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
     >
-      {mode === 'dark' ? <SunIcon /> : <MoonIcon />}
+      {mode === 'dark' ? (
+        <Sun className="w-[18px] h-[18px] text-text-secondary" strokeWidth={1.8} />
+      ) : (
+        <Moon className="w-[18px] h-[18px] text-text-secondary" strokeWidth={1.8} />
+      )}
     </button>
   );
 }

@@ -4,8 +4,24 @@
 
 :root {
   color-scheme: dark;
-  --flyeas-accent: #F59E0B;
-  --flyeas-gradient: linear-gradient(135deg, #F59E0B, #F97316, #EF4444);
+  --flyeas-accent: #E8A317;
+  --flyeas-accent-light: #F5BE3A;
+  --flyeas-accent-dark: #C78B0F;
+  --flyeas-gradient: linear-gradient(135deg, #E8A317, #D4940F, #C78B0F);
+  --surface-primary: #09090B;
+  --surface-elevated: #18181B;
+  --surface-card: rgba(255, 255, 255, 0.04);
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-default: rgba(255, 255, 255, 0.10);
+  --text-primary: #FAFAF9;
+  --text-secondary: #A8A29E;
+  --text-muted: #78716C;
+  --font-body: var(--font-inter), Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-heading: var(--font-display), 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
 }
 
 /* Smooth theme transitions — every color change feels luxurious */
@@ -27,11 +43,10 @@ body {
   padding: 0;
   min-height: 100%;
   background:
-    radial-gradient(circle at top left, color-mix(in srgb, var(--flyeas-accent) 8%, transparent), transparent 28%),
-    radial-gradient(circle at top right, color-mix(in srgb, var(--flyeas-accent) 5%, transparent), transparent 24%),
-    radial-gradient(circle at bottom center, color-mix(in srgb, var(--flyeas-accent) 3%, transparent), transparent 40%),
-    linear-gradient(180deg, #0C0A09 0%, #0A0908 45%, #060504 100%);
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    radial-gradient(ellipse 80% 50% at 20% 0%, color-mix(in srgb, var(--flyeas-accent) 5%, transparent), transparent),
+    radial-gradient(ellipse 60% 40% at 80% 100%, color-mix(in srgb, var(--flyeas-accent) 3%, transparent), transparent),
+    var(--surface-primary);
+  font-family: var(--font-body);
 }
 
 * {
@@ -71,40 +86,39 @@ input:focus, select:focus, textarea:focus {
    are silky smooth so theme changes feel luxurious. */
 
 .glass {
-  background: color-mix(in srgb, var(--flyeas-accent) 2%, rgba(255, 255, 255, 0.04));
-  backdrop-filter: blur(24px) saturate(1.3);
-  -webkit-backdrop-filter: blur(24px) saturate(1.3);
-  border: 1px solid color-mix(in srgb, var(--flyeas-accent) 10%, rgba(255,255,255,0.06));
-  box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.25),
-    0 0 80px color-mix(in srgb, var(--flyeas-accent) 3%, transparent),
-    inset 0 1px 0 color-mix(in srgb, var(--flyeas-accent) 5%, transparent);
-  transition: background 0.6s ease, border-color 0.6s ease, box-shadow 0.6s ease;
+  background: var(--surface-card);
+  backdrop-filter: blur(16px) saturate(1.2);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  border: 1px solid var(--border-subtle);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .glass:hover {
-  border-color: color-mix(in srgb, var(--flyeas-accent) 18%, rgba(255,255,255,0.08));
-  box-shadow:
-    0 12px 40px rgba(0, 0, 0, 0.3),
-    0 0 100px color-mix(in srgb, var(--flyeas-accent) 5%, transparent),
-    inset 0 1px 0 color-mix(in srgb, var(--flyeas-accent) 8%, transparent);
+  border-color: var(--border-default);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
 }
 
 .glass-premium {
-  background: color-mix(in srgb, var(--flyeas-accent) 5%, rgba(255,255,255,0.03));
-  backdrop-filter: blur(28px) saturate(1.4);
-  -webkit-backdrop-filter: blur(28px) saturate(1.4);
-  border: 1px solid color-mix(in srgb, var(--flyeas-accent) 20%, transparent);
+  background: color-mix(in srgb, var(--flyeas-accent) 3%, rgba(255,255,255,0.04));
+  backdrop-filter: blur(20px) saturate(1.3);
+  -webkit-backdrop-filter: blur(20px) saturate(1.3);
+  border: 1px solid color-mix(in srgb, var(--flyeas-accent) 12%, rgba(255,255,255,0.06));
   box-shadow:
-    0 12px 40px color-mix(in srgb, var(--flyeas-accent) 10%, transparent),
-    0 0 120px color-mix(in srgb, var(--flyeas-accent) 4%, transparent),
-    inset 0 1px 0 color-mix(in srgb, var(--flyeas-accent) 8%, transparent),
-    inset 0 -1px 0 rgba(0,0,0,0.2);
-  transition: background 0.6s ease, border-color 0.6s ease, box-shadow 0.6s ease;
+    0 8px 32px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255,255,255,0.04);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.glass-premium:hover {
+  border-color: color-mix(in srgb, var(--flyeas-accent) 18%, rgba(255,255,255,0.08));
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.3),
+    0 0 24px color-mix(in srgb, var(--flyeas-accent) 8%, transparent);
 }
 
 .soft-border {
-  border: 1px solid color-mix(in srgb, var(--flyeas-accent) 10%, rgba(255,255,255,0.06));
+  border: 1px solid var(--border-subtle);
 }
 
 /* ─── Light Mode ─────────────────────────────────── */
@@ -199,9 +213,9 @@ input:focus, select:focus, textarea:focus {
   background: linear-gradient(
     105deg,
     transparent 20%,
-    rgba(255,255,255,0.12) 45%,
-    rgba(255,255,255,0.15) 50%,
-    rgba(255,255,255,0.12) 55%,
+    rgba(255,255,255,0.06) 45%,
+    rgba(255,255,255,0.08) 50%,
+    rgba(255,255,255,0.06) 55%,
     transparent 80%
   );
   transform: translateX(-120%);
@@ -236,40 +250,9 @@ input:focus, select:focus, textarea:focus {
   letter-spacing: -0.04em;
 }
 
-/* Premium ambient glow — a subtle living pulse in the background */
-@keyframes ambientPulse {
-  0%, 100% { opacity: 0.4; transform: scale(1); }
-  50% { opacity: 0.7; transform: scale(1.05); }
-}
-
-body::before {
-  content: '';
-  position: fixed;
-  top: -20%;
-  left: -10%;
-  width: 50%;
-  height: 50%;
-  border-radius: 50%;
-  background: radial-gradient(circle, color-mix(in srgb, var(--flyeas-accent) 6%, transparent), transparent 70%);
-  pointer-events: none;
-  z-index: 0;
-  animation: ambientPulse 8s ease-in-out infinite;
-  transition: background 0.6s ease;
-}
-
-body::after {
-  content: '';
-  position: fixed;
-  bottom: -20%;
-  right: -10%;
-  width: 45%;
-  height: 45%;
-  border-radius: 50%;
-  background: radial-gradient(circle, color-mix(in srgb, var(--flyeas-accent) 4%, transparent), transparent 70%);
-  pointer-events: none;
-  z-index: 0;
-  animation: ambientPulse 10s ease-in-out infinite 2s;
-  transition: background 0.6s ease;
+/* Headings use display font */
+h1, h2, h3, .font-display {
+  font-family: var(--font-heading);
 }
 
 .muted {
@@ -327,8 +310,8 @@ body::after {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.65rem 0.85rem;
-  border-radius: 0.75rem;
+  padding: 0.7rem 0.85rem;
+  border-radius: var(--radius-md);
   font-size: 0.875rem;
   font-weight: 500;
   color: rgba(255,255,255,0.5);
@@ -363,9 +346,9 @@ body::after {
 .glass-input {
   background: rgba(255,255,255,0.04);
   border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 0.875rem;
+  border-radius: var(--radius-md);
   padding: 0.75rem 1rem;
-  color: white;
+  color: var(--text-primary);
   font-size: 0.9rem;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
   width: 100%;
@@ -375,7 +358,7 @@ body::after {
   box-shadow: 0 0 0 3px rgba(245,158,11,0.1);
 }
 .glass-input::placeholder {
-  color: rgba(255,255,255,0.25);
+  color: rgba(255,255,255,0.4);
 }
 
 /* Secondary button */
@@ -414,29 +397,22 @@ body::after {
 
 /* Premium gradient text */
 .gradient-text {
-  background: linear-gradient(135deg, #F59E0B, #F97316, #EF4444);
+  background: linear-gradient(135deg, var(--flyeas-accent-light), var(--flyeas-accent), var(--flyeas-accent-dark));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-/* Better glass cards with subtle border glow */
-.glass-premium {
-  background: rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+/* Glass card variant — elevated */
+.glass-elevated {
+  background: var(--surface-elevated);
+  border: 1px solid var(--border-default);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
-.glass-premium:hover {
-  border-color: rgba(245, 158, 11, 0.15);
-  box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.3),
-    0 0 20px rgba(245, 158, 11, 0.05),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+.glass-elevated:hover {
+  border-color: color-mix(in srgb, var(--flyeas-accent) 15%, rgba(255,255,255,0.08));
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
 }
 
 /* Pulse animation for live indicators */
@@ -543,8 +519,8 @@ html {
 
 /* Better selection color */
 ::selection {
-  background: rgba(245, 158, 11, 0.3);
-  color: white;
+  background: rgba(232, 163, 23, 0.3);
+  color: var(--text-primary);
 }
 
 /* Link hover underline animation */
@@ -558,7 +534,7 @@ html {
   left: 0;
   width: 0;
   height: 1px;
-  background: #F59E0B;
+  background: var(--flyeas-accent);
   transition: width 0.2s ease;
 }
 .link-hover:hover::after {
@@ -575,10 +551,10 @@ html {
   z-index: 100;
   height: 72px;
   padding-bottom: env(safe-area-inset-bottom, 0);
-  background: rgba(12, 10, 9, 0.92);
-  backdrop-filter: blur(24px) saturate(1.4);
-  -webkit-backdrop-filter: blur(24px) saturate(1.4);
-  border-top: 1px solid color-mix(in srgb, var(--flyeas-accent) 8%, rgba(255,255,255,0.06));
+  background: rgba(9, 9, 11, 0.92);
+  backdrop-filter: blur(16px) saturate(1.2);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  border-top: 1px solid var(--border-subtle);
   justify-content: space-around;
   align-items: center;
 }
@@ -631,20 +607,26 @@ html {
   transition: opacity 0.2s ease;
 }
 
-.bottom-nav-dot {
-  position: absolute;
-  bottom: 4px;
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: var(--flyeas-accent);
-  box-shadow: 0 0 8px var(--flyeas-accent);
-  animation: dotPulse 2s ease-in-out infinite;
+.bottom-nav-elevated {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: var(--flyeas-gradient);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--flyeas-accent) 30%, transparent);
+  margin-top: -8px;
 }
 
-@keyframes dotPulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.6; transform: scale(1.3); }
+.bottom-nav-dot {
+  position: absolute;
+  bottom: 6px;
+  width: 20px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--flyeas-accent);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--flyeas-accent) 40%, transparent);
 }
 
 .light-mode .bottom-nav {
@@ -737,13 +719,10 @@ html {
     0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
-/* Floating label animation */
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
-}
+/* Subtle lift for featured elements */
 .float-anim {
-  animation: float 3s ease-in-out infinite;
+  transform: translateY(-2px);
+  transition: transform 0.3s ease;
 }
 
 /* Favorite heart button */
@@ -778,5 +757,57 @@ html {
 @media (max-width: 1023px) {
   .pb-bottom-nav {
     padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px) + 8px);
+  }
+}
+
+/* ─── Cross-platform & Mobile Optimizations ──────── */
+
+/* iOS: prevent callout menu on long press */
+button, a, [role="button"] {
+  -webkit-touch-callout: none;
+}
+
+/* Android: prevent pull-to-refresh conflicts */
+body {
+  overscroll-behavior: none;
+}
+
+/* Reduce backdrop-filter on mobile for GPU performance */
+@media (max-width: 768px) {
+  .glass {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  .glass-premium {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+}
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .card-interactive:hover {
+    transform: none;
+  }
+  .bottom-nav-item:active {
+    transform: none;
+  }
+}
+
+/* Safe area for topbar (Dynamic Island) */
+header.sticky {
+  padding-top: max(0.625rem, env(safe-area-inset-top, 0));
+}
+
+/* Landscape safe areas */
+@media (orientation: landscape) {
+  main {
+    padding-left: max(1rem, env(safe-area-inset-left, 0));
+    padding-right: max(1rem, env(safe-area-inset-right, 0));
   }
 }

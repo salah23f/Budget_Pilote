@@ -47,7 +47,7 @@ export default function DashboardPage() {
           <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
         </svg>
       ),
-      color: '#F59E0B',
+      color: '#E8A317',
     },
     {
       href: '/hotels',
@@ -222,7 +222,7 @@ export default function DashboardPage() {
                         className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
                         style={{
                           background: r.kind === 'flight' ? 'rgba(245,158,11,0.1)' : 'rgba(249,115,22,0.1)',
-                          color: r.kind === 'flight' ? '#F59E0B' : '#F97316',
+                          color: r.kind === 'flight' ? '#E8A317' : '#F97316',
                         }}
                       >
                         {r.kind === 'flight' ? (
@@ -385,7 +385,7 @@ export default function DashboardPage() {
             height="16"
             viewBox="0 0 24 24"
             fill="none"
-            stroke="#F59E0B"
+            stroke="#E8A317"
             strokeWidth="1.5"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -509,7 +509,7 @@ function DealOfTheDay() {
                 rel="noopener noreferrer"
                 className="px-4 py-2.5 rounded-xl text-sm font-semibold text-white flex-shrink-0"
                 style={{
-                  background: 'var(--flyeas-gradient, linear-gradient(135deg, #F59E0B, #EF4444))',
+                  background: 'var(--flyeas-gradient, linear-gradient(135deg, #E8A317, #EF4444))',
                   boxShadow: '0 4px 12px rgba(245,158,11,0.3)',
                 }}
               >
@@ -575,7 +575,7 @@ function RecommendedRoutes({ recent }: { recent: RecentSearch[] }) {
             }}
           >
             <div className="flex items-center gap-2 mb-1">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--flyeas-accent, #F59E0B)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--flyeas-accent, #E8A317)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
                 <path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z" />
               </svg>
               <span className="text-sm font-semibold text-white group-hover:text-amber-300 transition-colors">
@@ -614,7 +614,7 @@ function DashboardStats() {
       label: 'Searches',
       value: searchesCount.toLocaleString(),
       sub: 'flight lookups',
-      color: '#F59E0B',
+      color: '#E8A317',
       icon: (
         <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="9" cy="9" r="6" /><path d="M13.5 13.5L17 17" />
@@ -735,7 +735,7 @@ function TravelStats({ recent }: { recent: RecentSearch[] }) {
           {
             label: 'Total Searches',
             value: searchesCount.toLocaleString(),
-            color: '#F59E0B',
+            color: '#E8A317',
             icon: (
               <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="9" cy="9" r="6" /><path d="M13.5 13.5L17 17" />
@@ -796,7 +796,7 @@ function TravelStats({ recent }: { recent: RecentSearch[] }) {
           <div className="flex items-center gap-2 mb-4">
             <div
               className="w-7 h-7 rounded-lg flex items-center justify-center"
-              style={{ background: 'rgba(245,158,11,0.1)', color: '#F59E0B' }}
+              style={{ background: 'rgba(245,158,11,0.1)', color: '#E8A317' }}
             >
               <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="2" y="10" width="3" height="8" rx="1" />
@@ -814,7 +814,7 @@ function TravelStats({ recent }: { recent: RecentSearch[] }) {
                   className="w-full rounded-t-md transition-all"
                   style={{
                     height: `${Math.max((count / maxBucket) * 100, 4)}%`,
-                    background: 'linear-gradient(to top, var(--flyeas-accent, #F59E0B), #FBBF24)',
+                    background: 'linear-gradient(to top, var(--flyeas-accent, #E8A317), #FBBF24)',
                     opacity: count > 0 ? 1 : 0.2,
                   }}
                 />
@@ -848,7 +848,7 @@ function TravelStats({ recent }: { recent: RecentSearch[] }) {
                       className="text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded"
                       style={{
                         background: i === 0 ? 'rgba(245,158,11,0.15)' : 'rgba(255,255,255,0.05)',
-                        color: i === 0 ? '#F59E0B' : 'rgba(255,255,255,0.4)',
+                        color: i === 0 ? '#E8A317' : 'rgba(255,255,255,0.4)',
                       }}
                     >
                       {i + 1}

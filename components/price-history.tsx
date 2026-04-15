@@ -12,7 +12,7 @@ interface PriceHistoryProps {
   color?: string;
 }
 
-export function PriceHistory({ currentPrice, route, origin, destination, color = '#F59E0B' }: PriceHistoryProps) {
+export function PriceHistory({ currentPrice, route, origin, destination, color = '#E8A317' }: PriceHistoryProps) {
   const [period, setPeriod] = useState<7 | 14 | 30>(30);
   const [realData, setRealData] = useState<PriceDataPoint[]>([]);
   const [loading, setLoading] = useState(false);

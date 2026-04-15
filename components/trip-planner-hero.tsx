@@ -269,7 +269,7 @@ export default function TripPlannerHero() {
         <div className="flex items-center gap-3 px-5 pt-5">
           <div
             className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
-            style={{ background: 'linear-gradient(135deg, #F59E0B, #F97316)' }}
+            style={{ background: 'linear-gradient(135deg, #E8A317, #F97316)' }}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
@@ -354,7 +354,7 @@ export default function TripPlannerHero() {
               onClick={() => handlePlan()}
               disabled={loading || !prompt.trim()}
               className="premium-button rounded-xl px-6 h-11 text-sm font-semibold inline-flex items-center gap-2 disabled:opacity-40"
-              style={{ background: 'linear-gradient(135deg, #F59E0B, #F97316, #EF4444)' }}
+              style={{ background: 'linear-gradient(135deg, #E8A317, #F97316, #EF4444)' }}
             >
               {loading ? (
                 <>
@@ -514,7 +514,7 @@ export default function TripPlannerHero() {
                               rel="noopener noreferrer"
                               className="text-xs px-3 py-1.5 rounded-lg font-semibold transition"
                               style={{
-                                background: 'linear-gradient(135deg, #F59E0B, #F97316)',
+                                background: 'linear-gradient(135deg, #E8A317, #F97316)',
                                 color: 'white',
                               }}
                             >

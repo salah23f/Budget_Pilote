@@ -227,9 +227,9 @@ export function FlightComparisonModal({
               style={{
                 width: `${f.score}%`,
                 background: f.score >= 85
-                  ? 'linear-gradient(90deg, #F59E0B, #10b981)'
+                  ? 'linear-gradient(90deg, #E8A317, #10b981)'
                   : f.score >= 70
-                    ? 'linear-gradient(90deg, #F97316, #F59E0B)'
+                    ? 'linear-gradient(90deg, #F97316, #E8A317)'
                     : 'linear-gradient(90deg, #f59e0b, #ef4444)',
               }}
             />

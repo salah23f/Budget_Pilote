@@ -269,7 +269,7 @@ export default function OnboardingPage() {
               <div key={l} className="flex items-center">
                 <div className="flex flex-col items-center">
                   <div className="flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold transition-all" style={{
-                    background: i < step ? 'linear-gradient(135deg,#F59E0B,#F97316)' : i === step ? 'linear-gradient(135deg,#F59E0B,#EF4444)' : 'rgba(255,255,255,0.06)',
+                    background: i < step ? 'linear-gradient(135deg,#E8A317,#F97316)' : i === step ? 'linear-gradient(135deg,#E8A317,#EF4444)' : 'rgba(255,255,255,0.06)',
                     color: i <= step ? '#fff' : 'rgba(255,255,255,0.3)',
                     boxShadow: i === step ? '0 0 16px rgba(245,158,11,0.25)' : 'none',
                   }}>
@@ -277,7 +277,7 @@ export default function OnboardingPage() {
                   </div>
                   <span className="mt-1 text-[10px] font-medium hidden sm:block" style={{ color: i <= step ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.2)' }}>{l}</span>
                 </div>
-                {i < steps.length - 1 && <div className="mx-2.5 h-[2px] w-12 sm:w-16 rounded-full" style={{ background: i < step ? '#F59E0B' : 'rgba(255,255,255,0.06)' }} />}
+                {i < steps.length - 1 && <div className="mx-2.5 h-[2px] w-12 sm:w-16 rounded-full" style={{ background: i < step ? '#E8A317' : 'rgba(255,255,255,0.06)' }} />}
               </div>
             ))}
           </div>
@@ -289,7 +289,7 @@ export default function OnboardingPage() {
           {/* ══ Step 0: Welcome ══ */}
           {step === 0 && (
             <div className="flex flex-col items-center py-4">
-              <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl" style={{ background: 'linear-gradient(135deg,#F59E0B,#F97316,#EF4444)' }}>
+              <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl" style={{ background: 'linear-gradient(135deg,#F5BE3A,#E8A317,#C78B0F)' }}>
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z" />
                 </svg>
@@ -297,7 +297,7 @@ export default function OnboardingPage() {
               <div className="h-12 flex items-center justify-center">
                 <h1 className="text-3xl sm:text-4xl font-bold text-center" style={{
                   opacity: fade ? 1 : 0, transform: fade ? 'translateY(0)' : 'translateY(8px)', transition: 'all 0.3s',
-                  background: 'linear-gradient(135deg,#F59E0B,#F97316,#EF4444)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+                  background: 'linear-gradient(135deg,#F5BE3A,#E8A317,#C78B0F)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
                 }}>{greetings[gi].text}</h1>
               </div>
               <p className="text-[11px] text-white/20 mt-0.5">{greetings[gi].lang}</p>
@@ -407,7 +407,7 @@ export default function OnboardingPage() {
                   background: walletAddress ? 'rgba(34,197,94,0.12)' : 'rgba(245,158,11,0.08)',
                   border: walletAddress ? '1px solid rgba(34,197,94,0.25)' : '1px solid rgba(245,158,11,0.15)',
                 }}>
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={walletAddress ? '#22c55e' : '#F59E0B'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={walletAddress ? '#22c55e' : '#E8A317'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                     <rect x="2" y="6" width="20" height="14" rx="2" /><path d="M2 10h20" /><path d="M16 14h2" />
                   </svg>
                 </div>
@@ -441,19 +441,19 @@ export default function OnboardingPage() {
                   </div>
                   <h2 className="text-lg font-semibold text-white">Welcome, {firstName}!</h2>
                   <div className="mt-2 flex items-center gap-2 px-3 py-1.5 rounded-full" style={{ background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.2)' }}>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E8A317" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M12 2L14.9 8.6L22 9.3L16.8 14L18.2 21L12 17.5L5.8 21L7.2 14L2 9.3L9.1 8.6L12 2Z" />
                     </svg>
                     <span className="text-[13px] font-semibold text-amber-400">You earned 50 bonus points!</span>
                   </div>
                   <p className="mt-2 text-[13px] text-white/35">Redirecting...</p>
                   <div className="mt-4 h-1 w-32 overflow-hidden rounded-full" style={{ background: 'rgba(255,255,255,0.05)' }}>
-                    <div className="h-full rounded-full" style={{ background: 'linear-gradient(90deg,#F59E0B,#F97316)', animation: 'grow 1.8s ease forwards' }} />
+                    <div className="h-full rounded-full" style={{ background: 'linear-gradient(90deg,#E8A317,#F97316)', animation: 'grow 1.8s ease forwards' }} />
                   </div>
                 </>
               ) : (
                 <>
-                  <div className="h-8 w-8 rounded-full" style={{ border: '2.5px solid rgba(245,158,11,0.25)', borderTopColor: '#F59E0B', animation: 'spin 0.7s linear infinite' }} />
+                  <div className="h-8 w-8 rounded-full" style={{ border: '2.5px solid rgba(245,158,11,0.25)', borderTopColor: '#E8A317', animation: 'spin 0.7s linear infinite' }} />
                   <p className="mt-3 text-[13px] text-white/35">Setting up...</p>
                 </>
               )}

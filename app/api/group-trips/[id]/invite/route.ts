@@ -53,7 +53,7 @@ export async function POST(req: NextRequest, context: { params: { id: string } }
           html: `
             <div style="font-family:Inter,system-ui,sans-serif;max-width:480px;margin:0 auto;padding:32px;background:#0C0A09;color:white;border-radius:16px;">
               <div style="text-align:center;margin-bottom:24px;">
-                <div style="display:inline-block;padding:8px 16px;background:linear-gradient(135deg,#F59E0B,#F97316,#EF4444);border-radius:12px;font-size:20px;font-weight:800;color:white;">
+                <div style="display:inline-block;padding:8px 16px;background:linear-gradient(135deg,#E8A317,#F97316,#EF4444);border-radius:12px;font-size:20px;font-weight:800;color:white;">
                   Flyeas
                 </div>
               </div>
@@ -66,7 +66,7 @@ export async function POST(req: NextRequest, context: { params: { id: string } }
                 ${trip.destination ? `<p style="color:rgba(255,255,255,0.4);font-size:13px;margin:0;">${trip.destination}</p>` : ''}
               </div>
               <div style="text-align:center;">
-                <a href="${inviteUrl}" style="display:inline-block;padding:14px 32px;background:linear-gradient(135deg,#F59E0B,#F97316);color:white;text-decoration:none;border-radius:12px;font-weight:600;font-size:14px;">
+                <a href="${inviteUrl}" style="display:inline-block;padding:14px 32px;background:linear-gradient(135deg,#E8A317,#F97316);color:white;text-decoration:none;border-radius:12px;font-weight:600;font-size:14px;">
                   Join This Trip
                 </a>
               </div>

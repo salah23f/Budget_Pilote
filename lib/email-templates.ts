@@ -10,7 +10,7 @@
 
 const BRAND = 'Flyeas';
 const SITE = 'faregenie.vercel.app';
-const GRADIENT = 'linear-gradient(135deg, #F59E0B, #F97316)';
+const GRADIENT = 'linear-gradient(135deg, #E8A317, #F97316)';
 
 const wrapper = (inner: string) => `
 <!DOCTYPE html>
@@ -19,7 +19,7 @@ const wrapper = (inner: string) => `
 <body style="margin:0;padding:0;background:#18181B;font-family:Inter,system-ui,-apple-system,sans-serif;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#18181B;">
 <tr><td align="center" style="padding:32px 16px;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#0C0A09;border-radius:16px;border:1px solid rgba(255,255,255,0.06);overflow:hidden;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#09090B;border-radius:16px;border:1px solid rgba(255,255,255,0.06);overflow:hidden;">
     ${inner}
     <tr><td style="padding:32px 32px 24px;border-top:1px solid rgba(255,255,255,0.06);">
       <p style="margin:0;font-size:11px;line-height:1.5;color:rgba(255,255,255,0.25);text-align:center;">

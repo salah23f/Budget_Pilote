@@ -274,8 +274,8 @@ export default function ChatPanel() {
           onClick={() => setOpen(true)}
           className="fixed bottom-24 right-4 lg:bottom-6 lg:right-5 z-[90] flex h-14 w-14 items-center justify-center rounded-2xl shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl"
           style={{
-            background: 'var(--flyeas-gradient, linear-gradient(135deg, #F59E0B, #F97316, #EF4444))',
-            boxShadow: '0 8px 30px color-mix(in srgb, var(--flyeas-accent, #F59E0B) 40%, transparent)',
+            background: 'var(--flyeas-gradient, linear-gradient(135deg, #E8A317, #F97316, #EF4444))',
+            boxShadow: '0 8px 30px color-mix(in srgb, var(--flyeas-accent, #E8A317) 40%, transparent)',
           }}
           aria-label="Open AI assistant"
         >
@@ -283,7 +283,7 @@ export default function ChatPanel() {
             <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
           </svg>
           <span
-            className="absolute -top-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-2 border-[#0C0A09]"
+            className="absolute -top-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-2 border-[#09090B]"
             style={{ background: '#22c55e' }}
           />
         </button>
@@ -312,7 +312,7 @@ export default function ChatPanel() {
         <div
           className="flex h-full flex-col"
           style={{
-            background: '#0C0A09',
+            background: '#09090B',
             borderLeft: '1px solid rgba(255,255,255,0.06)',
             boxShadow: '-10px 0 50px rgba(0,0,0,0.5)',
           }}
@@ -325,7 +325,7 @@ export default function ChatPanel() {
             <div className="flex items-center gap-3">
               <div
                 className="flex h-10 w-10 items-center justify-center rounded-xl"
-                style={{ background: 'var(--flyeas-gradient, linear-gradient(135deg, #F59E0B, #F97316, #EF4444))' }}
+                style={{ background: 'var(--flyeas-gradient, linear-gradient(135deg, #E8A317, #F97316, #EF4444))' }}
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z" />
@@ -469,7 +469,7 @@ export default function ChatPanel() {
                 style={{
                   background:
                     input.trim() && !loading
-                      ? 'var(--flyeas-gradient, linear-gradient(135deg, #F59E0B, #F97316))'
+                      ? 'var(--flyeas-gradient, linear-gradient(135deg, #E8A317, #F97316))'
                       : 'rgba(255,255,255,0.04)',
                 }}
               >

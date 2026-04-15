@@ -54,7 +54,7 @@ function getTypeIcon(type: NotificationType) {
       );
     case 'price_drop':
       return (
-        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#F59E0B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#E8A317" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M13 4L9 12 5 4" />
           <path d="M5 15h8" />
         </svg>
@@ -311,7 +311,7 @@ export default function NotificationPanel() {
                   background:
                     filter === f ? 'rgba(245,158,11,0.12)' : 'transparent',
                   color:
-                    filter === f ? '#F59E0B' : 'rgba(255,255,255,0.5)',
+                    filter === f ? '#E8A317' : 'rgba(255,255,255,0.5)',
                 }}
               >
                 {f}
@@ -332,7 +332,7 @@ export default function NotificationPanel() {
               onClick={markAllRead}
               className="rounded-lg px-3 py-1.5 text-xs font-medium transition-colors hover:bg-white/5"
               style={{
-                color: '#F59E0B',
+                color: '#E8A317',
                 border: '1px solid rgba(245,158,11,0.2)',
               }}
             >
@@ -417,7 +417,7 @@ export default function NotificationPanel() {
                             <span
                               className="h-2.5 w-2.5 rounded-full"
                               style={{
-                                background: '#F59E0B',
+                                background: '#E8A317',
                                 boxShadow: '0 0 6px rgba(245,158,11,0.4)',
                               }}
                             />

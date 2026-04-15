@@ -46,8 +46,8 @@ export default function BookingsPage() {
           href="/flights"
           className="premium-button rounded-xl px-6 py-3 text-sm font-semibold text-white no-underline"
           style={{
-            background: 'var(--flyeas-gradient, linear-gradient(135deg, #F59E0B, #F97316, #EF4444))',
-            boxShadow: '0 6px 20px color-mix(in srgb, var(--flyeas-accent, #F59E0B) 25%, transparent)',
+            background: 'var(--flyeas-gradient, linear-gradient(135deg, #E8A317, #F97316, #EF4444))',
+            boxShadow: '0 6px 20px color-mix(in srgb, var(--flyeas-accent, #E8A317) 25%, transparent)',
           }}
         >
           Search flights

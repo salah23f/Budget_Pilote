@@ -7,6 +7,7 @@ import React from 'react';
 /* ------------------------------------------------------------------ */
 
 type PaddingSize = 'none' | 'sm' | 'md' | 'lg';
+type CardVariant = 'default' | 'glass' | 'elevated';
 
 export interface CardProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'title'> {
   title?: React.ReactNode;
@@ -14,6 +15,7 @@ export interface CardProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 't
   footer?: React.ReactNode;
   padding?: PaddingSize;
   hoverable?: boolean;
+  variant?: CardVariant;
 }
 
 /* ------------------------------------------------------------------ */
@@ -25,6 +27,12 @@ const paddingClasses: Record<PaddingSize, string> = {
   sm: 'p-4',
   md: 'p-6',
   lg: 'p-8',
+};
+
+const variantClasses: Record<CardVariant, string> = {
+  default: 'bg-surface-card border border-border-subtle',
+  glass: 'glass',
+  elevated: 'glass-elevated',
 };
 
 /* ------------------------------------------------------------------ */
@@ -39,6 +47,7 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
       footer,
       padding = 'md',
       hoverable = false,
+      variant = 'default',
       children,
       className = '',
       ...rest
@@ -49,10 +58,11 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
       <div
         ref={ref}
         className={[
-          'glass rounded-2xl',
+          'rounded-2xl',
+          variantClasses[variant],
           paddingClasses[padding],
           hoverable
-            ? 'card-interactive hover:border-white/[0.14] hover:shadow-lg hover:shadow-amber-500/5'
+            ? 'card-interactive hover:border-border-default'
             : '',
           className,
         ]
@@ -64,12 +74,12 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
         {(title || subtitle) && (
           <div className={`mb-4 ${padding === 'none' ? 'px-6 pt-6' : ''}`}>
             {title && (
-              <h3 className="text-lg font-semibold text-white tracking-tight">
+              <h3 className="text-lg font-semibold font-display text-text-primary tracking-tight">
                 {title}
               </h3>
             )}
             {subtitle && (
-              <p className="mt-1 text-sm text-white/55">{subtitle}</p>
+              <p className="mt-1 text-sm text-text-secondary">{subtitle}</p>
             )}
           </div>
         )}
@@ -85,7 +95,7 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
         {footer && (
           <div
             className={[
-              'mt-4 pt-4 border-t border-white/[0.07]',
+              'mt-4 pt-4 border-t border-border-subtle',
               padding === 'none' ? 'px-6 pb-6' : '',
             ].join(' ')}
           >

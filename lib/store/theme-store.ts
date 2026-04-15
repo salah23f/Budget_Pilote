@@ -21,7 +21,7 @@ export interface ThemePreset {
 
 export const THEME_PRESETS: ThemePreset[] = [
   // Free presets
-  { id: 'default', name: 'Flyeas Gold', accent: '#F59E0B', gradient: 'linear-gradient(135deg, #F59E0B, #F97316, #EF4444)', tier: 'free' },
+  { id: 'default', name: 'Flyeas Gold', accent: '#E8A317', gradient: 'linear-gradient(135deg, #E8A317, #F97316, #EF4444)', tier: 'free' },
   { id: 'ocean', name: 'Ocean Blue', accent: '#3B82F6', gradient: 'linear-gradient(135deg, #3B82F6, #2563EB, #1D4ED8)', tier: 'free' },
   { id: 'emerald', name: 'Emerald', accent: '#10B981', gradient: 'linear-gradient(135deg, #10B981, #059669, #047857)', tier: 'free' },
   // Pro presets

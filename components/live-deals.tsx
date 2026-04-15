@@ -158,7 +158,7 @@ function DealCard({ deal }: { deal: Deal }) {
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2 min-w-0">
           <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(245,158,11,0.1)' }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--flyeas-accent, #F59E0B)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--flyeas-accent, #E8A317)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>
           </div>
           <div className="min-w-0">
             <p className="text-[10px] text-white/35 uppercase tracking-wider font-semibold">
@@ -205,7 +205,7 @@ function DealCard({ deal }: { deal: Deal }) {
           <p
             className="text-2xl font-bold leading-none"
             style={{
-              background: 'var(--flyeas-gradient, linear-gradient(135deg, #F59E0B, #F97316))',
+              background: 'var(--flyeas-gradient, linear-gradient(135deg, #E8A317, #F97316))',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
             }}
@@ -236,7 +236,7 @@ function DealCard({ deal }: { deal: Deal }) {
         className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300"
         style={{
           background:
-            'radial-gradient(circle at top left, color-mix(in srgb, var(--flyeas-accent, #F59E0B) 8%, transparent), transparent 60%)',
+            'radial-gradient(circle at top left, color-mix(in srgb, var(--flyeas-accent, #E8A317) 8%, transparent), transparent 60%)',
         }}
       />
     </div>

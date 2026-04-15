@@ -392,7 +392,7 @@ export default function HotelsPage() {
               className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
               style={{ background: 'rgba(245,158,11,0.12)' }}
             >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E8A317" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="10" />
                 <path d="M12 8v4M12 16h.01" />
               </svg>

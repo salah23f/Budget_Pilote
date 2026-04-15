@@ -202,7 +202,7 @@ export default function RewardsPage() {
         <div className="flex items-center gap-3 mb-2">
           <div
             className="w-10 h-10 rounded-xl flex items-center justify-center"
-            style={{ background: 'linear-gradient(135deg, #F59E0B, #F97316)' }}
+            style={{ background: 'linear-gradient(135deg, #E8A317, #F97316)' }}
           >
             <StarIcon size={22} className="text-white" />
           </div>
@@ -223,7 +223,7 @@ export default function RewardsPage() {
               className="w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0"
               style={{
                 background: currentLevel
-                  ? 'linear-gradient(135deg, #F59E0B, #F97316, #EF4444)'
+                  ? 'linear-gradient(135deg, #E8A317, #F97316, #EF4444)'
                   : 'rgba(255,255,255,0.05)',
               }}
             >
@@ -243,7 +243,7 @@ export default function RewardsPage() {
                 {currentLevel && (
                   <span
                     className="px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider"
-                    style={{ background: 'rgba(245,158,11,0.15)', color: '#F59E0B' }}
+                    style={{ background: 'rgba(245,158,11,0.15)', color: '#E8A317' }}
                   >
                     Current Level
                   </span>
@@ -269,7 +269,7 @@ export default function RewardsPage() {
                       className="h-full rounded-full transition-all duration-500"
                       style={{
                         width: `${progressToNext}%`,
-                        background: 'linear-gradient(90deg, #F59E0B, #F97316)',
+                        background: 'linear-gradient(90deg, #E8A317, #F97316)',
                       }}
                     />
                   </div>
@@ -344,7 +344,7 @@ export default function RewardsPage() {
                   className="w-14 h-14 rounded-full flex items-center justify-center mb-2"
                   style={{
                     background: isEarned
-                      ? 'linear-gradient(135deg, #F59E0B, #F97316)'
+                      ? 'linear-gradient(135deg, #E8A317, #F97316)'
                       : 'rgba(255,255,255,0.04)',
                   }}
                 >
@@ -361,7 +361,7 @@ export default function RewardsPage() {
                 {isEarned ? (
                   <span
                     className="mt-2 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider"
-                    style={{ background: 'rgba(245,158,11,0.15)', color: '#F59E0B' }}
+                    style={{ background: 'rgba(245,158,11,0.15)', color: '#E8A317' }}
                   >
                     Unlocked
                   </span>
@@ -447,7 +447,7 @@ export default function RewardsPage() {
                     className="flex-shrink-0 px-4 py-1.5 rounded-lg text-xs font-semibold transition-all"
                     style={{
                       background: canAfford
-                        ? 'linear-gradient(135deg, #F59E0B, #F97316)'
+                        ? 'linear-gradient(135deg, #E8A317, #F97316)'
                         : 'rgba(255,255,255,0.04)',
                       color: canAfford ? 'white' : 'rgba(255,255,255,0.2)',
                       cursor: canAfford ? 'pointer' : 'not-allowed',
