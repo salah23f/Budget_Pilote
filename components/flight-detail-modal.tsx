@@ -83,7 +83,7 @@ export function FlightDetailModal({ flight, origin, destination, departDate, onC
   };
 
   return (
-    <Modal open onClose={onClose} title="">
+    <Modal isOpen onClose={onClose} title="">
       <div className="space-y-5 -mt-2">
         {/* Header */}
         <div className="flex items-start justify-between">
