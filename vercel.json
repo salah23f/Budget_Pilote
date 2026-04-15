@@ -2,7 +2,6 @@
   "framework": "nextjs",
   "buildCommand": "pnpm build",
   "installCommand": "pnpm install --no-frozen-lockfile",
-  "nodeVersion": "20.x",
   "functions": {
     "app/api/flights/search/route.ts": {
       "maxDuration": 60
