@@ -360,12 +360,7 @@ export default function TripPlannerHero() {
           </div>
         </div>
 
-        <style jsx>{`
-          @keyframes pulse {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.5); }
-            50% { box-shadow: 0 0 0 10px rgba(239,68,68,0); }
-          }
-        `}</style>
+        {/* pulse animation handled by Tailwind animate-pulse */}
       </div>
 
       {/* Example chips */}
