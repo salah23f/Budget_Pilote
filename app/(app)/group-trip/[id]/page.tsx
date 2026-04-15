@@ -49,7 +49,7 @@ export default function GroupTripDetailPage() {
         setUserName(user.firstName || '');
         setUserEmail(user.email || '');
       }
-    } catch {}
+    } catch (_) {}
   }, []);
 
   const loadTrip = useCallback(async () => {

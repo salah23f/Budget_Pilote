@@ -387,7 +387,7 @@ export default function NewMissionPage() {
         if (form.paymentRail === 'wallet' && privy) {
           payload.walletAddress = privy;
         }
-      } catch {}
+      } catch (_) {}
 
       const res = await fetch('/api/missions/create', {
         method: 'POST',
@@ -411,7 +411,7 @@ export default function NewMissionPage() {
             wallet: data.wallet,
           })
         );
-      } catch {}
+      } catch (_) {}
 
       setSubmitted(true);
       setTimeout(

@@ -101,7 +101,7 @@ export default function MissionPayPage() {
         setLoading(false);
         return;
       }
-    } catch {}
+    } catch (_) {}
 
     // Fallback: fetch mission but we won't have the stripe client secret
     fetch(`/api/missions/${missionId}`)

@@ -65,7 +65,7 @@ function loadFromStorage(): Partial<PointsState> {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return {};
     return JSON.parse(raw);
-  } catch { return {}; }
+  } catch (_) { return {}; }
 }
 
 function saveToStorage(state: Partial<PointsState>) {
@@ -77,7 +77,7 @@ function saveToStorage(state: Partial<PointsState>) {
       totalRedeemed: state.totalRedeemed,
       events: (state.events || []).slice(-50),
     }));
-  } catch {}
+  } catch (_) {}
 }
 
 const initial = loadFromStorage();

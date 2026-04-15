@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { useStreakStore, ALL_BADGES } from '@/lib/store/streak-store';
+import { Flame, Snowflake } from 'lucide-react';
 
 /**
  * Streak widget — shows the user's current streak, points, badges,
@@ -52,7 +53,7 @@ export function StreakWidget() {
                 : 'rgba(255,255,255,0.03)',
             }}
           >
-            {currentStreak > 0 ? '🔥' : '❄️'}
+            {currentStreak > 0 ? <Flame className="w-5 h-5 text-accent" strokeWidth={1.8} /> : <Snowflake className="w-5 h-5 text-text-muted" strokeWidth={1.8} />}
           </div>
           <div>
             <p className="text-xl font-bold text-white">

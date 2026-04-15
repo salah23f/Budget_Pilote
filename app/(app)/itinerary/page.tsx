@@ -89,7 +89,7 @@ export default function ItineraryPage() {
       {flights.length > 0 && (
         <div className="space-y-3">
           <h2 className="text-base font-semibold text-white flex items-center gap-2">
-            ✈️ Flights
+            Flights
           </h2>
           {flights.map((f) => f.kind === 'flight' && (
             <Card key={f.id} padding="md" className="stagger-item">
@@ -117,7 +117,7 @@ export default function ItineraryPage() {
       {hotels.length > 0 && (
         <div className="space-y-3">
           <h2 className="text-base font-semibold text-white flex items-center gap-2">
-            🏨 Hotels
+            Hotels
           </h2>
           {hotels.map((h) => h.kind === 'hotel' && (
             <Card key={h.id} padding="md" className="stagger-item">
@@ -127,7 +127,7 @@ export default function ItineraryPage() {
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={h.photo} alt={h.name} className="w-full h-full object-cover" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-lg">🏨</div>
+                    <div className="w-full h-full flex items-center justify-center text-lg">H</div>
                   )}
                 </div>
                 <div className="flex-1">
@@ -205,7 +205,7 @@ export default function ItineraryPage() {
                   description: url,
                   duration: 4000,
                 });
-              } catch {
+              } catch (_) {
                 toast.error('Failed to create share link. Please try again.');
               }
             }}

@@ -23,12 +23,12 @@ const STORAGE_KEY = 'flyeas_reviews';
 
 function loadReviews(): Review[] {
   if (typeof window === 'undefined') return [];
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch { return []; }
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch (_) { return []; }
 }
 
 function saveReviews(reviews: Review[]) {
   if (typeof window === 'undefined') return;
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(reviews.slice(-200))); } catch {}
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(reviews.slice(-200))); } catch (_) {}
 }
 
 /* ------------------------------------------------------------------ */
@@ -64,7 +64,7 @@ export function UserReviews({ itemId, itemType, itemName, className = '' }: User
 
     const storedUser = typeof window !== 'undefined' ? localStorage.getItem('sv_user') : null;
     let authorName = 'Traveler';
-    try { if (storedUser) authorName = JSON.parse(storedUser).firstName || 'Traveler'; } catch {}
+    try { if (storedUser) authorName = JSON.parse(storedUser).firstName || 'Traveler'; } catch (_) {}
 
     const review: Review = {
       id: `rev_${Date.now()}_${Math.random().toString(36).slice(2, 5)}`,

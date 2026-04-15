@@ -66,7 +66,7 @@ export function HotelDestinationInput({ label, value, onChange, placeholder }: P
       } else {
         setResults([]);
       }
-    } catch {
+    } catch (_) {
       setResults([]);
     } finally {
       setLoading(false);

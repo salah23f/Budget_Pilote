@@ -186,7 +186,7 @@ export default function HotelsPage() {
           }, 150);
         }
       }
-    } catch {}
+    } catch (_) {}
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

@@ -59,7 +59,7 @@ export async function DELETE(req: NextRequest) {
       if (bookingsError) {
         console.error('[DELETE] Error deleting from bookings:', bookingsError);
       }
-    } catch {
+    } catch (_) {
       // bookings table may not exist — ignore
     }
 

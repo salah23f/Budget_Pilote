@@ -41,7 +41,7 @@ function read(): RecentSearch[] {
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     return Array.isArray(parsed) ? parsed : [];
-  } catch {
+  } catch (_) {
     return [];
   }
 }
@@ -50,7 +50,7 @@ function write(items: RecentSearch[]) {
   if (typeof window === 'undefined') return;
   try {
     localStorage.setItem(KEY, JSON.stringify(items.slice(0, MAX)));
-  } catch {}
+  } catch (_) {}
 }
 
 export function getRecentSearches(): RecentSearch[] {
@@ -72,5 +72,5 @@ export function clearRecentSearches() {
   if (typeof window === 'undefined') return;
   try {
     localStorage.removeItem(KEY);
-  } catch {}
+  } catch (_) {}
 }

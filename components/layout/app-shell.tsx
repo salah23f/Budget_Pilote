@@ -27,7 +27,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         const user = JSON.parse(stored);
         if (user.firstName) setName(user.firstName);
       }
-    } catch {}
+    } catch (_) {}
     initializeTheme();
   }, [setName]);
 

@@ -29,7 +29,7 @@ function loadNotifications(): Notification[] {
         }));
       }
     }
-  } catch {}
+  } catch (_) {}
   return getWelcomeNotifications();
 }
 
@@ -40,7 +40,7 @@ function saveNotifications(list: Notification[]) {
       STORAGE_KEY,
       JSON.stringify(list.slice(-30).map((n) => ({ ...n, timestamp: n.timestamp.toISOString() })))
     );
-  } catch {}
+  } catch (_) {}
 }
 
 function getWelcomeNotifications(): Notification[] {
@@ -205,7 +205,7 @@ export default function NotificationBell() {
         saveNotifications(merged);
         return merged;
       });
-    } catch {
+    } catch (_) {
       // Silently fail — local notifications still work
     }
   }, []);

@@ -151,7 +151,7 @@ export default function HomePage() {
         const user = JSON.parse(stored);
         if (user.firstName) setIsLoggedIn(true);
       }
-    } catch {}
+    } catch (_) {}
   }, []);
 
   useEffect(() => {
@@ -177,7 +177,7 @@ export default function HomePage() {
         body: JSON.stringify({ email }),
       });
       setSubscribed(true);
-    } catch {} finally {
+    } catch (_) {} finally {
       setSubscribing(false);
     }
   }

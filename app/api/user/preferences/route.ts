@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
   let body: { userId?: string; preferences?: Record<string, unknown> };
   try {
     body = await req.json();
-  } catch {
+  } catch (_) {
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
   }
 

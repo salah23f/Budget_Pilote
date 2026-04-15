@@ -78,7 +78,7 @@ function loadFromStorage(): Partial<StreakState> {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return {};
     return JSON.parse(raw);
-  } catch { return {}; }
+  } catch (_) { return {}; }
 }
 
 function saveToStorage(state: Partial<StreakState>) {
@@ -93,7 +93,7 @@ function saveToStorage(state: Partial<StreakState>) {
       badges: state.badges,
       weekActivity: state.weekActivity,
     }));
-  } catch {}
+  } catch (_) {}
 }
 
 function computeBadges(points: number, existing: Badge[]): Badge[] {

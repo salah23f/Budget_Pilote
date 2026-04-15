@@ -182,7 +182,7 @@ function SidebarBadge() {
       <div className="text-[11px] text-white/30 flex items-center gap-1 leading-tight">
         <span>{top.emoji}</span>
         <span className="text-accent/60">{top.name}</span>
-        {streak > 0 && <span className="text-white/15">· {streak}🔥</span>}
+        {streak > 0 && <span className="text-white/15">· {streak}</span>}
       </div>
     );
   }
@@ -190,7 +190,7 @@ function SidebarBadge() {
   return (
     <div className="text-[11px] text-white/20 leading-tight">
       Free plan
-      {streak > 0 && <span className="ml-1">· {streak}🔥</span>}
+      {streak > 0 && <span className="ml-1">· {streak}</span>}
     </div>
   );
 }

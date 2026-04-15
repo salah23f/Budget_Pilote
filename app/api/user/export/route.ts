@@ -55,7 +55,7 @@ export async function GET(req: NextRequest) {
         .select('*')
         .eq('user_id', userId);
       bookings = bookingsData ?? [];
-    } catch {
+    } catch (_) {
       // bookings table may not exist — ignore
     }
 

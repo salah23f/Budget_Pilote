@@ -18,7 +18,7 @@ export function DashboardSkeleton() {
       {/* Quick actions */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="glass rounded-2xl p-4 space-y-3">
+          <div key={i} className="bg-surface-card border border-border-subtle rounded-2xl p-4 space-y-3">
             <Skeleton variant="circle" size="md" />
             <Skeleton variant="text" size="md" width="70%" />
             <Skeleton variant="text" size="sm" width="50%" />
@@ -29,7 +29,7 @@ export function DashboardSkeleton() {
       {/* Stats row */}
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
         {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="glass rounded-2xl p-5 space-y-2">
+          <div key={i} className="bg-surface-card border border-border-subtle rounded-2xl p-5 space-y-2">
             <Skeleton variant="text" size="sm" width="40%" />
             <Skeleton variant="text" size="lg" width="60%" />
           </div>
@@ -40,7 +40,7 @@ export function DashboardSkeleton() {
       <div className="space-y-3">
         <Skeleton variant="text" size="md" width="30%" />
         {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="glass rounded-xl p-4 flex items-center gap-3">
+          <div key={i} className="bg-surface-card border border-border-subtle rounded-xl p-4 flex items-center gap-3">
             <Skeleton variant="circle" size="sm" />
             <div className="flex-1 space-y-1.5">
               <Skeleton variant="text" size="md" width="55%" />
@@ -62,7 +62,7 @@ export function FlightsSkeleton() {
   return (
     <div className="space-y-6 fade-in">
       {/* Search form */}
-      <div className="glass rounded-2xl p-5 space-y-4">
+      <div className="bg-surface-card border border-border-subtle rounded-2xl p-5 space-y-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <Skeleton variant="rect" size="sm" />
           <Skeleton variant="rect" size="sm" />
@@ -77,7 +77,7 @@ export function FlightsSkeleton() {
 
       {/* Results */}
       {Array.from({ length: 4 }).map((_, i) => (
-        <div key={i} className="glass rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+        <div key={i} className="bg-surface-card border border-border-subtle rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4">
           <Skeleton variant="circle" size="md" />
           <div className="flex-1 space-y-2 w-full">
             <Skeleton variant="text" size="md" width="65%" />
@@ -105,7 +105,7 @@ export function HotelsSkeleton() {
   return (
     <div className="space-y-6 fade-in">
       {/* Search form */}
-      <div className="glass rounded-2xl p-5 space-y-4">
+      <div className="bg-surface-card border border-border-subtle rounded-2xl p-5 space-y-4">
         <Skeleton variant="rect" size="sm" />
         <div className="grid grid-cols-2 gap-3">
           <Skeleton variant="rect" size="sm" />
@@ -117,7 +117,7 @@ export function HotelsSkeleton() {
       {/* Hotel cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="glass rounded-2xl overflow-hidden">
+          <div key={i} className="bg-surface-card border border-border-subtle rounded-2xl overflow-hidden">
             <Skeleton variant="rect" size="lg" className="!rounded-none" />
             <div className="p-4 space-y-2">
               <Skeleton variant="text" size="md" width="70%" />
@@ -148,7 +148,7 @@ export function BookingsSkeleton() {
     <div className="space-y-4 fade-in">
       <Skeleton variant="text" size="lg" width="40%" />
       {Array.from({ length: 3 }).map((_, i) => (
-        <div key={i} className="glass rounded-2xl p-5 space-y-3">
+        <div key={i} className="bg-surface-card border border-border-subtle rounded-2xl p-5 space-y-3">
           <div className="flex justify-between">
             <Skeleton variant="text" size="md" width="50%" />
             <Skeleton variant="text" size="sm" width="70px" />

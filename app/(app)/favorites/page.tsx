@@ -140,7 +140,7 @@ function FlightFavoriteCard({
             <span className="text-sm font-semibold text-white">
               {item.originCity || item.origin} → {item.destinationCity || item.destination}
             </span>
-            <Badge variant="default" size="sm">✈️ Flight</Badge>
+            <Badge variant="default" size="sm">Flight</Badge>
           </div>
           <p className="text-xs text-white/50">
             {item.airline} · {item.stops === 0 ? 'Nonstop' : `${item.stops} stop${item.stops > 1 ? 's' : ''}`} · {formatDuration(item.durationMinutes)} · {item.cabin}
@@ -212,7 +212,7 @@ function HotelFavoriteCard({
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
               <span className="text-sm font-semibold text-white truncate">{item.name}</span>
-              <Badge variant="default" size="sm">🏨 Hotel</Badge>
+              <Badge variant="default" size="sm">Hotel</Badge>
             </div>
             <p className="text-xs text-white/50">
               {'★'.repeat(item.stars)}{'☆'.repeat(5 - item.stars)} · {item.rating.toFixed(1)} ({item.reviewCount} reviews)

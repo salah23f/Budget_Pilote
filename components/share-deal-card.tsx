@@ -24,7 +24,7 @@ export function ShareDealCard({ type, title, price, details, url }: ShareDealCar
           try {
             await navigator.share({ title, text: shareText, url: shareUrl });
             setShared(true);
-          } catch {}
+          } catch (_) {}
         }
         break;
       case 'copy':

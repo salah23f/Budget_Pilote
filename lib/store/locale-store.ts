@@ -14,7 +14,7 @@ function loadLocale(): Locale {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored === 'en' || stored === 'fr' || stored === 'es') return stored;
     return 'en';
-  } catch {
+  } catch (_) {
     return 'en';
   }
 }
@@ -26,7 +26,7 @@ export const useLocaleStore = create<LocaleState>()((set) => ({
     if (typeof window !== 'undefined') {
       try {
         localStorage.setItem(STORAGE_KEY, locale);
-      } catch {}
+      } catch (_) {}
     }
   },
 }));

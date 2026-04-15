@@ -24,7 +24,7 @@ export async function createNotification(data: {
       body: data.body,
       data: data.data ?? null,
     });
-  } catch {
+  } catch (_) {
     // Graceful fallback — do not throw if notification insert fails
     console.error('[notifications] Failed to create notification');
   }

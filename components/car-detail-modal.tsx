@@ -150,7 +150,7 @@ function formatDate(dateStr?: string): string {
       day: 'numeric',
       year: 'numeric',
     });
-  } catch {
+  } catch (_) {
     return dateStr;
   }
 }

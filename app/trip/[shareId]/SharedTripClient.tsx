@@ -133,7 +133,7 @@ export default function SharedTripClient({ shareId }: { shareId: string }) {
         if (!res.ok) throw new Error('Trip not found');
         const data = await res.json();
         setTrip(data.tripData);
-      } catch {
+      } catch (_) {
         setError('This trip could not be found or may have been removed.');
       } finally {
         setLoading(false);

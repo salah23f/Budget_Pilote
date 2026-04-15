@@ -54,7 +54,7 @@ export default function SettingsPage() {
           }));
         }
       }
-    } catch {}
+    } catch (_) {}
   }, []);
 
   const handleProfileChange = (field: string, value: string) => {
@@ -274,7 +274,7 @@ export default function SettingsPage() {
                     const a = document.createElement('a');
                     a.href = url; a.download = 'flyeas-data-export.json'; a.click();
                     URL.revokeObjectURL(url);
-                  } catch { alert('Export failed'); }
+                  } catch (_) { alert('Export failed'); }
                 }}
                 className="secondary-button w-full rounded-xl px-5 py-2.5 text-sm font-medium text-left"
               >
@@ -300,7 +300,7 @@ export default function SettingsPage() {
                   await fetch('/api/user/delete', { method: 'DELETE' });
                   localStorage.removeItem('sv_user');
                   window.location.href = '/';
-                } catch { alert('Deletion failed'); }
+                } catch (_) { alert('Deletion failed'); }
               }}
               className="danger-button rounded-xl px-5 py-2.5 text-sm font-semibold"
             >
@@ -335,7 +335,7 @@ export default function SettingsPage() {
                     })
                   );
                   alert('Settings saved!');
-                } catch {
+                } catch (_) {
                   alert('Could not save — try again.');
                 }
               }}

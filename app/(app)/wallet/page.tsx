@@ -49,7 +49,7 @@ function WalletContent() {
       } else {
         alert(data.error || 'Payment failed');
       }
-    } catch {
+    } catch (_) {
       alert('Network error');
     } finally {
       setLoading(false);

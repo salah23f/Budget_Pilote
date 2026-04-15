@@ -94,7 +94,7 @@ async function handleCalendar(req: NextRequest, started: number) {
         if (offers.length === 0) return { date: departDate, price: 0 };
         const cheapest = Math.min(...offers.map((o) => o.priceUsd).filter((p) => p > 0));
         return { date: departDate, price: cheapest };
-      } catch {
+      } catch (_) {
         return { date: departDate, price: 0 };
       }
     })

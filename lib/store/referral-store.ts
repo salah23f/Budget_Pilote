@@ -24,14 +24,14 @@ function loadFromStorage(): Partial<ReferralState> {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return {};
     return JSON.parse(raw);
-  } catch { return {}; }
+  } catch (_) { return {}; }
 }
 
 function saveToStorage(state: Partial<ReferralState>) {
   if (typeof window === 'undefined') return;
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  } catch {}
+  } catch (_) {}
 }
 
 function makeCode(name?: string): string {

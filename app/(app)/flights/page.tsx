@@ -238,7 +238,7 @@ export default function FlightsPage() {
       );
       const data = await res.json();
       if (data.success) setCalendarPrices(data.prices || {});
-    } catch {} finally { setCalendarLoading(false); }
+    } catch (_) {} finally { setCalendarLoading(false); }
   }, [origin, destination, originSkyId, destSkyId, calendarMonth, cabin, passengers]);
 
   // Reload calendar when month changes while open
@@ -277,7 +277,7 @@ export default function FlightsPage() {
       if (data.success && data.destinations) {
         setExploreResults(data.destinations);
       }
-    } catch {
+    } catch (_) {
       // silently fail — explore is supplementary
     } finally {
       setExploreLoading(false);

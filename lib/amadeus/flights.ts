@@ -463,7 +463,7 @@ export async function searchFlights(
           cacheSet(primaryKey, fallbackOffers);
           return fallbackOffers;
         }
-      } catch {}
+      } catch (_) {}
     }
 
     // BACKUP 2: Amadeus (if configured — optional second fallback)

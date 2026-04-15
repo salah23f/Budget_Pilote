@@ -86,7 +86,7 @@ export default function TripBuilderPage() {
       });
       const data = await res.json();
       if (data.success) update({ flights: (data.data || []).slice(0, 8) });
-    } catch {}
+    } catch (_) {}
     setLoading(false);
   }
 
@@ -104,7 +104,7 @@ export default function TripBuilderPage() {
       });
       const data = await res.json();
       if (data.success) update({ hotels: (data.data || []).slice(0, 8) });
-    } catch {}
+    } catch (_) {}
     setLoading(false);
   }
 
@@ -121,7 +121,7 @@ export default function TripBuilderPage() {
       });
       const data = await res.json();
       if (data.success) update({ cars: (data.data || []).slice(0, 8) });
-    } catch {}
+    } catch (_) {}
     setLoading(false);
   }
 
@@ -136,10 +136,10 @@ export default function TripBuilderPage() {
 
   const STEPS = [
     { label: 'Destination', icon: '🗺️' },
-    { label: 'Flight', icon: '✈️' },
-    { label: 'Hotel', icon: '🏨' },
-    { label: 'Car', icon: '🚗' },
-    { label: 'Insurance', icon: '🛡️' },
+    { label: 'Flight', icon: 'Flight' },
+    { label: 'Hotel', icon: 'Hotel' },
+    { label: 'Car', icon: 'Car' },
+    { label: 'Insurance', icon: 'Insurance' },
     { label: 'Summary', icon: '📋' },
   ];
 
@@ -328,7 +328,7 @@ export default function TripBuilderPage() {
               onClick={() => update({ selectedCar: c, wantsCar: true })}
             >
               <div className="flex items-center gap-4">
-                <span className="text-3xl">🚗</span>
+                <span className="text-3xl">Car</span>
                 <div className="flex-1">
                   <p className="text-sm font-semibold text-white">{c.carName}</p>
                   <p className="text-xs text-white/40">{c.carType} · {c.seats} seats · {c.transmission} · via {c.provider}</p>
@@ -372,7 +372,7 @@ export default function TripBuilderPage() {
                   className={`cursor-pointer text-center ${selected ? 'ring-2 ring-amber-500/50' : ''}`}
                   onClick={() => update({ insurancePlan: plan, wantsInsurance: true })}
                 >
-                  <p className="text-lg mb-1">🛡️</p>
+                  <p className="text-lg mb-1">Insurance</p>
                   <p className="text-sm font-bold text-white capitalize">{plan}</p>
                   <p className="text-xl font-bold text-amber-400 mt-1">${price}</p>
                   <p className="text-[10px] text-white/30">{trip.passengers} traveler{trip.passengers > 1 ? 's' : ''}</p>
@@ -410,7 +410,7 @@ export default function TripBuilderPage() {
             {trip.selectedFlight && (
               <Card padding="md" className="stagger-item">
                 <div className="flex items-center gap-3">
-                  <span className="text-xl">✈️</span>
+                  <span className="text-xl">Flight</span>
                   <div className="flex-1">
                     <p className="text-sm font-semibold text-white">{trip.selectedFlight.airline}</p>
                     <p className="text-xs text-white/40">{trip.originCode} → {trip.destinationCode} · {trip.selectedFlight.stops === 0 ? 'Nonstop' : `${trip.selectedFlight.stops} stops`}</p>
@@ -424,7 +424,7 @@ export default function TripBuilderPage() {
             {trip.selectedHotel && (
               <Card padding="md" className="stagger-item">
                 <div className="flex items-center gap-3">
-                  <span className="text-xl">🏨</span>
+                  <span className="text-xl">Hotel</span>
                   <div className="flex-1">
                     <p className="text-sm font-semibold text-white">{trip.selectedHotel.name}</p>
                     <p className="text-xs text-white/40">{days} nights · {'★'.repeat(trip.selectedHotel.stars || 0)}</p>
@@ -438,7 +438,7 @@ export default function TripBuilderPage() {
             {trip.selectedCar && (
               <Card padding="md" className="stagger-item">
                 <div className="flex items-center gap-3">
-                  <span className="text-xl">🚗</span>
+                  <span className="text-xl">Car</span>
                   <div className="flex-1">
                     <p className="text-sm font-semibold text-white">{trip.selectedCar.carName}</p>
                     <p className="text-xs text-white/40">{trip.selectedCar.carType} · {days} days · via {trip.selectedCar.provider}</p>
@@ -452,7 +452,7 @@ export default function TripBuilderPage() {
             {trip.insurancePlan && (
               <Card padding="md" className="stagger-item">
                 <div className="flex items-center gap-3">
-                  <span className="text-xl">🛡️</span>
+                  <span className="text-xl">Insurance</span>
                   <div className="flex-1">
                     <p className="text-sm font-semibold text-white capitalize">{trip.insurancePlan} Insurance</p>
                     <p className="text-xs text-white/40">via VisitorsCoverage · {trip.passengers} traveler{trip.passengers > 1 ? 's' : ''}</p>
@@ -467,7 +467,7 @@ export default function TripBuilderPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-4">
             <Button variant="primary" size="lg" fullWidth onClick={() => {
               // Share trip summary
-              const text = `My trip to ${trip.destinationCode}:\n✈️ ${trip.selectedFlight?.airline || '—'} $${flightCost}\n🏨 ${trip.selectedHotel?.name || '—'} $${hotelCost}\n🚗 ${trip.selectedCar?.carName || '—'} $${carCost}\n🛡️ ${trip.insurancePlan || '—'} $${insuranceCost}\n\nTotal: $${totalCost}\n\nPlanned with Flyeas ✈️`;
+              const text = `My trip to ${trip.destinationCode}:\nFlight ${trip.selectedFlight?.airline || '—'} $${flightCost}\nHotel ${trip.selectedHotel?.name || '—'} $${hotelCost}\nCar ${trip.selectedCar?.carName || '—'} $${carCost}\nInsurance ${trip.insurancePlan || '—'} $${insuranceCost}\n\nTotal: $${totalCost}\n\nPlanned with Flyeas Flight`;
               if (navigator.share) {
                 navigator.share({ title: `Trip to ${trip.destinationCode}`, text, url: 'https://faregenie.vercel.app' });
               } else {
@@ -479,7 +479,7 @@ export default function TripBuilderPage() {
             </Button>
             <Link href={`/missions/new?origin=${trip.originCode}&destination=${trip.destinationCode}&departDate=${trip.departDate}&budget=${Math.round(totalCost * 1.1)}`}>
               <Button variant="secondary" size="lg" fullWidth>
-                🎯 Create Mission to Monitor
+                AI Create Mission to Monitor
               </Button>
             </Link>
           </div>

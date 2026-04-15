@@ -47,7 +47,7 @@ export default function PWAInstallPrompt() {
       if (dismissedAt && Date.now() - dismissedAt < 7 * 24 * 60 * 60 * 1000) {
         return; // Don't bug them for a week
       }
-    } catch {}
+    } catch (_) {}
 
     // iOS detection (Safari doesn't support beforeinstallprompt)
     const ua = window.navigator.userAgent;
@@ -75,7 +75,7 @@ export default function PWAInstallPrompt() {
       await deferred.prompt();
       const { outcome } = await deferred.userChoice;
       if (outcome === 'accepted') setVisible(false);
-    } catch {}
+    } catch (_) {}
     setDeferred(null);
   }
 
@@ -83,7 +83,7 @@ export default function PWAInstallPrompt() {
     setVisible(false);
     try {
       localStorage.setItem(DISMISS_KEY, String(Date.now()));
-    } catch {}
+    } catch (_) {}
   }
 
   if (!visible || standalone) return null;

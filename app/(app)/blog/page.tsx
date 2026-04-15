@@ -116,7 +116,7 @@ export default function BlogPage() {
                 } else {
                   alert(data.error || 'Subscription failed. Try again.');
                 }
-              } catch {
+              } catch (_) {
                 alert('Network error. Please try again.');
               }
             }}

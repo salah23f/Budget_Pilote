@@ -70,7 +70,7 @@ async function handleCreate(
   let body: any;
   try {
     body = await req.json();
-  } catch {
+  } catch (_) {
     console.warn('[missions/create] invalid JSON', { ip: logCtx.ip });
     return NextResponse.json(
       { success: false, error: 'Invalid JSON body' },

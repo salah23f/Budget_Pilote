@@ -80,7 +80,7 @@ export default function OnboardingPage() {
           timestamp: new Date().toISOString(),
         }),
       });
-    } catch {} // Non-blocking
+    } catch (_) {} // Non-blocking
 
     const trimmedEmail = email.trim().toLowerCase();
 
@@ -101,7 +101,7 @@ export default function OnboardingPage() {
         setLoading(false);
         return;
       }
-    } catch {} // Resend failed, try Supabase
+    } catch (_) {} // Resend failed, try Supabase
 
     // Fallback: Supabase Auth OTP (works for any email)
     if (supabaseBrowser) {
@@ -122,7 +122,7 @@ export default function OnboardingPage() {
         setStep(2);
         setLoading(false);
         return;
-      } catch {
+      } catch (_) {
         // All methods failed - skip verification
         setStep(2);
         setLoading(false);
@@ -158,7 +158,7 @@ export default function OnboardingPage() {
         setLoading(false);
         return;
       }
-    } catch {}
+    } catch (_) {}
 
     // Fallback: Supabase
     if (supabaseBrowser) {
@@ -173,7 +173,7 @@ export default function OnboardingPage() {
           setLoading(false);
           return;
         }
-      } catch {}
+      } catch (_) {}
     }
 
     setError('Failed to resend. Please try again.');
@@ -208,7 +208,7 @@ export default function OnboardingPage() {
 
       setLoading(false);
       setStep(2);
-    } catch {
+    } catch (_) {
       setError('Verification failed. Try again.');
       setLoading(false);
     }
@@ -231,7 +231,7 @@ export default function OnboardingPage() {
               auth_method: walletAddress ? 'wallet+email' : 'email',
               primary_wallet_verified: Boolean(walletAddress),
             }, { onConflict: 'id' });
-          } catch { /* ignore if users table doesn't exist yet */ }
+          } catch (_) { /* ignore if users table doesn't exist yet */ }
         }
       }
 

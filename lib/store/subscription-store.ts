@@ -44,7 +44,7 @@ const TRIAL_DAYS = 7;
 
 function loadState() {
   if (typeof window === 'undefined') return {};
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch { return {}; }
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch (_) { return {}; }
 }
 
 function saveState(state: Partial<SubscriptionState>) {
@@ -60,7 +60,7 @@ function saveState(state: Partial<SubscriptionState>) {
       appliedCoupon: state.appliedCoupon,
       payments: state.payments,
     }));
-  } catch {}
+  } catch (_) {}
 }
 
 const initial = loadState();

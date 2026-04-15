@@ -83,7 +83,7 @@ export default function MultiCityPage() {
         } else {
           legResults.push({ leg, flight: null, allFlights: [] });
         }
-      } catch {
+      } catch (_) {
         legResults.push({ leg, flight: null, allFlights: [] });
       }
     }

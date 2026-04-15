@@ -9,6 +9,21 @@ import { ReferralCard } from '@/components/referral-card';
 import { StreakWidget } from '@/components/streak-widget';
 import { DashboardSkeleton } from '@/components/skeletons';
 import { Card } from '@/components/ui/card';
+import {
+  Plane,
+  Building2,
+  Rocket,
+  TrendingUp,
+  Search,
+  Star,
+  Zap,
+  Target,
+  MapPin,
+  BarChart3,
+  ArrowRight,
+  Info,
+  Clock,
+} from 'lucide-react';
 
 export default function DashboardPage() {
   const [name, setName] = useState('Traveler');
@@ -24,7 +39,7 @@ export default function DashboardPage() {
         const user = JSON.parse(stored);
         if (user.firstName) setName(user.firstName);
       }
-    } catch {}
+    } catch (_) {}
     setRecent(getRecentSearches());
   }, []);
 
@@ -41,34 +56,22 @@ export default function DashboardPage() {
     {
       href: '/flights',
       title: 'Search Flights',
-      desc: 'Real live prices from 400+ airlines',
-      icon: (
-        <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
-        </svg>
-      ),
+      desc: 'Live prices from 400+ airlines worldwide',
+      icon: Plane,
       color: '#E8A317',
     },
     {
       href: '/hotels',
       title: 'Search Hotels',
-      desc: 'Real photos, addresses, guest ratings',
-      icon: (
-        <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3H21m-3.75 3H21" />
-        </svg>
-      ),
+      desc: 'Photos, ratings & verified guest reviews',
+      icon: Building2,
       color: '#F97316',
     },
     {
       href: '/missions/new',
       title: 'New AI Mission',
-      desc: 'Monitor prices 24/7, auto-book at your price',
-      icon: (
-        <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.631 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.8m2.58-5.84a14.927 14.927 0 00-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m-2.24 2.39a4.493 4.493 0 00-1.757 4.306 4.493 4.493 0 004.306-1.758M16.5 9a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
-        </svg>
-      ),
+      desc: 'Set a target price — we monitor and book for you',
+      icon: Rocket,
       color: '#10B981',
     },
   ];
@@ -86,10 +89,9 @@ export default function DashboardPage() {
 
     if (!recent || recent.length === 0) return DEFAULT_TRENDING;
 
-    // Count destination frequency from recent searches
     const destCount = new Map<string, { city: string; country: string; count: number; price?: number }>();
     for (const r of recent) {
-      const city = r.kind === 'flight' ? r.destination : r.destination;
+      const city = r.destination;
       if (!city) continue;
       const existing = destCount.get(city);
       if (existing) {
@@ -102,7 +104,6 @@ export default function DashboardPage() {
       }
     }
 
-    // Also pull from favorites
     try {
       const raw = localStorage.getItem('flyeas_favorites');
       if (raw) {
@@ -112,27 +113,19 @@ export default function DashboardPage() {
             if (item.kind === 'flight' && item.destinationCity) {
               const city = item.destinationCity;
               const existing = destCount.get(city);
-              if (existing) {
-                existing.count += 2; // favorites weigh more
-              } else {
-                destCount.set(city, { city, country: '', count: 2, price: item.price });
-              }
-            }
-            if (item.kind === 'hotel' && item.name) {
-              // Hotels don't have a city field directly but we can derive from name
+              if (existing) existing.count += 2;
+              else destCount.set(city, { city, country: '', count: 2, price: item.price });
             }
           }
         }
       }
-    } catch {}
+    } catch (_) {}
 
-    // Sort by frequency, take top destinations
     const sorted = [...destCount.values()]
       .sort((a, b) => b.count - a.count)
       .slice(0, 6)
       .map((d) => ({ city: d.city, country: d.country || '' }));
 
-    // Fill remaining slots with defaults (avoiding duplicates)
     const seen = new Set(sorted.map((d) => d.city.toLowerCase()));
     for (const d of DEFAULT_TRENDING) {
       if (sorted.length >= 6) break;
@@ -167,13 +160,13 @@ export default function DashboardPage() {
       <div className="mx-auto max-w-5xl">
         {/* Header */}
         <div className="mb-10">
-          <h1 className="text-2xl sm:text-3xl font-semibold">
+          <h1 className="text-2xl sm:text-3xl font-semibold font-display text-text-primary tracking-tight">
             {greeting}, {name}
           </h1>
-          <p className="mt-1 text-sm text-white/35">{today}</p>
+          <p className="mt-1.5 text-sm text-text-muted">{today}</p>
         </div>
 
-        {/* Stats Row — the investor-grade dashboard surface */}
+        {/* Stats Row */}
         <DashboardStats />
 
         {/* Deal of the Day */}
@@ -181,73 +174,66 @@ export default function DashboardPage() {
 
         {/* Quick Actions */}
         <div className="mb-10 grid grid-cols-1 gap-3 sm:grid-cols-3">
-          {actions.map((a) => (
-            <Link
-              key={a.href}
-              href={a.href}
-              className="glass-premium rounded-2xl p-5 group card-interactive stagger-item"
-            >
-              <div
-                className="flex h-11 w-11 items-center justify-center rounded-xl mb-4 transition-transform group-hover:scale-110"
-                style={{ background: `${a.color}15`, color: a.color }}
+          {actions.map((a) => {
+            const Icon = a.icon;
+            return (
+              <Link
+                key={a.href}
+                href={a.href}
+                className="bg-surface-card border border-border-subtle rounded-2xl p-5 group hover:border-border-default transition-all hover:-translate-y-0.5"
               >
-                {a.icon}
-              </div>
-              <p className="text-[15px] font-semibold text-white group-hover:text-amber-300 transition-colors">
-                {a.title}
-              </p>
-              <p className="mt-1 text-xs text-white/35">{a.desc}</p>
-            </Link>
-          ))}
+                <div
+                  className="flex h-10 w-10 items-center justify-center rounded-xl mb-4 transition-transform group-hover:scale-105"
+                  style={{ background: `${a.color}12`, color: a.color }}
+                >
+                  <Icon className="w-5 h-5" strokeWidth={1.6} />
+                </div>
+                <p className="text-[15px] font-semibold text-text-primary group-hover:text-accent transition-colors">
+                  {a.title}
+                </p>
+                <p className="mt-1 text-xs text-text-muted leading-relaxed">{a.desc}</p>
+              </Link>
+            );
+          })}
         </div>
 
-        {/* Recent Searches — REAL data from the user's actual searches */}
+        {/* Recent Searches */}
         {mounted && recent.length > 0 && (
           <div className="mb-10">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-base font-semibold">Your Recent Searches</h2>
-              <span className="text-[11px] text-white/30">Real prices you saw last time</span>
+              <h2 className="text-base font-semibold font-display text-text-primary">Recent Searches</h2>
+              <span className="text-[11px] text-text-muted flex items-center gap-1">
+                <Clock className="w-3 h-3" strokeWidth={1.5} />
+                Live prices from your last searches
+              </span>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
               {recent.slice(0, 6).map((r, i) => (
                 <Link
                   key={i}
                   href={rerunLink(r)}
-                  className="glass rounded-xl p-4 group hover:border-amber-500/30 transition-all"
-                  style={{ border: '1px solid rgba(255,255,255,0.06)' }}
+                  className="bg-surface-card border border-border-subtle rounded-xl p-4 group hover:border-border-default transition-all"
                 >
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3 min-w-0 flex-1">
                       <div
-                        className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+                        className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
                         style={{
-                          background: r.kind === 'flight' ? 'rgba(245,158,11,0.1)' : 'rgba(249,115,22,0.1)',
+                          background: r.kind === 'flight' ? 'rgba(232,163,23,0.08)' : 'rgba(249,115,22,0.08)',
                           color: r.kind === 'flight' ? '#E8A317' : '#F97316',
                         }}
                       >
                         {r.kind === 'flight' ? (
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                            <path
-                              d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                          </svg>
+                          <Plane className="w-4 h-4" strokeWidth={1.6} />
                         ) : (
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75"
-                            />
-                          </svg>
+                          <Building2 className="w-4 h-4" strokeWidth={1.6} />
                         )}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="text-sm font-semibold text-white truncate group-hover:text-amber-300 transition-colors">
+                        <p className="text-sm font-medium text-text-primary truncate group-hover:text-accent transition-colors">
                           {r.kind === 'flight' ? `${r.origin} → ${r.destination}` : r.destination}
                         </p>
-                        <p className="text-[11px] text-white/40 truncate">
+                        <p className="text-[11px] text-text-muted truncate">
                           {r.kind === 'flight'
                             ? `${r.departDate}${r.returnDate ? ` · return ${r.returnDate}` : ''}`
                             : `${r.checkIn} → ${r.checkOut}`}
@@ -257,14 +243,14 @@ export default function DashboardPage() {
                       </div>
                     </div>
                     {r.cheapestPrice != null && (
-                      <div className="text-right flex-shrink-0">
-                        <p className="text-[10px] text-white/35 uppercase tracking-wider">Was</p>
-                        <p className="text-sm font-bold text-emerald-300">${r.cheapestPrice}</p>
+                      <div className="text-right shrink-0">
+                        <p className="text-[10px] text-text-muted uppercase tracking-wider">From</p>
+                        <p className="text-sm font-bold text-emerald-400">${r.cheapestPrice}</p>
                       </div>
                     )}
                   </div>
                   {(r.kind === 'flight' ? r.airline : r.hotelName) && (
-                    <p className="mt-2 pl-12 text-[11px] text-white/30 truncate">
+                    <p className="mt-2 pl-12 text-[11px] text-text-muted/60 truncate">
                       {r.kind === 'flight' ? r.airline : r.hotelName}
                     </p>
                   )}
@@ -274,10 +260,10 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* Smart recommendations based on search history */}
+        {/* Smart recommendations */}
         <RecommendedRoutes recent={recent} />
 
-        {/* Streak + Referral — engagement & viral loop */}
+        {/* Streak + Referral */}
         <div className="mb-10 grid grid-cols-1 md:grid-cols-2 gap-4">
           <StreakWidget />
           <ReferralCard />
@@ -286,10 +272,10 @@ export default function DashboardPage() {
         {/* Trending Destinations */}
         <div className="mb-10">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-base font-semibold">Trending Destinations</h2>
-            <span className="text-[11px] text-white/30">Tap to search live prices</span>
+            <h2 className="text-base font-semibold font-display text-text-primary">Trending Destinations</h2>
+            <span className="text-[11px] text-text-muted">Tap to search live prices</span>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
             {trending.map((t) => {
               const isPending = pendingCity === t.city;
               return (
@@ -298,46 +284,19 @@ export default function DashboardPage() {
                   href={`/hotels?q=${encodeURIComponent(t.city)}&auto=1`}
                   onClick={() => setPendingCity(t.city)}
                   aria-busy={isPending}
-                  className="relative glass rounded-xl p-4 text-center group hover:border-amber-500/30 transition-all overflow-hidden"
-                  style={{
-                    border: isPending
-                      ? '1px solid rgba(245,158,11,0.4)'
-                      : '1px solid rgba(255,255,255,0.06)',
-                  }}
+                  className={`relative bg-surface-card border rounded-xl p-4 text-center group transition-all overflow-hidden ${
+                    isPending ? 'border-accent/30' : 'border-border-subtle hover:border-border-default'
+                  }`}
                 >
-                  <p
-                    className={`text-sm font-semibold transition-colors ${
-                      isPending ? 'text-amber-300' : 'text-white group-hover:text-amber-300'
-                    }`}
-                  >
+                  <p className={`text-sm font-medium transition-colors ${isPending ? 'text-accent' : 'text-text-primary group-hover:text-accent'}`}>
                     {t.city}
                   </p>
-                  <p className="mt-0.5 text-[11px] text-white/35">{t.country}</p>
+                  <p className="mt-0.5 text-[11px] text-text-muted">{t.country}</p>
                   {isPending && (
-                    <>
-                      <div className="flex items-center justify-center gap-1.5 mt-2">
-                        <span className="h-1 w-1 rounded-full bg-amber-400 animate-pulse" />
-                        <span className="text-[10px] text-amber-300/80 font-medium">
-                          Loading live prices…
-                        </span>
-                      </div>
-                      <div
-                        className="absolute bottom-0 left-0 h-0.5 bg-amber-400/60"
-                        style={{
-                          animation: 'progressSlide 3s linear forwards',
-                        }}
-                      />
-                      <style jsx>{`
-                        @keyframes progressSlide {
-                          from {
-                            width: 0;
-                          }
-                          to {
-                            width: 100%;
-                          }
-                        }
-                      `}</style>
-                    </>
+                    <div className="flex items-center justify-center gap-1.5 mt-2">
+                      <span className="h-1 w-1 rounded-full bg-accent animate-pulse" />
+                      <span className="text-[10px] text-accent/70 font-medium">Loading live prices</span>
+                    </div>
                   )}
                 </Link>
               );
@@ -345,58 +304,36 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Missions empty state */}
-        <div className="glass rounded-2xl p-6 mb-6">
-          <h2 className="text-base font-semibold mb-5">Your Missions</h2>
+        {/* Missions */}
+        <div className="bg-surface-card border border-border-subtle rounded-2xl p-6 mb-8">
+          <h2 className="text-base font-semibold font-display text-text-primary mb-5">Your Missions</h2>
           <div className="flex flex-col items-center py-8 text-center">
-            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/[0.03] mb-3">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10" />
-                <circle cx="12" cy="12" r="6" />
-                <circle cx="12" cy="12" r="2" />
-              </svg>
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/[0.03] mb-4">
+              <Target className="w-6 h-6 text-text-muted/30" strokeWidth={1.5} />
             </div>
-            <p className="text-sm text-white/35 max-w-xs">
-              No active missions yet. Create a mission to start monitoring real prices with AI.
+            <p className="text-sm text-text-secondary max-w-xs leading-relaxed">
+              No active missions yet. Set a target price and let AI monitor 24/7 — it books automatically when the price is right.
             </p>
             <Link
               href="/missions/new"
-              className="premium-button mt-5 rounded-xl px-6 py-2.5 text-sm font-semibold inline-flex items-center gap-2"
+              className="mt-6 inline-flex items-center gap-2 bg-gradient-to-r from-accent-light to-accent-dark text-white rounded-xl px-6 py-2.5 text-sm font-semibold hover:shadow-glow transition-all"
             >
               Create your first mission
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M5 12h14M12 5l7 7-7 7" />
-              </svg>
+              <ArrowRight className="w-4 h-4" strokeWidth={2} />
             </Link>
           </div>
         </div>
 
-        {/* Your Travel Stats */}
+        {/* Travel Stats */}
         <TravelStats recent={recent} />
 
-        {/* Tip */}
-        <div
-          className="rounded-xl p-4 flex items-start gap-3"
-          style={{ background: 'rgba(245,158,11,0.04)', border: '1px solid rgba(245,158,11,0.08)' }}
-        >
-          <svg
-            className="flex-shrink-0 mt-0.5"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="#E8A317"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <circle cx="12" cy="12" r="10" />
-            <path d="M12 16v-4M12 8h.01" />
-          </svg>
+        {/* Pro tip */}
+        <div className="rounded-xl p-4 flex items-start gap-3 bg-accent/[0.04] border border-accent/[0.08]">
+          <Info className="w-4 h-4 text-accent shrink-0 mt-0.5" strokeWidth={1.5} />
           <div>
-            <p className="text-xs font-medium text-amber-200/80">Pro tip</p>
-            <p className="text-xs text-white/35 mt-0.5">
-              Use the AI Assistant (bottom right) or the trip planner on the home page — tell it your trip in one sentence and get real live prices instantly.
+            <p className="text-xs font-medium text-accent/80">Pro tip</p>
+            <p className="text-xs text-text-muted mt-0.5 leading-relaxed">
+              Use the AI Assistant or the trip planner on the home page — describe your trip in one sentence and get live prices instantly.
             </p>
           </div>
         </div>
@@ -405,16 +342,13 @@ export default function DashboardPage() {
   );
 }
 
-/* ── Stats Row (hoisted outside main component per React best practices) ── */
-
-/* ── Deal of the Day — personalized from user searches/favorites, rotates daily ── */
+/* ── Deal of the Day ── */
 
 function DealOfTheDay() {
   const [deal, setDeal] = useState<any>(null);
   const [label, setLabel] = useState('Deal of the day');
 
   useEffect(() => {
-    // Build personalized query from user history
     let url = '/api/deals';
     let isPersonalized = false;
     try {
@@ -453,18 +387,17 @@ function DealOfTheDay() {
         url = `/api/deals?${params.toString()}`;
         isPersonalized = true;
       }
-    } catch {}
+    } catch (_) {}
 
     fetch(url)
       .then((r) => r.json())
       .then((data) => {
         if (data.success && data.deals?.length > 0) {
           const deals = data.deals;
-          // Rotate which deal is shown based on day of year
           const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000);
           const idx = dayOfYear % deals.length;
           setDeal(deals[idx]);
-          setLabel(isPersonalized ? 'Your deal of the day' : 'Deal of the day');
+          setLabel(isPersonalized ? 'Recommended for you' : 'Deal of the day');
         }
       })
       .catch(() => {});
@@ -474,44 +407,34 @@ function DealOfTheDay() {
 
   return (
     <div className="mb-8">
-      <div
-        className="rounded-2xl p-5 relative overflow-hidden"
-        style={{
-          background: 'linear-gradient(135deg, rgba(245,158,11,0.08), rgba(16,185,129,0.05))',
-          border: '1px solid rgba(245,158,11,0.15)',
-        }}
-      >
+      <div className="rounded-2xl p-5 relative overflow-hidden bg-emerald-500/[0.04] border border-emerald-500/10">
         <div className="flex flex-col sm:flex-row sm:items-center gap-4">
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-[10px] uppercase tracking-wider font-semibold text-amber-300">
+            <div className="flex items-center gap-2 mb-1.5">
+              <span className="text-[10px] uppercase tracking-[0.1em] font-semibold text-accent">
                 {label}
               </span>
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
             </div>
-            <h3 className="text-lg font-semibold text-white">
+            <h3 className="text-lg font-semibold font-display text-text-primary">
               {deal.originCity} → {deal.destinationCity}
             </h3>
-            <p className="text-xs text-white/40 mt-1">
+            <p className="text-xs text-text-muted mt-1">
               {deal.airline} · {deal.stops === 0 ? 'Non-stop' : `${deal.stops} stop${deal.stops > 1 ? 's' : ''}`}
               {deal.durationMinutes ? ` · ${Math.floor(deal.durationMinutes / 60)}h ${deal.durationMinutes % 60}m` : ''}
             </p>
           </div>
           <div className="flex items-center gap-4">
             <div className="text-right">
-              <p className="text-3xl font-bold text-white">${deal.price}</p>
-              <p className="text-[10px] text-white/30">one-way · live price</p>
+              <p className="text-3xl font-bold font-display text-text-primary">${deal.price}</p>
+              <p className="text-[10px] text-text-muted">one-way · live price</p>
             </div>
             {deal.deepLink && (
               <a
                 href={deal.deepLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-4 py-2.5 rounded-xl text-sm font-semibold text-white flex-shrink-0"
-                style={{
-                  background: 'var(--flyeas-gradient, linear-gradient(135deg, #E8A317, #EF4444))',
-                  boxShadow: '0 4px 12px rgba(245,158,11,0.3)',
-                }}
+                className="px-5 py-2.5 rounded-xl text-sm font-semibold text-white shrink-0 bg-gradient-to-r from-accent-light to-accent-dark shadow-glow hover:shadow-glow-lg transition-all"
               >
                 Book now
               </a>
@@ -523,30 +446,25 @@ function DealOfTheDay() {
   );
 }
 
-/* ── Recommended routes based on search history ── */
+/* ── Recommended Routes ── */
 
-/* Recommended routes — built from real user search history, no fake data */
 function RecommendedRoutes({ recent }: { recent: RecentSearch[] }) {
-  // Only show routes the user has actually searched
   const flightSearches = recent.filter((r): r is import('@/lib/recent-searches').RecentFlight => r.kind === 'flight');
 
   if (flightSearches.length === 0) {
     return (
       <div className="mb-8">
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-base font-semibold text-white">Your Routes</h2>
-        </div>
-        <div className="rounded-xl p-6 text-center" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="mx-auto mb-3">
-            <path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z" />
-          </svg>
-          <p className="text-sm text-white/40">Search flights to see personalized route suggestions here.</p>
+        <h2 className="text-base font-semibold font-display text-text-primary mb-3">Your Routes</h2>
+        <div className="rounded-xl p-8 text-center bg-surface-card border border-border-subtle">
+          <Plane className="w-6 h-6 text-text-muted/20 mx-auto mb-3" strokeWidth={1.5} />
+          <p className="text-sm text-text-muted leading-relaxed max-w-xs mx-auto">
+            Start searching flights to see personalized route suggestions here.
+          </p>
         </div>
       </div>
     );
   }
 
-  // Show unique destinations from real searches
   const seen = new Set<string>();
   const routes = flightSearches
     .filter((f) => {
@@ -560,33 +478,26 @@ function RecommendedRoutes({ recent }: { recent: RecentSearch[] }) {
   return (
     <div className="mb-8">
       <div className="flex items-center justify-between mb-3">
-        <h2 className="text-base font-semibold text-white">Your Recent Routes</h2>
-        <span className="text-[10px] text-white/30">From your searches</span>
+        <h2 className="text-base font-semibold font-display text-text-primary">Your Recent Routes</h2>
+        <span className="text-[10px] text-text-muted">From your searches</span>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
         {routes.map((r) => (
           <Link
             key={`${r.origin}-${r.destination}`}
-            href={`/flights`}
-            className="rounded-xl p-4 transition-all hover:scale-[1.02] group"
-            style={{
-              background: 'rgba(255,255,255,0.02)',
-              border: '1px solid rgba(255,255,255,0.05)',
-            }}
+            href="/flights"
+            className="bg-surface-card border border-border-subtle rounded-xl p-4 transition-all hover:border-border-default group"
           >
             <div className="flex items-center gap-2 mb-1">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--flyeas-accent, #E8A317)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
-                <path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z" />
-              </svg>
-              <span className="text-sm font-semibold text-white group-hover:text-amber-300 transition-colors">
+              <Plane className="w-4 h-4 text-accent shrink-0" strokeWidth={1.6} />
+              <span className="text-sm font-medium text-text-primary group-hover:text-accent transition-colors">
                 {r.origin} → {r.destination}
               </span>
             </div>
-            {r.cheapestPrice && (
-              <p className="text-[11px] text-white/40">From ${r.cheapestPrice}</p>
-            )}
-            {!r.cheapestPrice && (
-              <p className="text-[11px] text-white/40">Searched {new Date(r.at).toLocaleDateString()}</p>
+            {r.cheapestPrice ? (
+              <p className="text-[11px] text-text-muted">From ${r.cheapestPrice}</p>
+            ) : (
+              <p className="text-[11px] text-text-muted">Searched {new Date(r.at).toLocaleDateString()}</p>
             )}
           </Link>
         ))}
@@ -595,6 +506,8 @@ function RecommendedRoutes({ recent }: { recent: RecentSearch[] }) {
   );
 }
 
+/* ── Dashboard Stats ── */
+
 function DashboardStats() {
   const { totalSaved, searchesCount, dealsFound, events } = useSavingsStore();
 
@@ -602,84 +515,67 @@ function DashboardStats() {
     {
       label: 'Total Saved',
       value: totalSaved > 0 ? `$${Math.round(totalSaved).toLocaleString()}` : '$0',
-      sub: totalSaved > 0 ? `across ${events.length} bookings` : 'book to start saving',
+      sub: totalSaved > 0 ? `across ${events.length} bookings` : 'Book to start saving',
       color: '#10B981',
-      icon: (
-        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M3 16l4-4 3 3 7-8" /><path d="M14 7h4v4" />
-        </svg>
-      ),
+      icon: TrendingUp,
     },
     {
       label: 'Searches',
       value: searchesCount.toLocaleString(),
-      sub: 'flight lookups',
+      sub: 'Flight lookups',
       color: '#E8A317',
-      icon: (
-        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="9" cy="9" r="6" /><path d="M13.5 13.5L17 17" />
-        </svg>
-      ),
+      icon: Search,
     },
     {
       label: 'Deals Found',
       value: dealsFound.toLocaleString(),
-      sub: 'live offers seen',
+      sub: 'Live offers seen',
       color: '#8B5CF6',
-      icon: (
-        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M10 2l2.5 5 5.5.8-4 3.9.9 5.3L10 14.5 5.1 17l.9-5.3-4-3.9 5.5-.8z" />
-        </svg>
-      ),
+      icon: Star,
     },
     {
       label: 'Best Save',
       value: events.length > 0
         ? `$${Math.round(Math.max(...events.map((e) => e.amountSaved)))}`
-        : '—',
+        : '--',
       sub: events.length > 0
         ? events.reduce((best, e) => (e.amountSaved > best.amountSaved ? e : best), events[0]).route
-        : 'no saves yet',
+        : 'No saves yet',
       color: '#EF4444',
-      icon: (
-        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M13 2L3 14h7l-1 6 10-12h-7l1-6z" />
-        </svg>
-      ),
+      icon: Zap,
     },
   ];
 
   return (
-    <div className="mb-8 grid grid-cols-2 md:grid-cols-4 gap-3">
-      {stats.map((s) => (
-        <div
-          key={s.label}
-          className="rounded-2xl p-4 transition-colors"
-          style={{
-            background: 'rgba(255,255,255,0.02)',
-            border: '1px solid rgba(255,255,255,0.05)',
-          }}
-        >
-          <div className="flex items-center gap-2 mb-2">
-            <div
-              className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
-              style={{ background: `${s.color}15`, color: s.color }}
-            >
-              {s.icon}
+    <div className="mb-8 grid grid-cols-2 md:grid-cols-4 gap-2">
+      {stats.map((s) => {
+        const Icon = s.icon;
+        return (
+          <div
+            key={s.label}
+            className="bg-surface-card border border-border-subtle rounded-2xl p-4"
+          >
+            <div className="flex items-center gap-2 mb-3">
+              <div
+                className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
+                style={{ background: `${s.color}10`, color: s.color }}
+              >
+                <Icon className="w-[14px] h-[14px]" strokeWidth={2} />
+              </div>
+              <span className="text-[10px] uppercase tracking-[0.08em] text-text-muted font-medium">
+                {s.label}
+              </span>
             </div>
-            <span className="text-[10px] uppercase tracking-wider text-white/40 font-semibold">
-              {s.label}
-            </span>
+            <p className="text-xl font-bold font-display text-text-primary">{s.value}</p>
+            <p className="text-[11px] text-text-muted mt-0.5 truncate">{s.sub}</p>
           </div>
-          <p className="text-xl font-bold text-white">{s.value}</p>
-          <p className="text-[11px] text-white/30 mt-0.5 truncate">{s.sub}</p>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
 
-/* ── Your Travel Stats ── */
+/* ── Travel Stats ── */
 
 function getWeekLabel(weeksAgo: number): string {
   if (weeksAgo === 0) return 'This week';
@@ -691,10 +587,9 @@ function TravelStats({ recent }: { recent: RecentSearch[] }) {
   const { searchesCount, dealsFound, totalSaved } = useSavingsStore();
   const { currentStreak } = useStreakStore();
 
-  // Group searches by week (last 4 weeks)
   const now = Date.now();
   const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
-  const weekBuckets = [0, 0, 0, 0]; // index 0 = 3 weeks ago, 3 = this week
+  const weekBuckets = [0, 0, 0, 0];
   for (const r of recent) {
     const weeksAgo = Math.floor((now - r.at) / WEEK_MS);
     if (weeksAgo >= 0 && weeksAgo < 4) {
@@ -703,7 +598,6 @@ function TravelStats({ recent }: { recent: RecentSearch[] }) {
   }
   const maxBucket = Math.max(...weekBuckets, 1);
 
-  // Top destinations
   const destCounts: Record<string, number> = {};
   for (const r of recent) {
     const dest = r.destination;
@@ -713,7 +607,6 @@ function TravelStats({ recent }: { recent: RecentSearch[] }) {
     .sort((a, b) => b[1] - a[1])
     .slice(0, 5);
 
-  // Average flight price & best deal
   const prices = recent
     .filter((r) => r.cheapestPrice != null)
     .map((r) => r.cheapestPrice as number);
@@ -725,158 +618,108 @@ function TravelStats({ recent }: { recent: RecentSearch[] }) {
   return (
     <div className="mb-10">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-base font-semibold text-white">Your Travel Stats</h2>
-        <span className="text-[11px] text-white/30">Based on your activity</span>
+        <h2 className="text-base font-semibold font-display text-text-primary">Your Travel Insights</h2>
+        <span className="text-[11px] text-text-muted">Based on your activity</span>
       </div>
 
-      {/* Stats cards grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+      {/* Quick stats */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
         {[
-          {
-            label: 'Total Searches',
-            value: searchesCount.toLocaleString(),
-            color: '#E8A317',
-            icon: (
-              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="9" cy="9" r="6" /><path d="M13.5 13.5L17 17" />
-              </svg>
-            ),
-          },
-          {
-            label: 'Deals Found',
-            value: dealsFound.toLocaleString(),
-            color: '#8B5CF6',
-            icon: (
-              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M10 2l2.5 5 5.5.8-4 3.9.9 5.3L10 14.5 5.1 17l.9-5.3-4-3.9 5.5-.8z" />
-              </svg>
-            ),
-          },
-          {
-            label: 'Total Saved',
-            value: totalSaved > 0 ? `$${Math.round(totalSaved).toLocaleString()}` : '$0',
-            color: '#10B981',
-            icon: (
-              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M3 16l4-4 3 3 7-8" /><path d="M14 7h4v4" />
-              </svg>
-            ),
-          },
-          {
-            label: 'Current Streak',
-            value: `${currentStreak} day${currentStreak !== 1 ? 's' : ''}`,
-            color: '#EF4444',
-            icon: (
-              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M13 2L3 14h7l-1 6 10-12h-7l1-6z" />
-              </svg>
-            ),
-          },
-        ].map((s) => (
-          <Card key={s.label} padding="sm" className="!p-4">
-            <div className="flex items-center gap-2 mb-2">
-              <div
-                className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
-                style={{ background: `${s.color}15`, color: s.color }}
-              >
-                {s.icon}
+          { label: 'Total Searches', value: searchesCount.toLocaleString(), color: '#E8A317', icon: Search },
+          { label: 'Deals Found', value: dealsFound.toLocaleString(), color: '#8B5CF6', icon: Star },
+          { label: 'Total Saved', value: totalSaved > 0 ? `$${Math.round(totalSaved).toLocaleString()}` : '$0', color: '#10B981', icon: TrendingUp },
+          { label: 'Current Streak', value: `${currentStreak} day${currentStreak !== 1 ? 's' : ''}`, color: '#EF4444', icon: Zap },
+        ].map((s) => {
+          const Icon = s.icon;
+          return (
+            <Card key={s.label} padding="sm" className="!p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <div
+                  className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
+                  style={{ background: `${s.color}10`, color: s.color }}
+                >
+                  <Icon className="w-[14px] h-[14px]" strokeWidth={2} />
+                </div>
+                <span className="text-[10px] uppercase tracking-[0.08em] text-text-muted font-medium">
+                  {s.label}
+                </span>
               </div>
-              <span className="text-[10px] uppercase tracking-wider text-white/40 font-semibold">
-                {s.label}
-              </span>
-            </div>
-            <p className="text-xl font-bold text-white">{s.value}</p>
-          </Card>
-        ))}
+              <p className="text-xl font-bold font-display text-text-primary">{s.value}</p>
+            </Card>
+          );
+        })}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Search Activity Chart */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        {/* Search Activity */}
         <Card padding="md">
           <div className="flex items-center gap-2 mb-4">
-            <div
-              className="w-7 h-7 rounded-lg flex items-center justify-center"
-              style={{ background: 'rgba(245,158,11,0.1)', color: '#E8A317' }}
-            >
-              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="2" y="10" width="3" height="8" rx="1" />
-                <rect x="7" y="6" width="3" height="12" rx="1" />
-                <rect x="12" y="3" width="3" height="15" rx="1" />
-              </svg>
+            <div className="w-7 h-7 rounded-lg flex items-center justify-center bg-accent/10 text-accent">
+              <BarChart3 className="w-[14px] h-[14px]" strokeWidth={2} />
             </div>
-            <h3 className="text-sm font-semibold text-white">Search Activity</h3>
+            <h3 className="text-sm font-semibold text-text-primary">Search Activity</h3>
           </div>
           <div className="flex items-end gap-2 h-28">
             {weekBuckets.map((count, i) => (
               <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                <span className="text-[10px] text-white/50 font-medium">{count}</span>
+                <span className="text-[10px] text-text-muted font-medium">{count}</span>
                 <div
                   className="w-full rounded-t-md transition-all"
                   style={{
                     height: `${Math.max((count / maxBucket) * 100, 4)}%`,
-                    background: 'linear-gradient(to top, var(--flyeas-accent, #E8A317), #FBBF24)',
-                    opacity: count > 0 ? 1 : 0.2,
+                    background: `linear-gradient(to top, var(--flyeas-accent), var(--flyeas-accent-light))`,
+                    opacity: count > 0 ? 1 : 0.15,
                   }}
                 />
-                <span className="text-[9px] text-white/30">{getWeekLabel(3 - i)}</span>
+                <span className="text-[9px] text-text-muted/60">{getWeekLabel(3 - i)}</span>
               </div>
             ))}
           </div>
         </Card>
 
-        {/* Top Destinations & Price Stats */}
+        {/* Top Destinations */}
         <Card padding="md">
           <div className="flex items-center gap-2 mb-4">
-            <div
-              className="w-7 h-7 rounded-lg flex items-center justify-center"
-              style={{ background: 'rgba(16,185,129,0.1)', color: '#10B981' }}
-            >
-              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="10" cy="8" r="3" />
-                <path d="M10 18s-6-5.3-6-10a6 6 0 1112 0c0 4.7-6 10-6 10z" />
-              </svg>
+            <div className="w-7 h-7 rounded-lg flex items-center justify-center bg-emerald-500/10 text-emerald-500">
+              <MapPin className="w-[14px] h-[14px]" strokeWidth={2} />
             </div>
-            <h3 className="text-sm font-semibold text-white">Top Destinations</h3>
+            <h3 className="text-sm font-semibold text-text-primary">Top Destinations</h3>
           </div>
 
           {topDests.length > 0 ? (
-            <div className="space-y-2 mb-4">
+            <div className="space-y-2.5 mb-4">
               {topDests.map(([dest, count], i) => (
                 <div key={dest} className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span
                       className="text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded"
                       style={{
-                        background: i === 0 ? 'rgba(245,158,11,0.15)' : 'rgba(255,255,255,0.05)',
-                        color: i === 0 ? '#E8A317' : 'rgba(255,255,255,0.4)',
+                        background: i === 0 ? 'rgba(232,163,23,0.12)' : 'rgba(255,255,255,0.04)',
+                        color: i === 0 ? '#E8A317' : 'rgba(255,255,255,0.35)',
                       }}
                     >
                       {i + 1}
                     </span>
-                    <span className="text-sm text-white/80">{dest}</span>
+                    <span className="text-sm text-text-secondary">{dest}</span>
                   </div>
-                  <span className="text-[11px] text-white/40">{count} search{count !== 1 ? 'es' : ''}</span>
+                  <span className="text-[11px] text-text-muted">{count} search{count !== 1 ? 'es' : ''}</span>
                 </div>
               ))}
             </div>
           ) : (
-            <p className="text-xs text-white/30 mb-4">No destinations searched yet</p>
+            <p className="text-xs text-text-muted mb-4">Start exploring to see your top destinations here</p>
           )}
 
-          {/* Price stats */}
-          <div
-            className="flex gap-4 pt-3"
-            style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}
-          >
+          <div className="flex gap-4 pt-3 border-t border-border-subtle">
             <div className="flex-1">
-              <p className="text-[10px] uppercase tracking-wider text-white/35 mb-0.5">Avg Price</p>
-              <p className="text-sm font-semibold text-white">
+              <p className="text-[10px] uppercase tracking-[0.08em] text-text-muted mb-0.5">Avg Price</p>
+              <p className="text-sm font-semibold text-text-primary">
                 {avgPrice != null ? `$${avgPrice}` : '--'}
               </p>
             </div>
             <div className="flex-1">
-              <p className="text-[10px] uppercase tracking-wider text-white/35 mb-0.5">Best Deal</p>
-              <p className="text-sm font-semibold text-emerald-300">
+              <p className="text-[10px] uppercase tracking-[0.08em] text-text-muted mb-0.5">Best Deal</p>
+              <p className="text-sm font-semibold text-emerald-400">
                 {bestDeal != null ? `$${bestDeal}` : '--'}
               </p>
             </div>

@@ -24,7 +24,7 @@ function getAssignment(testId: string, variants: string[]): string {
     stored[testId] = variant;
     localStorage.setItem(AB_STORAGE_KEY, JSON.stringify(stored));
     return variant;
-  } catch {
+  } catch (_) {
     return variants[0];
   }
 }
@@ -36,7 +36,7 @@ function trackEvent(testId: string, variant: string, event: string) {
     const events = JSON.parse(localStorage.getItem(key) || '[]');
     events.push({ testId, variant, event, ts: Date.now() });
     localStorage.setItem(key, JSON.stringify(events.slice(-500)));
-  } catch {}
+  } catch (_) {}
   // In production, send to analytics
   console.log(`[A/B] ${testId}:${variant} — ${event}`);
 }

@@ -35,12 +35,12 @@ function ensureShimmerStyles() {
     .bp-shimmer {
       background: linear-gradient(
         90deg,
-        rgba(255,255,255,0.04) 0%,
-        rgba(255,255,255,0.10) 40%,
-        rgba(255,255,255,0.04) 80%
+        rgba(255,255,255,0.03) 0%,
+        rgba(255,255,255,0.07) 40%,
+        rgba(255,255,255,0.03) 80%
       );
       background-size: 800px 100%;
-      animation: bp-shimmer 1.6s ease-in-out infinite;
+      animation: bp-shimmer 2s ease-in-out infinite;
     }
   `;
   document.head.appendChild(style);

@@ -18,7 +18,7 @@ export function ReferralCard() {
         const stored = localStorage.getItem('sv_user');
         const name = stored ? JSON.parse(stored).firstName : undefined;
         generateCode(name);
-      } catch {
+      } catch (_) {
         generateCode();
       }
     }
@@ -34,13 +34,13 @@ export function ReferralCard() {
       try {
         await navigator.share({ title: 'Join Flyeas', text: shareText, url: shareUrl });
         return;
-      } catch {}
+      } catch (_) {}
     }
     try {
       await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch {}
+    } catch (_) {}
   }
 
   return (

@@ -36,7 +36,7 @@ export async function shareDeal(params: ShareDealParams): Promise<boolean> {
     try {
       await navigator.clipboard.writeText(`${text}\n${url}`);
       return true;
-    } catch {}
+    } catch (_) {}
   }
 
   return false;

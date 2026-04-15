@@ -45,7 +45,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         description: `Check out this trip: ${flightCount} flight${flightCount !== 1 ? 's' : ''}, ${hotelCount} hotel${hotelCount !== 1 ? 's' : ''} — $${total}`,
       },
     };
-  } catch {
+  } catch (_) {
     return {
       title: 'Shared Trip | Flyeas',
       description: 'Check out this trip on Flyeas',

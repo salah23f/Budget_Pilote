@@ -62,7 +62,7 @@ export function AirportInput({ label, value, onChange, placeholder }: AirportInp
       } else {
         setResults([]);
       }
-    } catch {
+    } catch (_) {
       setResults([]);
     } finally {
       setLoading(false);

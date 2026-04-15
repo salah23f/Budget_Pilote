@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
           user_agent: record.user_agent,
           created_at: record.timestamp,
         });
-      } catch {
+      } catch (_) {
         // Table may not exist yet - log to console
         console.log('[CONSENT]', JSON.stringify(record));
       }

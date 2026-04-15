@@ -65,7 +65,7 @@ function loadFromStorage(): Partial<SavingsState> {
       dealsFound: parsed.dealsFound || 0,
       searchesCount: parsed.searchesCount || 0,
     };
-  } catch {
+  } catch (_) {
     return {};
   }
 }
@@ -88,7 +88,7 @@ function saveToStorage(state: {
         searchesCount: state.searchesCount,
       })
     );
-  } catch {}
+  } catch (_) {}
 }
 
 const initial = loadFromStorage();

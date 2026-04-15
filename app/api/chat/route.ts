@@ -385,7 +385,7 @@ export async function POST(req: NextRequest) {
   let body: { message?: string; history?: Array<{ role: string; content: string }> };
   try {
     body = await req.json();
-  } catch {
+  } catch (_) {
     return NextResponse.json({ success: false, message: 'Invalid JSON' }, { status: 400 });
   }
   const message = (body.message || '').trim();

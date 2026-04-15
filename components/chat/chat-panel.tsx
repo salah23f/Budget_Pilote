@@ -89,7 +89,7 @@ function formatClock(iso?: string): string {
   try {
     const d = new Date(iso);
     return d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-  } catch {
+  } catch (_) {
     return '';
   }
 }
@@ -251,7 +251,7 @@ export default function ChatPanel() {
           cards: Array.isArray(data.cards) ? data.cards : undefined,
         },
       ]);
-    } catch {
+    } catch (_) {
       setMessages((p) => [
         ...p,
         {

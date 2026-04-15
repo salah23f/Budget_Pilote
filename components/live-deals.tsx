@@ -41,7 +41,7 @@ function formatDuration(min: number): string {
 function formatDate(iso: string): string {
   try {
     return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  } catch {
+  } catch (_) {
     return iso;
   }
 }
@@ -70,7 +70,7 @@ export default function LiveDeals() {
             ? items.filter((i: any) => i.kind === 'flight')
             : [];
         }
-      } catch {}
+      } catch (_) {}
 
       // Collect unique origins and destinations
       const originsSet = new Set<string>();
@@ -91,7 +91,7 @@ export default function LiveDeals() {
         params.set('destinations', [...destsSet].slice(0, 5).join(','));
         url = `/api/deals?${params.toString()}`;
       }
-    } catch {}
+    } catch (_) {}
 
     fetch(url)
       .then((r) => r.json())

@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
 
   try {
     body = await request.json();
-  } catch {
+  } catch (_) {
     return NextResponse.json(
       { success: false, error: 'Invalid JSON body' },
       { status: 400 },
@@ -124,7 +124,7 @@ export async function PATCH(request: NextRequest) {
 
   try {
     body = await request.json();
-  } catch {
+  } catch (_) {
     return NextResponse.json(
       { success: false, error: 'Invalid JSON body' },
       { status: 400 },

@@ -83,7 +83,7 @@ function formatTime(iso: string): string {
   try {
     const d = new Date(iso);
     return d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-  } catch {
+  } catch (_) {
     return iso.slice(0, 5);
   }
 }
@@ -148,7 +148,7 @@ export default function TripPlannerHero() {
         const url = new URL(window.location.href);
         url.searchParams.set('q', q);
         window.history.replaceState({}, '', url.toString());
-      } catch {}
+      } catch (_) {}
 
       try {
         const res = await fetch('/api/plan', {
@@ -187,7 +187,7 @@ export default function TripPlannerHero() {
         // Kick off after a tiny delay so the UI shows the prompt
         setTimeout(() => handlePlan(q), 200);
       }
-    } catch {}
+    } catch (_) {}
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -221,7 +221,7 @@ export default function TripPlannerHero() {
     recognitionRef.current = rec;
     try {
       rec.start();
-    } catch {
+    } catch (_) {
       setListening(false);
     }
   }
@@ -229,7 +229,7 @@ export default function TripPlannerHero() {
   function stopVoice() {
     try {
       recognitionRef.current?.stop();
-    } catch {}
+    } catch (_) {}
     setListening(false);
   }
 
@@ -247,12 +247,12 @@ export default function TripPlannerHero() {
         });
         return;
       }
-    } catch {}
+    } catch (_) {}
     try {
       await navigator.clipboard.writeText(shareUrl);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch {}
+    } catch (_) {}
   }
 
   return (

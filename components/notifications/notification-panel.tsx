@@ -38,7 +38,7 @@ function loadLocalNotifications(): Notification[] {
         }));
       }
     }
-  } catch {}
+  } catch (_) {}
   return [];
 }
 
@@ -222,7 +222,7 @@ export default function NotificationPanel() {
         (a, b) => b.timestamp.getTime() - a.timestamp.getTime(),
       );
       setNotifications(merged);
-    } catch {
+    } catch (_) {
       // API unavailable — local notifications still shown
     }
   }, []);

@@ -70,7 +70,7 @@ function load(): FavoriteItem[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     return raw ? JSON.parse(raw) : [];
-  } catch {
+  } catch (_) {
     return [];
   }
 }
@@ -79,7 +79,7 @@ function save(items: FavoriteItem[]) {
   if (typeof window === 'undefined') return;
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(items.slice(-100)));
-  } catch {}
+  } catch (_) {}
 }
 
 /* ------------------------------------------------------------------ */

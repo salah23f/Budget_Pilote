@@ -231,12 +231,12 @@ export default function CarsPage() {
                       <Badge variant="default" size="sm">{car.carType}</Badge>
                     </div>
                     <div className="flex flex-wrap gap-3 text-xs text-white/40">
-                      <span>👤 {car.seats} seats</span>
-                      <span>🧳 {car.bags} bags</span>
-                      <span>⚙️ {car.transmission}</span>
-                      {car.hasAC && <span>❄️ A/C</span>}
-                      <span>⛽ {car.fuelPolicy}</span>
-                      <span>📏 {car.mileage}</span>
+                      <span>{car.seats} seats</span>
+                      <span>{car.bags} bags</span>
+                      <span>{car.transmission}</span>
+                      {car.hasAC && <span>A/C</span>}
+                      <span>{car.fuelPolicy}</span>
+                      <span>{car.mileage}</span>
                     </div>
                     {car.features.length > 0 && (
                       <div className="flex flex-wrap gap-1.5 mt-2">

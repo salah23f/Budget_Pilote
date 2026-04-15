@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
     let payload: { identifier: string; code: string; expiresAt: number; hmac: string };
     try {
       payload = JSON.parse(Buffer.from(token, 'base64').toString());
-    } catch {
+    } catch (_) {
       return NextResponse.json({ error: 'Invalid token' }, { status: 400 });
     }
 

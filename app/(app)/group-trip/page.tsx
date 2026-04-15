@@ -42,7 +42,7 @@ export default function GroupTripPage() {
         setUserName(user.firstName || '');
         setUserEmail(user.email || '');
       }
-    } catch {}
+    } catch (_) {}
   }, []);
 
   // Load user's trips

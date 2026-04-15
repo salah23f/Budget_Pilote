@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
   let body: { userId?: string; items?: unknown[] };
   try {
     body = await req.json();
-  } catch {
+  } catch (_) {
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
   }
 
@@ -101,7 +101,7 @@ export async function DELETE(req: NextRequest) {
   let body: { userId?: string; id?: string };
   try {
     body = await req.json();
-  } catch {
+  } catch (_) {
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
   }
 

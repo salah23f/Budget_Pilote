@@ -59,12 +59,12 @@ function loadFromStorage(): { activeThemeId: string; customAccent: string | null
     if (!raw) return { activeThemeId: 'default', customAccent: null, mode: 'dark' };
     const parsed = JSON.parse(raw);
     return { activeThemeId: parsed.activeThemeId || 'default', customAccent: parsed.customAccent || null, mode: parsed.mode || 'dark' };
-  } catch { return { activeThemeId: 'default', customAccent: null, mode: 'dark' }; }
+  } catch (_) { return { activeThemeId: 'default', customAccent: null, mode: 'dark' }; }
 }
 
 function saveToStorage(state: { activeThemeId: string; customAccent: string | null; mode: 'dark' | 'light' }) {
   if (typeof window === 'undefined') return;
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch {}
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (_) {}
 }
 
 const initial = loadFromStorage();

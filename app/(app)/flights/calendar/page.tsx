@@ -189,7 +189,7 @@ function FlightCalendarContent() {
         setPrices({});
       }
       setFetched(true);
-    } catch {
+    } catch (_) {
       setPrices({});
       setFetched(true);
     } finally {
