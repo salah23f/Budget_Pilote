@@ -359,8 +359,6 @@ export default function TripPlannerHero() {
             </button>
           </div>
         </div>
-
-        {/* pulse animation handled by Tailwind animate-pulse */}
       </div>
 
       {/* Example chips */}
