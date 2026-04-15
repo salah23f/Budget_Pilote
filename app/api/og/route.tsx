@@ -71,7 +71,7 @@ export async function GET(req: NextRequest) {
               fontSize: '24px',
             }}
           >
-            ✈️
+            Flyeas
           </div>
           <span
             style={{

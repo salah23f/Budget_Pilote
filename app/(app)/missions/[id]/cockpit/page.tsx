@@ -854,7 +854,7 @@ function BookedCard({
           </p>
           {refunded > 0 && (
             <p className="text-sm text-emerald-300 mt-1">
-              💰 {formatUsd(refunded)} released back to your{' '}
+              $ {formatUsd(refunded)} released back to your{' '}
               {mission.paymentRail === 'wallet' ? 'wallet' : 'card'}
             </p>
           )}

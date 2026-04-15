@@ -14,7 +14,7 @@ interface ShareDealCardProps {
 export function ShareDealCard({ type, title, price, details, url }: ShareDealCardProps) {
   const [shared, setShared] = useState(false);
 
-  const shareText = `${type === 'flight' ? '✈️' : '🏨'} ${title} — $${price} ${details}\n\nFound on Flyeas`;
+  const shareText = `${type === 'flight' ? 'Flight:' : 'Hotel:'} ${title} — $${price} ${details}\n\nFound on Flyeas`;
   const shareUrl = url || 'https://faregenie.vercel.app';
 
   async function handleShare(method: 'native' | 'copy' | 'twitter' | 'whatsapp') {
@@ -57,7 +57,7 @@ export function ShareDealCard({ type, title, price, details, url }: ShareDealCar
             background: type === 'flight' ? 'rgba(245,158,11,0.12)' : 'rgba(16,185,129,0.12)',
           }}
         >
-          {type === 'flight' ? '✈️' : '🏨'}
+          {type === 'flight' ? 'Flight:' : 'Hotel:'}
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold text-white truncate">{title}</p>

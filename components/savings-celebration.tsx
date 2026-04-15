@@ -18,7 +18,7 @@ const MILESTONES = [100, 250, 500, 1000, 2500, 5000, 10000];
 const MESSAGES: Record<number, { emoji: string; title: string; sub: string }> = {
   100: { emoji: '🎉', title: 'You saved $100!', sub: 'Your first milestone. The journey begins.' },
   250: { emoji: '🚀', title: '$250 saved!', sub: 'That\'s a weekend getaway in savings.' },
-  500: { emoji: '✈️', title: '$500 saved!', sub: 'Half a flight to anywhere. Keep going!' },
+  500: { emoji: '*', title: '$500 saved!', sub: 'Half a flight to anywhere. Keep going!' },
   1000: { emoji: '🏆', title: '$1,000 saved!', sub: 'A thousand reasons to celebrate.' },
   2500: { emoji: '💎', title: '$2,500 saved!', sub: 'You\'re in the top 5% of smart travelers.' },
   5000: { emoji: '👑', title: '$5,000 saved!', sub: 'Travel legend status unlocked.' },

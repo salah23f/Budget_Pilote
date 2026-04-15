@@ -100,7 +100,7 @@ export function HotelDestinationInput({ label, value, onChange, placeholder }: P
     const s = t.toUpperCase();
     if (s.includes('CITY')) return '🏙';
     if (s.includes('AIRPORT')) return '✈';
-    if (s.includes('HOTEL')) return '🏨';
+    if (s.includes('HOTEL')) return 'H';
     if (s.includes('REGION') || s.includes('AREA')) return '📍';
     if (s.includes('DISTRICT') || s.includes('NEIGHBORHOOD')) return '🏘';
     return '📍';

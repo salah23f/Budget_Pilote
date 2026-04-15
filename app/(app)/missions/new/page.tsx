@@ -594,7 +594,7 @@ export default function NewMissionPage() {
               {showHotel && (
                 <div className="space-y-4 rounded-xl p-4" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}>
                   <div className="flex items-center gap-2">
-                    <span className="text-amber-300">🏨</span>
+                    <span className="text-amber-300">Hotel</span>
                     <h3 className="text-sm font-semibold text-white/80">Hotel</h3>
                   </div>
                   {form.type === 'hotel' && (
@@ -630,7 +630,7 @@ export default function NewMissionPage() {
                   />
                   <div>
                     <span className="text-sm font-semibold text-white flex items-center gap-2">
-                      🚗 Add car rental
+                      + Add car rental
                     </span>
                     <p className="text-xs text-white/35">Monitor car prices at your destination</p>
                   </div>
@@ -675,7 +675,7 @@ export default function NewMissionPage() {
                   />
                   <div>
                     <span className="text-sm font-semibold text-white flex items-center gap-2">
-                      🛡️ Add travel insurance
+                      + Add travel insurance
                     </span>
                     <p className="text-xs text-white/35">Protect your trip with VisitorsCoverage</p>
                   </div>

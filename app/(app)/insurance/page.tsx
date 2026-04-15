@@ -18,7 +18,7 @@ const PLANS = [
     priceBase: 29,
     pricePerDay: 3.5,
     color: '#64748B',
-    icon: '🛡️',
+    icon: 'Basic',
     provider: 'VisitorsCoverage',
     features: [
       { text: 'Trip cancellation up to $5,000', included: true },
@@ -36,7 +36,7 @@ const PLANS = [
     priceBase: 49,
     pricePerDay: 5.5,
     color: '#E8A317',
-    icon: '🛡️✨',
+    icon: 'Pro',
     popular: true,
     provider: 'VisitorsCoverage',
     features: [
@@ -55,7 +55,7 @@ const PLANS = [
     priceBase: 79,
     pricePerDay: 8,
     color: '#8B5CF6',
-    icon: '🛡️👑',
+    icon: 'Elite',
     provider: 'VisitorsCoverage',
     features: [
       { text: 'Trip cancellation up to $25,000', included: true },

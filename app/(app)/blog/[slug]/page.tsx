@@ -116,7 +116,7 @@ export default function BlogArticlePage() {
       {/* CTA */}
       <Card padding="lg" className="text-center mt-12">
         <div className="max-w-sm mx-auto">
-          <div className="text-3xl mb-3">✈️</div>
+          <div className="text-3xl mb-3">Flyeas</div>
           <h3 className="text-lg font-semibold text-white mb-2">
             Ready to save on your next trip?
           </h3>

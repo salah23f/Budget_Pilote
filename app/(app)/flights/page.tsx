@@ -1181,7 +1181,7 @@ export default function FlightsPage() {
                       </Badge>
                       {/* Points badge */}
                       <span className="px-1.5 py-0.5 rounded text-[9px] font-semibold bg-amber-500/10 text-amber-300 border border-amber-400/20">
-                        ✈️ +{formatPoints(calculatePoints(f.price, 'free'))} pts
+                        + +{formatPoints(calculatePoints(f.price, 'free'))} pts
                       </span>
                       {/* Baggage indicator */}
                       <span className={`px-1.5 py-0.5 rounded text-[9px] font-medium ${
@@ -1189,7 +1189,7 @@ export default function FlightsPage() {
                           ? 'bg-emerald-500/10 text-emerald-300 border border-emerald-400/20'
                           : 'bg-white/5 text-white/40 border border-white/10'
                       }`}>
-                        {f.baggageIncluded ? '🧳 Bag included' : '🎒 Cabin only'}
+                        {f.baggageIncluded ? 'Checked: Bag included' : 'Carry-on: Cabin only'}
                       </span>
                       {/* Price vs average indicator */}
                       {(() => {
