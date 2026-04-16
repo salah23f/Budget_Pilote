@@ -6,6 +6,8 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useSubscriptionStore } from '@/lib/store/subscription-store';
+import { useIdentity, useIdentityStore } from '@/lib/store/identity-store';
+import { User, Mail, Pencil, Check } from 'lucide-react';
 
 const PLANS = [
   { tier: 'free' as const, name: 'Free', price: 0, features: ['5 searches/day', '1 active mission', 'Basic filters'] },
@@ -29,8 +31,11 @@ export default function AccountPage() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-6 md:px-8 md:py-8 space-y-6">
-      <h1 className="text-2xl font-bold text-white tracking-tight">My Account</h1>
+    <div className="mx-auto max-w-4xl px-4 py-6 md:px-8 md:py-8 space-y-8">
+      <h1 className="editorial text-h1 text-pen-1">Account</h1>
+
+      {/* ─── Identity block (read-only, edit inline) ─── */}
+      <IdentityBlock />
 
       {/* Current plan */}
       <Card padding="lg" className="glass-premium">
@@ -159,6 +164,102 @@ export default function AccountPage() {
           </div>
         )}
       </Card>
+    </div>
+  );
+}
+
+/* ── IdentityBlock — read-only with inline edit ── */
+
+function IdentityBlock() {
+  const { firstName, lastName, email, initials, isKnown } = useIdentity();
+  const updateIdentity = useIdentityStore((s) => s.update);
+  const [editing, setEditing] = useState(false);
+  const [editFirst, setEditFirst] = useState('');
+  const [editLast, setEditLast] = useState('');
+
+  function startEdit() {
+    setEditFirst(firstName);
+    setEditLast(lastName);
+    setEditing(true);
+  }
+
+  function saveEdit() {
+    const patch: Record<string, string> = {};
+    if (editFirst.trim() !== firstName) patch.firstName = editFirst.trim();
+    if (editLast.trim() !== lastName) patch.lastName = editLast.trim();
+    if (Object.keys(patch).length > 0) {
+      updateIdentity(patch);
+    }
+    setEditing(false);
+  }
+
+  return (
+    <div className="rounded-lg border border-line-1 bg-ink-800 p-6">
+      <div className="flex items-center justify-between mb-5">
+        <p className="text-micro uppercase text-pen-3">Your identity</p>
+        {!editing && (
+          <button
+            onClick={startEdit}
+            className="inline-flex items-center gap-1.5 text-caption text-pen-2 hover:text-pen-1 transition"
+          >
+            <Pencil className="w-3 h-3" strokeWidth={1.8} />
+            Edit
+          </button>
+        )}
+        {editing && (
+          <button
+            onClick={saveEdit}
+            className="inline-flex items-center gap-1.5 text-caption text-accent hover:text-pen-1 transition"
+          >
+            <Check className="w-3 h-3" strokeWidth={2} />
+            Save
+          </button>
+        )}
+      </div>
+
+      {!editing ? (
+        <div className="flex items-center gap-4">
+          <div
+            className="flex items-center justify-center w-12 h-12 rounded-lg text-body font-semibold text-accent"
+            style={{ background: 'var(--accent-soft)' }}
+          >
+            {initials}
+          </div>
+          <div>
+            <p className="text-body-lg text-pen-1 font-medium">
+              {isKnown ? `${firstName}${lastName ? ` ${lastName}` : ''}` : 'Not set'}
+            </p>
+            {email && <p className="text-caption text-pen-3 mt-0.5">{email}</p>}
+          </div>
+        </div>
+      ) : (
+        <div className="grid sm:grid-cols-2 gap-3">
+          <label className="block">
+            <span className="text-micro uppercase text-pen-3 block mb-1">First name</span>
+            <input
+              className="glass-input"
+              value={editFirst}
+              onChange={(e) => setEditFirst(e.target.value)}
+              autoFocus
+            />
+          </label>
+          <label className="block">
+            <span className="text-micro uppercase text-pen-3 block mb-1">Last name</span>
+            <input
+              className="glass-input"
+              value={editLast}
+              onChange={(e) => setEditLast(e.target.value)}
+            />
+          </label>
+          {email && (
+            <div className="sm:col-span-2">
+              <span className="text-micro uppercase text-pen-3 block mb-1">Email</span>
+              <p className="text-body text-pen-2">{email}</p>
+              <p className="text-caption text-pen-3 mt-1">Managed through authentication</p>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

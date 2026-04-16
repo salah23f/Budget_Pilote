@@ -6,10 +6,11 @@ import Topbar from './topbar';
 import BottomNav from './bottom-nav';
 import PageTransition from './page-transition';
 import { useUserStore } from '@/stores/user-store';
+import { useIdentityStore } from '@/lib/store/identity-store';
+import { useProfileStore } from '@/lib/store/profile-store';
 import { initializeTheme } from '@/lib/store/theme-store';
 import { ChevronUp } from 'lucide-react';
 
-// Lazy-load heavy components for faster initial page load
 const ChatPanel = lazy(() => import('@/components/chat/chat-panel'));
 const CommandPalette = lazy(() => import('@/components/command-palette'));
 const SavingsCelebration = lazy(() => import('@/components/savings-celebration').then(m => ({ default: m.SavingsCelebration })));
@@ -21,19 +22,30 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const setName = useUserStore((s) => s.setName);
 
-  // Load user name from localStorage + initialize theme
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem('sv_user');
-      if (stored) {
-        const user = JSON.parse(stored);
-        if (user.firstName) setName(user.firstName);
-      }
-    } catch (_) {}
-    initializeTheme();
-  }, [setName]);
+  // ── Identity hydration (replaces old sv_user read) ──
+  const hydrateIdentity = useIdentityStore((s) => s.hydrate);
+  const reconcileIdentity = useIdentityStore((s) => s.reconcile);
+  const identity = useIdentityStore((s) => s.identity);
+  const hydrateProfile = useProfileStore((s) => s.hydrate);
 
-  // Show scroll-to-top button when scrolled down
+  useEffect(() => {
+    // 1. Hydrate identity from localStorage (instant)
+    hydrateIdentity();
+    // 2. Hydrate user travel profile from localStorage (instant)
+    hydrateProfile();
+    // 3. Initialize theme
+    initializeTheme();
+    // 4. Try server reconcile (async, non-blocking)
+    void reconcileIdentity();
+  }, [hydrateIdentity, reconcileIdentity, hydrateProfile]);
+
+  // Bridge identity → legacy userStore so existing components get the name
+  useEffect(() => {
+    if (identity?.firstName) {
+      setName(identity.firstName);
+    }
+  }, [identity?.firstName, setName]);
+
   useEffect(() => {
     const handleScroll = () => setShowScrollTop(window.scrollY > 500);
     window.addEventListener('scroll', handleScroll);
@@ -41,11 +53,9 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <div className="min-h-screen flex">
-      {/* Sidebar — hidden on mobile, replaced by bottom nav */}
+    <div className="min-h-screen flex bg-ink-950">
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      {/* Main content area */}
       <div className="flex-1 flex flex-col lg:ml-[260px] min-h-screen">
         <Topbar onMenuToggle={() => setSidebarOpen((prev) => !prev)} />
 
@@ -54,10 +64,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         </main>
       </div>
 
-      {/* Bottom navigation — mobile only */}
       <BottomNav />
 
-      {/* Lazy-loaded overlays — code-split for faster initial load */}
       <Suspense fallback={null}>
         <ChatPanel />
         <CommandPalette />
@@ -66,22 +74,19 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         <OfflineBanner />
       </Suspense>
 
-      {/* Scroll to top button */}
+      {/* Scroll to top — neutral, no glow */}
       <button
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        className={`fixed bottom-24 right-6 z-40 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-105 ${
+        className={`fixed bottom-24 right-6 z-40 w-10 h-10 rounded-md flex items-center justify-center transition-all duration-200 ${
           showScrollTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'
         }`}
         style={{
-          background: 'rgba(232,163,23,0.15)',
-          border: '1px solid rgba(232,163,23,0.3)',
-          backdropFilter: 'blur(12px)',
-          WebkitBackdropFilter: 'blur(12px)',
-          boxShadow: '0 0 20px rgba(232,163,23,0.15)',
+          background: 'var(--ink-800)',
+          border: '1px solid var(--line-2)',
         }}
         aria-label="Scroll to top"
       >
-        <ChevronUp className="w-[18px] h-[18px] text-[#D4A24C]" strokeWidth={2.5} />
+        <ChevronUp className="w-4 h-4 text-pen-2" strokeWidth={2} />
       </button>
     </div>
   );

@@ -157,16 +157,10 @@ export default function LandingPage() {
               </p>
             </div>
 
-            {/* Right — the demo */}
+            {/* Right — the demo, visually quiet */}
             <div className="lg:sticky lg:top-24">
-              <div className="mb-4 flex items-baseline justify-between">
-                <p className="text-micro uppercase text-pen-3">Try it right now</p>
-                <p className="text-caption text-pen-3">Live data · no login</p>
-              </div>
-              <div
-                className="rounded-xl border border-line-1 bg-ink-900 p-5 md:p-6"
-                style={{ boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.02)' }}
-              >
+              <p className="text-micro uppercase text-pen-3 mb-3">Try it now — live data, no login</p>
+              <div className="rounded-lg border border-line-1 bg-ink-900 p-4">
                 <TripPlannerHero />
               </div>
             </div>
