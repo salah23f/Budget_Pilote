@@ -4,24 +4,69 @@
 
 :root {
   color-scheme: dark;
-  --flyeas-accent: #E8A317;
-  --flyeas-accent-light: #F5BE3A;
-  --flyeas-accent-dark: #C78B0F;
-  --flyeas-gradient: linear-gradient(135deg, #E8A317, #D4940F, #C78B0F);
-  --surface-primary: #09090B;
-  --surface-elevated: #18181B;
-  --surface-card: rgba(255, 255, 255, 0.04);
-  --border-subtle: rgba(255, 255, 255, 0.06);
-  --border-default: rgba(255, 255, 255, 0.10);
-  --text-primary: #FAFAF9;
-  --text-secondary: #A8A29E;
-  --text-muted: #78716C;
+
+  /* ──── Design System v2 tokens — see docs/design-system.md ──── */
+
+  /* Ink scale — warm off-black surfaces */
+  --ink-950: #0B0B0D;
+  --ink-900: #111114;
+  --ink-800: #17171B;
+  --ink-700: #1D1D22;
+  --ink-600: #26262C;
+  --ink-500: #32323A;
+
+  /* Text tones */
+  --pen-1: #F5F5F1;
+  --pen-2: #A9A9A4;
+  --pen-3: #6E6E68;
+
+  /* Borders */
+  --line-1: #1A1A1D;
+  --line-2: #252528;
+  --line-3: #2F2F34;
+
+  /* Single accent — use sparingly (5-10% of screen) */
+  --accent: #D4A24C;
+  --accent-soft: rgba(212,162,76,0.12);
+  --accent-ink: #0B0B0D;
+
+  /* Semantic */
+  --success: #4F8A6E;
+  --success-soft: rgba(79,138,110,0.12);
+  --danger: #A14848;
+  --danger-soft: rgba(161,72,72,0.12);
+  --warning: #B8893C;
+
+  /* Font families */
   --font-body: var(--font-inter), Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-heading: var(--font-display), 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
+  --font-editorial: var(--font-serif), Fraunces, ui-serif, Georgia, serif;
+
+  /* Radius — 4 sizes */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
   --radius-xl: 20px;
+
+  /* Timing */
+  --ease-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-entrance: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+
+  /* ──── Legacy aliases — kept for incremental migration ──── */
+  /* Route old variable references to the new palette so pages still render. */
+  --flyeas-accent: var(--accent);
+  --flyeas-accent-light: #E0B76B;
+  --flyeas-accent-dark: #B18538;
+  --flyeas-gradient: var(--accent);
+  --surface-primary: var(--ink-950);
+  --surface-elevated: var(--ink-800);
+  --surface-card: var(--ink-800);
+  --border-subtle: var(--line-1);
+  --border-default: var(--line-2);
+  --text-primary: var(--pen-1);
+  --text-secondary: var(--pen-2);
+  --text-muted: var(--pen-3);
 }
 
 /* Smooth theme transitions — every color change feels luxurious */
@@ -42,11 +87,12 @@ body {
   margin: 0;
   padding: 0;
   min-height: 100%;
-  background:
-    radial-gradient(ellipse 80% 50% at 20% 0%, color-mix(in srgb, var(--flyeas-accent) 5%, transparent), transparent),
-    radial-gradient(ellipse 60% 40% at 80% 100%, color-mix(in srgb, var(--flyeas-accent) 3%, transparent), transparent),
-    var(--surface-primary);
+  background: var(--ink-950);
+  color: var(--pen-1);
   font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 * {
@@ -63,62 +109,63 @@ input {
 }
 
 input:focus, select:focus, textarea:focus {
-  border-color: color-mix(in srgb, var(--flyeas-accent) 40%, transparent) !important;
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--flyeas-accent) 15%, transparent);
+  border-color: var(--line-3) !important;
+  box-shadow: none;
 }
 
 ::selection {
-  background: color-mix(in srgb, var(--flyeas-accent) 30%, transparent);
+  background: var(--accent-soft);
+  color: var(--pen-1);
 }
 
-::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
-  background: color-mix(in srgb, var(--flyeas-accent) 20%, rgba(255,255,255,0.1));
+  background: var(--line-2);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: color-mix(in srgb, var(--flyeas-accent) 35%, rgba(255,255,255,0.15));
+  background: var(--line-3);
 }
 
-/* ─── Premium Glass System ────────────────────────── */
-/* Every surface breathes the accent color. Transitions
-   are silky smooth so theme changes feel luxurious. */
+/* ─── Elevation System v2 ──────────────────────────
+   No more blur everywhere. Three subtle levels.
+   .glass is now a legacy alias for .surface-1 (neutral card).
+   True blur lives only in the sticky topbar (see .topbar-glass).
+*/
 
+.surface-1,
 .glass {
-  background: var(--surface-card);
-  backdrop-filter: blur(16px) saturate(1.2);
-  -webkit-backdrop-filter: blur(16px) saturate(1.2);
-  border: 1px solid var(--border-subtle);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  background: var(--ink-800);
+  border: 1px solid var(--line-1);
+  transition: border-color 160ms var(--ease-default);
 }
-
+.surface-1:hover,
 .glass:hover {
-  border-color: var(--border-default);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  border-color: var(--line-2);
 }
 
+.surface-2,
 .glass-premium {
-  background: color-mix(in srgb, var(--flyeas-accent) 3%, rgba(255,255,255,0.04));
-  backdrop-filter: blur(20px) saturate(1.3);
-  -webkit-backdrop-filter: blur(20px) saturate(1.3);
-  border: 1px solid color-mix(in srgb, var(--flyeas-accent) 12%, rgba(255,255,255,0.06));
-  box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.25),
-    inset 0 1px 0 rgba(255,255,255,0.04);
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  background: var(--ink-700);
+  border: 1px solid var(--line-2);
+  transition: border-color 160ms var(--ease-default);
 }
-
+.surface-2:hover,
 .glass-premium:hover {
-  border-color: color-mix(in srgb, var(--flyeas-accent) 18%, rgba(255,255,255,0.08));
-  box-shadow:
-    0 12px 40px rgba(0, 0, 0, 0.3),
-    0 0 24px color-mix(in srgb, var(--flyeas-accent) 8%, transparent);
+  border-color: var(--line-3);
 }
 
 .soft-border {
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--line-1);
+}
+
+/* The ONLY place we use real glass blur — sticky topbar */
+.topbar-glass {
+  background: rgba(17, 17, 20, 0.72);
+  backdrop-filter: blur(18px) saturate(1.2);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+  border-bottom: 1px solid var(--line-1);
 }
 
 /* ─── Light Mode ─────────────────────────────────── */
@@ -187,65 +234,55 @@ input:focus, select:focus, textarea:focus {
   border-color: rgba(0, 0, 0, 0.06) !important;
 }
 
+/* Primary button — solid accent, no glow, no shimmer.
+   See docs/design-system.md §9 */
 .premium-button {
-  background: var(--flyeas-gradient);
-  color: white;
+  background: var(--accent);
+  color: var(--accent-ink);
   border: none;
-  position: relative;
-  overflow: hidden;
-  box-shadow:
-    0 8px 24px color-mix(in srgb, var(--flyeas-accent) 30%, transparent),
-    0 0 60px color-mix(in srgb, var(--flyeas-accent) 8%, transparent);
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
-}
-
-.premium-button::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    105deg,
-    transparent 20%,
-    rgba(255,255,255,0.06) 45%,
-    rgba(255,255,255,0.08) 50%,
-    rgba(255,255,255,0.06) 55%,
-    transparent 80%
-  );
-  transform: translateX(-120%);
-  transition: transform 0.8s ease;
+  font-weight: 600;
+  transition: background-color 160ms var(--ease-default), transform 160ms var(--ease-default);
 }
 
 .premium-button:hover {
-  transform: translateY(-2px) scale(1.01);
-  box-shadow:
-    0 14px 40px color-mix(in srgb, var(--flyeas-accent) 40%, transparent),
-    0 0 80px color-mix(in srgb, var(--flyeas-accent) 12%, transparent);
-}
-
-.premium-button:hover::before {
-  transform: translateX(120%);
+  background: #DFAE5B;
 }
 
 .premium-button:active {
-  transform: translateY(0) scale(0.99);
+  transform: scale(0.98);
 }
 
 .premium-button:disabled {
-  opacity: 0.6;
+  opacity: 0.45;
   cursor: not-allowed;
-  transform: none;
-}
-.premium-button:disabled::before {
-  display: none;
 }
 
 .hero-title {
-  letter-spacing: -0.04em;
+  letter-spacing: -0.02em;
 }
 
-/* Headings use display font */
-h1, h2, h3, .font-display {
+/* Headings default to sans — use .font-serif for editorial moments */
+h1, h2, h3 {
+  font-family: var(--font-body);
+  letter-spacing: -0.01em;
+  color: var(--pen-1);
+}
+
+.font-display {
   font-family: var(--font-heading);
+}
+
+.font-serif {
+  font-family: var(--font-editorial);
+  font-feature-settings: 'ss01' on, 'liga' on;
+}
+
+/* Editorial display tuning */
+.editorial {
+  font-family: var(--font-editorial);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--pen-1);
 }
 
 .muted {
@@ -265,31 +302,33 @@ h1, h2, h3, .font-display {
 .badge {
   display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
-  border-radius: 9999px;
-  padding: 0.42rem 0.8rem;
-  font-size: 0.78rem;
-  line-height: 1;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.05);
+  gap: 0.35rem;
+  border-radius: var(--radius-sm);
+  padding: 2px 8px;
+  font-size: 11px;
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+  background: var(--ink-800);
+  color: var(--pen-2);
+  border: 1px solid transparent;
 }
 
 .highlight-badge {
-  background: rgba(245, 158, 11, 0.14);
-  color: #FDE68A;
-  border-color: rgba(245, 158, 11, 0.25);
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-color: transparent;
 }
 
 .success-badge {
-  background: rgba(16, 185, 129, 0.15);
-  color: #bbf7d0;
-  border-color: rgba(16, 185, 129, 0.28);
+  background: var(--success-soft);
+  color: var(--success);
+  border-color: transparent;
 }
 
 .warning-badge {
-  background: rgba(245, 158, 11, 0.14);
-  color: #fde68a;
-  border-color: rgba(245, 158, 11, 0.28);
+  background: var(--accent-soft);
+  color: var(--warning);
+  border-color: transparent;
 }
 
 /* Scrollbar */
@@ -311,36 +350,36 @@ h1, h2, h3, .font-display {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Glass input */
+/* Input — clean, no accent glow */
 .glass-input {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: var(--ink-900);
+  border: 1px solid var(--line-1);
   border-radius: var(--radius-md);
-  padding: 0.75rem 1rem;
-  color: var(--text-primary);
-  font-size: 0.9rem;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  padding: 10px 14px;
+  color: var(--pen-1);
+  font-size: 14px;
+  transition: border-color 160ms var(--ease-default);
   width: 100%;
 }
 .glass-input:focus {
-  border-color: rgba(245,158,11,0.45);
-  box-shadow: 0 0 0 3px rgba(245,158,11,0.1);
+  border-color: var(--line-3);
+  box-shadow: none;
 }
 .glass-input::placeholder {
-  color: rgba(255,255,255,0.4);
+  color: var(--pen-3);
 }
 
-/* Secondary button */
+/* Secondary button — neutral surface */
 .secondary-button {
-  background: rgba(255,255,255,0.05);
-  color: rgba(255,255,255,0.7);
-  border: 1px solid rgba(255,255,255,0.1);
-  transition: all 0.2s ease;
+  background: var(--ink-800);
+  color: var(--pen-1);
+  border: 1px solid var(--line-1);
+  font-weight: 500;
+  transition: background-color 160ms var(--ease-default), border-color 160ms var(--ease-default);
 }
 .secondary-button:hover {
-  background: rgba(255,255,255,0.08);
-  color: white;
-  border-color: rgba(255,255,255,0.15);
+  background: var(--ink-700);
+  border-color: var(--line-2);
 }
 
 /* Link button */
@@ -364,24 +403,20 @@ h1, h2, h3, .font-display {
   box-shadow: 0 4px 15px rgba(239,68,68,0.3);
 }
 
-/* Premium gradient text */
+/* Logo wordmark accent — single-tone, no rainbow */
 .gradient-text {
-  background: linear-gradient(135deg, var(--flyeas-accent-light), var(--flyeas-accent), var(--flyeas-accent-dark));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--accent);
+  letter-spacing: -0.01em;
 }
 
-/* Glass card variant — elevated */
+/* Legacy: elevated card — maps to surface-2 */
 .glass-elevated {
-  background: var(--surface-elevated);
-  border: 1px solid var(--border-default);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  background: var(--ink-700);
+  border: 1px solid var(--line-2);
+  transition: border-color 160ms var(--ease-default);
 }
 .glass-elevated:hover {
-  border-color: color-mix(in srgb, var(--flyeas-accent) 15%, rgba(255,255,255,0.08));
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+  border-color: var(--line-3);
 }
 
 /* Pulse animation for live indicators */
@@ -393,18 +428,19 @@ h1, h2, h3, .font-display {
   animation: pulse-live 2s ease-in-out infinite;
 }
 
-/* Auto-buy badge */
+/* Auto-buy badge — subtle success */
 .auto-buy-badge {
-  background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(16, 185, 129, 0.1));
-  color: #4ade80;
-  border: 1px solid rgba(34, 197, 94, 0.25);
-  border-radius: 9999px;
-  padding: 0.3rem 0.75rem;
-  font-size: 0.75rem;
+  background: var(--success-soft);
+  color: var(--success);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  padding: 2px 8px;
+  font-size: 11px;
   font-weight: 600;
+  letter-spacing: 0.02em;
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 6px;
 }
 
 /* Card payment form */
@@ -622,6 +658,23 @@ html {
   0% { transform: scale(0.5) rotate(0deg); opacity: 0; }
   40% { transform: scale(1.15) rotate(20deg); opacity: 1; }
   100% { transform: scale(1) rotate(360deg); opacity: 0; }
+}
+
+/* Onboarding progress grow */
+@keyframes grow {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+/* Savings celebration */
+@keyframes bounce {
+  0%   { transform: scale(0.3); }
+  50%  { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+@keyframes confettiFall {
+  0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(400px) rotate(720deg); opacity: 0; }
 }
 
 /* Subtle flame flicker for streaks */

@@ -131,13 +131,13 @@ export function FlightRadar({
           return (
             <g key={b.id}>
               <circle cx={bx} cy={by} r={4 * near + 2} fill="rgba(232,163,23,0.2)" />
-              <circle cx={bx} cy={by} r={2} fill="#E8A317" opacity={0.6 + 0.4 * near} />
+              <circle cx={bx} cy={by} r={2} fill="#D4A24C" opacity={0.6 + 0.4 * near} />
             </g>
           );
         })}
 
         {/* Center pulse */}
-        <circle cx={center} cy={center} r="3" fill="#E8A317" />
+        <circle cx={center} cy={center} r="3" fill="#D4A24C" />
         <circle cx={center} cy={center} r="3" fill="none" stroke="rgba(232,163,23,0.4)" strokeWidth="1">
           <animate attributeName="r" from="3" to="12" dur="2s" repeatCount="indefinite" />
           <animate attributeName="opacity" from="0.6" to="0" dur="2s" repeatCount="indefinite" />

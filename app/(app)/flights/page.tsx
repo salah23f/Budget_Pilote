@@ -112,7 +112,7 @@ function PriceSparkline({ price, score }: { price: number; score: number }) {
   }, [price, score]);
 
   const path = points.map((y, i) => `${i === 0 ? 'M' : 'L'}${i * 6.5},${y / 5}`).join(' ');
-  const color = score >= 70 ? '#10b981' : score >= 40 ? '#E8A317' : '#ef4444';
+  const color = score >= 70 ? '#10b981' : score >= 40 ? '#D4A24C' : '#ef4444';
 
   return (
     <svg width="40" height="20" viewBox="0 0 39 20" className="shrink-0">
@@ -727,7 +727,7 @@ export default function FlightsPage() {
         <Card padding="lg">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-bold text-white flex items-center gap-2">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E8A317" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D4A24C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="10" />
                 <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
               </svg>
@@ -795,7 +795,7 @@ export default function FlightsPage() {
               className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
               style={{ background: 'rgba(245,158,11,0.12)' }}
             >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E8A317" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D4A24C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="10" />
                 <path d="M12 8v4M12 16h.01" />
               </svg>
@@ -1299,9 +1299,9 @@ export default function FlightsPage() {
                               width: `${f.score}%`,
                               background:
                                 f.score >= 85
-                                  ? 'linear-gradient(90deg, #E8A317, #10b981)'
+                                  ? 'linear-gradient(90deg, #D4A24C, #10b981)'
                                   : f.score >= 70
-                                    ? 'linear-gradient(90deg, #F97316, #E8A317)'
+                                    ? 'linear-gradient(90deg, #F97316, #D4A24C)'
                                     : 'linear-gradient(90deg, #f59e0b, #ef4444)',
                             }}
                           />

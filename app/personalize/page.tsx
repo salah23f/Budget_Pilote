@@ -63,7 +63,7 @@ const TRAVEL_STYLES: Array<{
     title: 'Luxury',
     subtitle: 'First class, five stars, nothing less',
     icon: Crown,
-    gradient: 'linear-gradient(135deg, #E8A317, #F97316)',
+    gradient: 'linear-gradient(135deg, #D4A24C, #DFAE5B)',
     description: "We'll prioritize business class, 5-star hotels & private transfers",
   },
 ];
@@ -190,7 +190,7 @@ export default function PersonalizePage() {
           className="h-full transition-all duration-500 ease-out"
           style={{
             width: `${((step + 1) / totalSteps) * 100}%`,
-            background: 'linear-gradient(90deg, #E8A317, #F97316)',
+            background: 'linear-gradient(90deg, #D4A24C, #DFAE5B)',
           }}
         />
       </div>
@@ -200,7 +200,7 @@ export default function PersonalizePage() {
         <div className="flex items-center gap-2">
           <div
             className="flex h-7 w-7 items-center justify-center rounded-lg"
-            style={{ background: 'linear-gradient(135deg, #E8A317, #F97316)' }}
+            style={{ background: 'linear-gradient(135deg, #D4A24C, #DFAE5B)' }}
           >
             <Plane className="w-3.5 h-3.5 text-white" strokeWidth={2.2} />
           </div>
@@ -255,7 +255,7 @@ export default function PersonalizePage() {
           className="flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold transition disabled:opacity-30 disabled:cursor-not-allowed"
           style={{
             background: canProceed
-              ? 'linear-gradient(135deg, #E8A317, #F97316)'
+              ? 'linear-gradient(135deg, #D4A24C, #DFAE5B)'
               : 'rgba(255,255,255,0.06)',
             color: canProceed ? 'white' : 'rgba(255,255,255,0.4)',
           }}
@@ -284,7 +284,7 @@ function StepTravelStyle({
   return (
     <div>
       <div className="text-center mb-10">
-        <p className="text-[10px] uppercase tracking-[0.2em] text-[#E8A317] font-semibold mb-3">
+        <p className="text-[10px] uppercase tracking-[0.2em] text-[#D4A24C] font-semibold mb-3">
           1 of 3 · About you
         </p>
         <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight leading-tight">
@@ -325,14 +325,14 @@ function StepTravelStyle({
               <p className="text-xs text-white/55 mt-1">{t.subtitle}</p>
               {isSelected && (
                 <div className="mt-3 pt-3 flex items-start gap-2" style={{ borderTop: '1px solid rgba(232,163,23,0.2)' }}>
-                  <Sparkles className="w-3.5 h-3.5 text-[#E8A317] shrink-0 mt-0.5" strokeWidth={1.8} />
+                  <Sparkles className="w-3.5 h-3.5 text-[#D4A24C] shrink-0 mt-0.5" strokeWidth={1.8} />
                   <p className="text-[11px] text-white/65 leading-relaxed">{t.description}</p>
                 </div>
               )}
               {isSelected && (
                 <div
                   className="absolute top-3 right-3 flex h-6 w-6 items-center justify-center rounded-full"
-                  style={{ background: 'linear-gradient(135deg, #E8A317, #F97316)' }}
+                  style={{ background: 'linear-gradient(135deg, #D4A24C, #DFAE5B)' }}
                 >
                   <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />
                 </div>
@@ -361,7 +361,7 @@ function StepDestinations({
   return (
     <div>
       <div className="text-center mb-8">
-        <p className="text-[10px] uppercase tracking-[0.2em] text-[#E8A317] font-semibold mb-3">
+        <p className="text-[10px] uppercase tracking-[0.2em] text-[#D4A24C] font-semibold mb-3">
           2 of 3 · Your wishlist
         </p>
         <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight leading-tight">
@@ -383,8 +383,8 @@ function StepDestinations({
         <svg viewBox="0 0 100 80" className="w-full h-auto" aria-hidden="true">
           <defs>
             <radialGradient id="pinSelected" cx="0.5" cy="0.5" r="0.5">
-              <stop offset="0%" stopColor="#E8A317" stopOpacity="0.6" />
-              <stop offset="100%" stopColor="#E8A317" stopOpacity="0" />
+              <stop offset="0%" stopColor="#D4A24C" stopOpacity="0.6" />
+              <stop offset="100%" stopColor="#D4A24C" stopOpacity="0" />
             </radialGradient>
           </defs>
 
@@ -403,7 +403,7 @@ function StepDestinations({
                   cx={d.x}
                   cy={d.y}
                   r={isSelected ? 1.5 : 1}
-                  fill={isSelected ? '#E8A317' : 'rgba(255,255,255,0.5)'}
+                  fill={isSelected ? '#D4A24C' : 'rgba(255,255,255,0.5)'}
                   stroke={isSelected ? 'white' : 'transparent'}
                   strokeWidth="0.3"
                 />
@@ -435,7 +435,7 @@ function StepDestinations({
               <MapPin className="w-3.5 h-3.5" strokeWidth={isSelected ? 2 : 1.5} />
               {d.city}
               {isSelected && (
-                <Check className="w-3.5 h-3.5 text-[#E8A317]" strokeWidth={2.5} />
+                <Check className="w-3.5 h-3.5 text-[#D4A24C]" strokeWidth={2.5} />
               )}
             </button>
           );
@@ -444,7 +444,7 @@ function StepDestinations({
 
       {selected.length > 0 && (
         <p className="text-xs text-white/50 text-center mt-6">
-          <span className="text-[#E8A317] font-semibold">{selected.length}</span> destination{selected.length > 1 ? 's' : ''} selected · we&apos;ll start watching prices
+          <span className="text-[#D4A24C] font-semibold">{selected.length}</span> destination{selected.length > 1 ? 's' : ''} selected · we&apos;ll start watching prices
         </p>
       )}
     </div>
@@ -469,7 +469,7 @@ function StepFirstMission({
   return (
     <div>
       <div className="text-center mb-10">
-        <p className="text-[10px] uppercase tracking-[0.2em] text-[#E8A317] font-semibold mb-3">
+        <p className="text-[10px] uppercase tracking-[0.2em] text-[#D4A24C] font-semibold mb-3">
           3 of 3 · Your first mission
         </p>
         <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight leading-tight">
@@ -497,7 +497,7 @@ function StepFirstMission({
         >
           <div
             className="flex h-11 w-11 items-center justify-center rounded-xl mb-4"
-            style={{ background: 'linear-gradient(135deg, #E8A317, #F97316)' }}
+            style={{ background: 'linear-gradient(135deg, #D4A24C, #DFAE5B)' }}
           >
             <Sparkles className="w-5 h-5 text-white" strokeWidth={1.8} />
           </div>
@@ -505,14 +505,14 @@ function StepFirstMission({
           <p className="text-xs text-white/55 mt-1 leading-relaxed">
             Pick a destination, set a target price, and let the AI do the rest.
           </p>
-          <div className="flex items-center gap-1.5 mt-4 text-[11px] text-[#E8A317] font-medium">
+          <div className="flex items-center gap-1.5 mt-4 text-[11px] text-[#D4A24C] font-medium">
             <Plane className="w-3 h-3" strokeWidth={2} />
             Opens the mission wizard
           </div>
           {intent === 'create' && (
             <div
               className="absolute top-3 right-3 flex h-6 w-6 items-center justify-center rounded-full"
-              style={{ background: 'linear-gradient(135deg, #E8A317, #F97316)' }}
+              style={{ background: 'linear-gradient(135deg, #D4A24C, #DFAE5B)' }}
             >
               <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />
             </div>
@@ -559,7 +559,7 @@ function StepFirstMission({
 
       <p className="text-center text-[11px] text-white/30 mt-6">
         Either way, you&apos;ll earn{' '}
-        <span className="text-[#E8A317] font-semibold">+50 bonus points</span> for completing onboarding.
+        <span className="text-[#D4A24C] font-semibold">+50 bonus points</span> for completing onboarding.
       </p>
     </div>
   );
@@ -576,7 +576,7 @@ function CelebrationOverlay() {
       <div
         className="relative scale-in"
         style={{
-          background: 'linear-gradient(135deg, #E8A317 0%, #F97316 100%)',
+          background: 'linear-gradient(135deg, #D4A24C 0%, #DFAE5B 100%)',
           padding: '3rem 4rem',
           borderRadius: '28px',
           boxShadow: '0 40px 100px rgba(232,163,23,0.5)',

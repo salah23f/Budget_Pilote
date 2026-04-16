@@ -98,25 +98,6 @@ export function SavingsCelebration() {
         </div>
       </div>
 
-      <style jsx>{`
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        @keyframes scaleIn {
-          from { transform: scale(0.7); opacity: 0; }
-          to { transform: scale(1); opacity: 1; }
-        }
-        @keyframes bounce {
-          0% { transform: scale(0.3); }
-          50% { transform: scale(1.2); }
-          100% { transform: scale(1); }
-        }
-        @keyframes confettiFall {
-          0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-          100% { transform: translateY(400px) rotate(720deg); opacity: 0; }
-        }
-      `}</style>
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import './globals.css';
-import { Inter, Plus_Jakarta_Sans } from 'next/font/google';
+import { Inter, Plus_Jakarta_Sans, Fraunces } from 'next/font/google';
 import { Toaster } from 'sonner';
 import WalletProvider from '@/components/wallet-provider';
 import PWAInstallPrompt from '@/components/pwa-install-prompt';
@@ -8,48 +8,53 @@ import { WebsiteSchema } from '@/components/structured-data';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const jakarta = Plus_Jakarta_Sans({ subsets: ['latin'], variable: '--font-display', weight: ['500', '600', '700', '800'] });
+// Editorial serif — hero headlines, greetings, section intros (see docs/design-system.md §2)
+const fraunces = Fraunces({
+  subsets: ['latin'],
+  variable: '--font-serif',
+  weight: ['300', '400', '500', '600'],
+  style: ['normal', 'italic'],
+});
 
 export const metadata = {
   title: {
-    default: 'Flyeas — AI Travel Agent for Flights & Hotels',
-    template: '%s | Flyeas',
+    default: 'Flyeas — Your travel concierge',
+    template: '%s · Flyeas',
   },
   description:
-    'AI-powered travel agent that monitors live flight and hotel prices 24/7, predicts the best time to buy, and auto-books within your budget.',
+    'Watch flight and hotel prices around the clock. Set a target, let the mission run, book on your terms.',
   keywords: [
     'travel',
     'flights',
     'hotels',
-    'AI',
-    'booking',
-    'cheap flights',
-    'price prediction',
-    'auto-buy',
-    'travel agent',
+    'concierge',
+    'price tracking',
+    'travel planner',
+    'price alerts',
     'Flyeas',
   ],
   manifest: '/manifest.json',
   metadataBase: new URL('https://faregenie.vercel.app'),
   openGraph: {
-    title: 'Flyeas — AI Travel Agent for Flights & Hotels',
-    description: 'AI-powered travel agent that monitors live prices 24/7 and auto-books the best deals.',
+    title: 'Flyeas — Your travel concierge',
+    description: 'Watch prices around the clock. Book on your terms.',
     type: 'website',
     siteName: 'Flyeas',
     locale: 'en_US',
     images: [
       {
-        url: '/api/og?title=Flyeas%20—%20AI%20Travel%20Agent&subtitle=Find%20the%20cheapest%20flights%20%26%20hotels%20powered%20by%20AI',
+        url: '/api/og?title=Flyeas&subtitle=Your%20travel%20concierge',
         width: 1200,
         height: 630,
-        alt: 'Flyeas — AI Travel Agent',
+        alt: 'Flyeas',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Flyeas — AI Travel Agent',
-    description: 'AI-powered travel agent that monitors live prices 24/7.',
-    images: ['/api/og?title=Flyeas%20—%20AI%20Travel%20Agent'],
+    title: 'Flyeas — Your travel concierge',
+    description: 'Watch prices around the clock. Book on your terms.',
+    images: ['/api/og?title=Flyeas'],
   },
   robots: {
     index: true,
@@ -65,12 +70,12 @@ export const metadata = {
 export const viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#09090B',
+  themeColor: '#0B0B0D',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${inter.variable} ${jakarta.variable}`}>
+    <html lang="en" className={`${inter.variable} ${jakarta.variable} ${fraunces.variable}`}>
       <head>
         {/* Travelpayouts affiliate verification */}
         <script
@@ -94,10 +99,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             position="top-right"
             toastOptions={{
               style: {
-                background: 'rgba(9, 9, 11, 0.95)',
-                border: '1px solid rgba(255,255,255,0.08)',
-                color: '#FAFAF9',
-                backdropFilter: 'blur(12px)',
+                background: '#1D1D22',
+                border: '1px solid #252528',
+                color: '#F5F5F1',
+                borderRadius: '10px',
               },
             }}
           />

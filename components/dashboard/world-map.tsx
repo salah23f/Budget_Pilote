@@ -89,8 +89,8 @@ export function WorldMap({
             <stop offset="100%" stopColor="rgba(249,115,22,0)" />
           </linearGradient>
           <radialGradient id="wmPin" cx="0.5" cy="0.5" r="0.5">
-            <stop offset="0%" stopColor="#E8A317" stopOpacity="0.9" />
-            <stop offset="100%" stopColor="#E8A317" stopOpacity="0" />
+            <stop offset="0%" stopColor="#D4A24C" stopOpacity="0.9" />
+            <stop offset="100%" stopColor="#D4A24C" stopOpacity="0" />
           </radialGradient>
         </defs>
 
@@ -154,9 +154,9 @@ export function WorldMap({
               </path>
               {/* Endpoints */}
               <circle cx={r.from.x} cy={r.from.y} r="2" fill="url(#wmPin)" />
-              <circle cx={r.from.x} cy={r.from.y} r="0.8" fill="#E8A317" />
+              <circle cx={r.from.x} cy={r.from.y} r="0.8" fill="#D4A24C" />
               <circle cx={r.to.x} cy={r.to.y} r="2" fill="url(#wmPin)" />
-              <circle cx={r.to.x} cy={r.to.y} r="0.8" fill="#F97316" />
+              <circle cx={r.to.x} cy={r.to.y} r="0.8" fill="#DFAE5B" />
               {/* Labels */}
               <text
                 x={r.from.x}

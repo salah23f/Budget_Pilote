@@ -98,7 +98,7 @@ const en: Record<string, string> = {
   'pricing.pro': 'Pro',
   'pricing.elite': 'Elite',
   'pricing.perMonth': 'per month',
-  'pricing.getStarted': 'Get started',
+  'pricing.getStarted': 'Begin',
   'pricing.startProTrial': 'Start Pro trial',
   'pricing.goElite': 'Go Elite',
 
@@ -129,7 +129,7 @@ const en: Record<string, string> = {
 
   // Flights
   'flights.title': 'Search Flights',
-  'flights.subtitle': 'Live prices from 400+ airlines worldwide',
+  'flights.subtitle': 'Live prices from 400 airlines. No stale caches.',
   'flights.hackerFare': 'Hacker Fare',
   'flights.hackerFareDesc': 'Combining one-way tickets for savings',
   'flights.priceAlert': 'Set Price Alert',
@@ -147,7 +147,7 @@ const en: Record<string, string> = {
 
   // Hotels
   'hotels.title': 'Search Hotels',
-  'hotels.subtitle': 'Photos, ratings & verified guest reviews',
+  'hotels.subtitle': 'Two million hotels. Verified reviews. Transparent rates.',
   'hotels.checkIn': 'Check-in',
   'hotels.checkOut': 'Check-out',
   'hotels.guests': 'Guests',
@@ -173,7 +173,7 @@ const en: Record<string, string> = {
 
   // Missions
   'missions.title': 'AI Missions',
-  'missions.subtitle': 'Set targets and let AI monitor prices 24/7',
+  'missions.subtitle': 'Set a target. We watch the fare. You book on your terms.',
   'missions.active': 'Active',
   'missions.completed': 'Completed',
   'missions.paused': 'Paused',
@@ -208,7 +208,7 @@ const en: Record<string, string> = {
   'chat.title': 'Flyeas AI',
   'chat.subtitle': 'Live worldwide search',
   'chat.placeholder': 'Ask anything...',
-  'chat.welcome': "Hi! I'm **Flyeas** -- your AI travel agent.\n\nAsk me to find live flights, real hotels, or compare prices for any route in the world.\n\nI can also explain our AI predictions, help you create monitoring missions, and give you travel tips.",
+  'chat.welcome': "Flyeas here. Ask for a route, a city, or a date.\n\nReal flights, real hotels, live prices — no guesses. I can set up a mission to watch a fare for you too.",
   'chat.searching': 'Searching live data...',
   'chat.connectionError': 'Connection error. Please try again.',
   'chat.clearChat': 'Clear chat',

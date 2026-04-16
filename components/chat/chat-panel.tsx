@@ -225,7 +225,7 @@ function PlaneIcon({ size = 16 }: { size?: number }) {
       height={size}
       viewBox="0 0 24 24"
       fill="none"
-      stroke="#E8A317"
+      stroke="#D4A24C"
       strokeWidth="1.8"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -441,7 +441,7 @@ export default function ChatPanel() {
           }}
           aria-label="Open AI assistant"
         >
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E8A317" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#D4A24C" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
             <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
           </svg>
           <span
@@ -605,7 +605,7 @@ export default function ChatPanel() {
                           border: '1px solid rgba(232,163,23,0.15)',
                           backdropFilter: 'blur(8px)',
                           WebkitBackdropFilter: 'blur(8px)',
-                          color: '#E8A317',
+                          color: '#D4A24C',
                         }}
                       >
                         {a}
@@ -675,7 +675,7 @@ export default function ChatPanel() {
                 style={{
                   background:
                     input.trim() && !loading
-                      ? 'linear-gradient(135deg, #E8A317, #F97316)'
+                      ? 'linear-gradient(135deg, #D4A24C, #F97316)'
                       : 'rgba(255,255,255,0.04)',
                   border: '1px solid transparent',
                 }}

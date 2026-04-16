@@ -81,7 +81,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         }}
         aria-label="Scroll to top"
       >
-        <ChevronUp className="w-[18px] h-[18px] text-[#E8A317]" strokeWidth={2.5} />
+        <ChevronUp className="w-[18px] h-[18px] text-[#D4A24C]" strokeWidth={2.5} />
       </button>
     </div>
   );

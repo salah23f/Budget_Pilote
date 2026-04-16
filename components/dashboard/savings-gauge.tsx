@@ -83,8 +83,8 @@ export function SavingsGauge({
             <stop offset="100%" stopColor="rgba(255,255,255,0.02)" />
           </linearGradient>
           <linearGradient id="gaugeFill" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor="#E8A317" />
-            <stop offset="50%" stopColor="#F97316" />
+            <stop offset="0%" stopColor="#D4A24C" />
+            <stop offset="50%" stopColor="#DFAE5B" />
             <stop offset="100%" stopColor="#10b981" />
           </linearGradient>
           <filter id="gaugeGlow" x="-10%" y="-10%" width="120%" height="120%">
@@ -145,7 +145,7 @@ export function SavingsGauge({
             cx={endX}
             cy={endY}
             r="7"
-            fill="#E8A317"
+            fill="#D4A24C"
             stroke="#09090B"
             strokeWidth="2"
             filter="url(#gaugeGlow)"
@@ -158,10 +158,10 @@ export function SavingsGauge({
           Total saved
         </p>
         <div className="mt-1">
-          <PriceDisplay usd={totalSavedUsd} size="2xl" color="#E8A317" />
+          <PriceDisplay usd={totalSavedUsd} size="2xl" color="#D4A24C" />
         </div>
         <p className="text-[10px] text-white/40 mt-1">
-          Tier: <span className="text-[#E8A317] font-semibold">{tierLabels[tierIndex]}</span>
+          Tier: <span className="text-[#D4A24C] font-semibold">{tierLabels[tierIndex]}</span>
           {nextTier !== currentTier && (
             <span className="text-white/30">
               {' '}

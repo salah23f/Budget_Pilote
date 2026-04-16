@@ -42,7 +42,7 @@ export function LevelWidget() {
         <div className="flex items-center gap-3">
           <div
             className="flex h-10 w-10 items-center justify-center rounded-xl"
-            style={{ background: 'linear-gradient(135deg, #E8A317, #F97316)' }}
+            style={{ background: 'linear-gradient(135deg, #D4A24C, #DFAE5B)' }}
           >
             <Trophy className="w-4 h-4 text-white" strokeWidth={2} />
           </div>
@@ -65,7 +65,7 @@ export function LevelWidget() {
             {nextLevel && <span className="text-white/20"> / {formatPoints(nextLevel.requirement)}</span>}
           </span>
           {nextLevel && (
-            <span className="text-[10px] text-[#E8A317]/80 font-medium">
+            <span className="text-[10px] text-[#D4A24C]/80 font-medium">
               Next: {nextLevel.name}
             </span>
           )}
@@ -75,7 +75,7 @@ export function LevelWidget() {
             className="h-full rounded-full transition-all duration-700"
             style={{
               width: `${progress}%`,
-              background: 'linear-gradient(90deg, #E8A317, #F97316)',
+              background: 'linear-gradient(90deg, #D4A24C, #DFAE5B)',
             }}
           />
         </div>

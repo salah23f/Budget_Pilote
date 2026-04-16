@@ -91,13 +91,13 @@ function AvatarConnectionIllustration() {
     <svg viewBox="0 0 240 120" className="w-full h-full" aria-hidden="true">
       <defs>
         <linearGradient id="connLine" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="#E8A317" stopOpacity="0" />
-          <stop offset="50%" stopColor="#E8A317" stopOpacity="0.9" />
-          <stop offset="100%" stopColor="#F97316" stopOpacity="0" />
+          <stop offset="0%" stopColor="#D4A24C" stopOpacity="0" />
+          <stop offset="50%" stopColor="#D4A24C" stopOpacity="0.9" />
+          <stop offset="100%" stopColor="#DFAE5B" stopOpacity="0" />
         </linearGradient>
         <radialGradient id="avatarGlow" cx="0.5" cy="0.5" r="0.5">
-          <stop offset="0%" stopColor="#E8A317" stopOpacity="0.35" />
-          <stop offset="100%" stopColor="#E8A317" stopOpacity="0" />
+          <stop offset="0%" stopColor="#D4A24C" stopOpacity="0.35" />
+          <stop offset="100%" stopColor="#D4A24C" stopOpacity="0" />
         </radialGradient>
       </defs>
 
@@ -123,17 +123,17 @@ function AvatarConnectionIllustration() {
       {/* Plane in middle */}
       <g transform="translate(120, 60)">
         <circle r="16" fill="#09090B" stroke="rgba(232,163,23,0.3)" strokeWidth="1" />
-        <path d="M -8 -1 L 6 -1 L 9 -5 L 11 -5 L 9 -1 L 10 -1 L 10 1 L 9 1 L 11 5 L 9 5 L 6 1 L -5 1 L -7 4 L -9 4 L -7 1 L -8 1 Z" fill="#E8A317" transform="scale(1.05)" />
+        <path d="M -8 -1 L 6 -1 L 9 -5 L 11 -5 L 9 -1 L 10 -1 L 10 1 L 9 1 L 11 5 L 9 5 L 6 1 L -5 1 L -7 4 L -9 4 L -7 1 L -8 1 Z" fill="#D4A24C" transform="scale(1.05)" />
       </g>
 
       {/* Sparkles */}
-      <circle cx="40" cy="30" r="1.5" fill="#E8A317" opacity="0.7">
+      <circle cx="40" cy="30" r="1.5" fill="#D4A24C" opacity="0.7">
         <animate attributeName="opacity" from="0.2" to="0.9" dur="1.5s" repeatCount="indefinite" />
       </circle>
-      <circle cx="200" cy="90" r="1.5" fill="#E8A317" opacity="0.5">
+      <circle cx="200" cy="90" r="1.5" fill="#D4A24C" opacity="0.5">
         <animate attributeName="opacity" from="0.3" to="1" dur="1.8s" repeatCount="indefinite" />
       </circle>
-      <circle cx="120" cy="28" r="1.5" fill="#F97316" opacity="0.6">
+      <circle cx="120" cy="28" r="1.5" fill="#DFAE5B" opacity="0.6">
         <animate attributeName="opacity" from="0.2" to="0.9" dur="1.2s" repeatCount="indefinite" />
       </circle>
     </svg>
@@ -239,7 +239,7 @@ export default function ReferralPage() {
           <div
             className="relative scale-in"
             style={{
-              background: 'linear-gradient(135deg, #E8A317, #F97316)',
+              background: 'linear-gradient(135deg, #D4A24C, #DFAE5B)',
               padding: '3rem 4rem',
               borderRadius: '24px',
               boxShadow: '0 30px 80px rgba(232,163,23,0.4)',
@@ -268,15 +268,15 @@ export default function ReferralPage() {
         <div className="grid md:grid-cols-[1fr_320px] gap-0">
           <div className="p-6 md:p-8">
             <div className="flex items-center gap-2 mb-3">
-              <span className="text-[10px] font-semibold uppercase tracking-widest text-[#E8A317]">
+              <span className="text-[10px] font-semibold uppercase tracking-widest text-[#D4A24C]">
                 Invite & Earn
               </span>
-              <span className="h-1 w-1 rounded-full bg-[#E8A317]/50" />
+              <span className="h-1 w-1 rounded-full bg-[#D4A24C]/50" />
               <span className="text-[10px] uppercase tracking-widest text-white/40">No limit</span>
             </div>
-            <h1 className="text-2xl md:text-4xl font-bold text-white tracking-tight leading-tight">
-              Invite friends,<br />
-              earn <span style={{ background: 'linear-gradient(135deg,#E8A317,#F97316)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>real rewards</span>.
+            <h1 className="editorial text-[32px] md:text-[44px] leading-[1.05] text-pen-1">
+              Invite friends. Earn<br />
+              <em className="italic text-accent">real</em> rewards.
             </h1>
             <p className="text-sm text-white/55 mt-3 max-w-md leading-relaxed">
               You get <span className="text-white font-semibold">$10 in travel credits</span> for every friend who joins and makes their first search.
@@ -292,7 +292,7 @@ export default function ReferralPage() {
               <div>
                 <p className="text-[10px] uppercase tracking-widest text-white/30">Credits earned</p>
                 <div className="mt-0.5">
-                  <PriceDisplay usd={totalEarned} size="2xl" color="#E8A317" />
+                  <PriceDisplay usd={totalEarned} size="2xl" color="#D4A24C" />
                 </div>
               </div>
               <div className="w-px h-10 bg-white/10 hidden md:block" />
@@ -402,7 +402,7 @@ export default function ReferralPage() {
             <span
               className="flex items-center justify-center w-8 h-8 rounded-lg"
               style={{
-                background: 'linear-gradient(135deg, #E8A317, #F97316)',
+                background: 'linear-gradient(135deg, #D4A24C, #DFAE5B)',
               }}
             >
               <Share2 className="w-4 h-4 text-white" strokeWidth={2} />
@@ -433,7 +433,7 @@ export default function ReferralPage() {
               style={{
                 background: emailSent
                   ? 'linear-gradient(135deg, #10b981, #059669)'
-                  : 'linear-gradient(135deg, #E8A317, #F97316)',
+                  : 'linear-gradient(135deg, #D4A24C, #DFAE5B)',
                 color: 'white',
               }}
             >
@@ -459,13 +459,13 @@ export default function ReferralPage() {
         <div className="flex items-center justify-between mb-4">
           <div>
             <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-              <Gift className="w-5 h-5 text-[#E8A317]" strokeWidth={1.8} /> Reward tiers
+              <Gift className="w-5 h-5 text-[#D4A24C]" strokeWidth={1.8} /> Reward tiers
             </h2>
             <p className="text-xs text-white/40 mt-0.5">Unlock progressively bigger rewards as your network grows</p>
           </div>
           {nextTier && (
             <div className="hidden md:flex items-center gap-2 text-[11px] text-white/50">
-              <span>{nextTier.threshold - completedCount} friends to <strong className="text-[#E8A317]">{nextTier.title}</strong></span>
+              <span>{nextTier.threshold - completedCount} friends to <strong className="text-[#D4A24C]">{nextTier.title}</strong></span>
             </div>
           )}
         </div>
@@ -484,7 +484,7 @@ export default function ReferralPage() {
                 className="h-full rounded-full transition-all duration-700 ease-out"
                 style={{
                   width: `${tierProgress}%`,
-                  background: 'linear-gradient(90deg, #E8A317, #F97316)',
+                  background: 'linear-gradient(90deg, #D4A24C, #DFAE5B)',
                   boxShadow: '0 0 10px rgba(232,163,23,0.3)',
                 }}
               />
@@ -547,7 +547,7 @@ export default function ReferralPage() {
               }}
             >
               <div
-                className="w-9 h-9 rounded-xl flex items-center justify-center text-sm font-bold text-[#E8A317] mb-3"
+                className="w-9 h-9 rounded-xl flex items-center justify-center text-sm font-bold text-[#D4A24C] mb-3"
                 style={{
                   background: 'rgba(232,163,23,0.1)',
                   border: '1px solid rgba(232,163,23,0.2)',
@@ -572,7 +572,7 @@ export default function ReferralPage() {
       >
         <div className="flex items-center gap-3">
           <div className="flex -space-x-2">
-            {['#E8A317', '#F97316', '#10b981', '#60a5fa', '#a78bfa'].map((c, i) => (
+            {['#D4A24C', '#DFAE5B', '#10b981', '#60a5fa', '#a78bfa'].map((c, i) => (
               <div
                 key={i}
                 className="w-8 h-8 rounded-full border-2"
@@ -723,7 +723,7 @@ function TierCard({
         <span
           className="absolute top-3 right-3 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider"
           style={{
-            background: 'linear-gradient(135deg, #E8A317, #F97316)',
+            background: 'linear-gradient(135deg, #D4A24C, #DFAE5B)',
             color: 'white',
           }}
         >
@@ -736,7 +736,7 @@ function TierCard({
           className="w-10 h-10 rounded-xl flex items-center justify-center"
           style={{
             background: unlocked
-              ? 'linear-gradient(135deg, #E8A317, #F97316)'
+              ? 'linear-gradient(135deg, #D4A24C, #DFAE5B)'
               : 'rgba(255,255,255,0.04)',
             border: unlocked ? 'none' : '1px solid rgba(255,255,255,0.06)',
           }}
@@ -757,31 +757,31 @@ function TierCard({
 
       <div className="space-y-1 text-[11px]">
         <div className="flex items-center gap-2">
-          <span className="text-[#E8A317]">+</span>
+          <span className="text-[#D4A24C]">+</span>
           <PriceDisplay usd={tier.creditUsd} size="sm" />
           <span className="text-white/50">travel credits</span>
         </div>
         {tier.proMonthsBonus && (
           <div className="flex items-center gap-2 text-white/65">
-            <span className="text-[#E8A317]">+</span>
+            <span className="text-[#D4A24C]">+</span>
             {tier.proMonthsBonus} month{tier.proMonthsBonus > 1 ? 's' : ''} Pro free
           </div>
         )}
         {tier.eliteMonthsBonus && (
           <div className="flex items-center gap-2 text-white/65">
-            <span className="text-[#E8A317]">+</span>
+            <span className="text-[#D4A24C]">+</span>
             {tier.eliteMonthsBonus} months Elite
           </div>
         )}
         {tier.vipLifetime && (
           <div className="flex items-center gap-2 text-white/65">
-            <span className="text-[#E8A317]">+</span>
+            <span className="text-[#D4A24C]">+</span>
             Lifetime VIP status
           </div>
         )}
         {tier.badgeName && (
           <div className="flex items-center gap-2 text-white/65">
-            <span className="text-[#E8A317]">+</span>
+            <span className="text-[#D4A24C]">+</span>
             &quot;{tier.badgeName}&quot; badge
           </div>
         )}
@@ -803,7 +803,7 @@ function FriendRow({ friend }: { friend: InvitedFriend }) {
     pending: { label: 'Pending signup', color: '#9ca3af' },
     signed_up: { label: 'Signed up', color: '#60a5fa' },
     searched: { label: 'Earned $10', color: '#10b981' },
-    booked: { label: 'Booked + earned', color: '#E8A317' },
+    booked: { label: 'Booked + earned', color: '#D4A24C' },
   };
   const cfg = statusConfig[friend.status];
   const initial = (friend.name || friend.email || '?').charAt(0).toUpperCase();
@@ -865,7 +865,7 @@ function EmptyFriends({ onInvite }: { onInvite: () => void }) {
           border: '1px solid rgba(232,163,23,0.2)',
         }}
       >
-        <Plus className="w-6 h-6 text-[#E8A317]" strokeWidth={1.8} />
+        <Plus className="w-6 h-6 text-[#D4A24C]" strokeWidth={1.8} />
       </div>
       <p className="text-sm font-semibold text-white">Invite your first friend</p>
       <p className="text-xs text-white/40 mt-1 mb-4">Earn $10 when they make their first search</p>
@@ -873,7 +873,7 @@ function EmptyFriends({ onInvite }: { onInvite: () => void }) {
         onClick={onInvite}
         className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition"
         style={{
-          background: 'linear-gradient(135deg, #E8A317, #F97316)',
+          background: 'linear-gradient(135deg, #D4A24C, #DFAE5B)',
           color: 'white',
         }}
       >

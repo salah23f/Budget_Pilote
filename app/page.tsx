@@ -2,659 +2,780 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import TripPlannerHero from '@/components/trip-planner-hero';
-import LiveDeals from '@/components/live-deals';
 import { Accordion, AccordionItem } from '@/components/ui/accordion';
-import {
-  Eye,
-  Zap,
-  ShieldCheck,
-  BarChart3,
-  Globe,
-  Wallet,
-  Search,
-  Activity,
-  CheckCircle,
-  ArrowRight,
+import { PriceDisplay } from '@/components/ui/price-display';
+import { useSavingsStore } from '@/lib/store/savings-store';
+import { ArrowRight, Check } from 'lucide-react';
 
-  Plane,
-  Check,
-} from 'lucide-react';
+/* ──────────────────────────────────────────────────────────
+   Landing — editorial travel brand.
+   See docs/design-system.md for tokens.
+   No gradients. No glows. No emojis. Serif for moments that matter.
+   ────────────────────────────────────────────────────────── */
 
-/* ── Multilingual greetings ─────────────────────────────── */
-const greetings = [
-  { text: 'Hello', lang: 'English' },
-  { text: 'Bonjour', lang: 'Français' },
-  { text: 'Hola', lang: 'Español' },
-  { text: 'Willkommen', lang: 'Deutsch' },
-  { text: 'Ciao', lang: 'Italiano' },
-  { text: 'Olá', lang: 'Português' },
-  { text: 'Merhaba', lang: 'Türkçe' },
-  { text: 'Welkom', lang: 'Nederlands' },
-  { text: 'ようこそ', lang: '日本語' },
-  { text: '환영합니다', lang: '한국어' },
-  { text: '欢迎', lang: '中文' },
-  { text: 'مرحباً', lang: 'العربية' },
-  { text: 'Добро пожаловать', lang: 'Русский' },
-  { text: 'Välkommen', lang: 'Svenska' },
-  { text: 'Witaj', lang: 'Polski' },
-  { text: 'Xin chào', lang: 'Tiếng Việt' },
-];
-
-/* ── Pricing tiers ─────────────────────────────── */
 const TIERS = [
   {
     name: 'Free',
     price: 0,
-    desc: 'Get started with AI travel intelligence',
-    cta: 'Get started',
+    cadence: 'Always',
+    pitch: 'One live mission. Daily deal digest.',
+    cta: 'Begin',
+    ctaHref: '/onboarding',
     highlight: false,
-    features: [
+    items: [
       '1 active mission',
-      '3 flight searches / day',
-      'Basic price predictions',
-      'Deal alerts (daily digest)',
+      '3 searches per day',
+      'Deal alerts, daily',
       'Price calendar view',
-      'Community support',
     ],
   },
   {
     name: 'Pro',
-    price: 9.99,
-    desc: 'AI works 24/7 to find your best deals',
+    price: 9,
+    cadence: 'per month',
+    pitch: 'Auto-book when your target hits. 3× loyalty points.',
     cta: 'Start Pro trial',
+    ctaHref: '/onboarding',
     highlight: true,
-    badge: 'Most popular',
-    features: [
-      'Unlimited missions & searches',
-      'Full statistical predictions',
-      'Auto-buy when price is right',
-      'Priority monitoring (15 min)',
-      'Real-time push alerts',
-      'Price history (90 days)',
-      '3x loyalty points',
-      'Priority support',
+    items: [
+      'Unlimited missions',
+      'Auto-buy on target',
+      '15-minute monitoring',
+      '90 days of price history',
+      '3× loyalty points',
     ],
   },
   {
     name: 'Elite',
-    price: 29.99,
-    desc: 'Premium experience with dedicated AI agent',
+    price: 29,
+    cadence: 'per month',
+    pitch: 'Dedicated concierge. Real-time alerts. 5× points.',
     cta: 'Go Elite',
+    ctaHref: '/onboarding',
     highlight: false,
-    features: [
+    items: [
       'Everything in Pro',
-      'Dedicated AI travel advisor',
-      'Group trip builder',
-      'Business & First class tracking',
-      'Multi-city mission planning',
-      '5x loyalty points',
-      'Crypto payments (USDC)',
-      'White-glove onboarding',
+      '5-minute monitoring',
+      'Dedicated AI concierge',
+      'Full price history',
+      '5× loyalty points',
+      'Priority support',
     ],
   },
 ];
 
-/* ── FAQ ─────────────────────────────── */
-const FAQ_ITEMS = [
+const FAQ = [
   {
-    q: 'How does Flyeas find cheaper flights?',
-    a: 'Our AI agents monitor live prices from 400+ airlines 24/7 using real-time APIs. We use statistical analysis (z-scores, percentile rankings, trend detection) to identify when a price is genuinely below its historical average for that route.',
+    q: 'How do you get real prices?',
+    a: 'We query live inventory from 400+ airline APIs and 2 million hotels. No stale caches, no bait. You see the price your chosen provider actually charges at that second.',
   },
   {
-    q: 'Is auto-buy safe? Will it charge my card without asking?',
-    a: 'Auto-buy only triggers when the price drops below your specified threshold AND our AI model confirms it\'s a genuine deal. Your card is authorized (not charged) upfront — we only capture the exact amount when a matching deal is found. You can cancel anytime.',
+    q: 'Do you hide any fees?',
+    a: 'No. The number you see is the number you pay. Taxes and required fees are included. Optional extras like baggage are shown separately with clear labels.',
   },
   {
-    q: 'What airlines and hotels do you search?',
-    a: 'We search across 400+ airlines and 150,000+ hotels worldwide through our live API partners. Results include major carriers, low-cost airlines, and boutique hotels — all with real-time pricing.',
+    q: 'What does a mission actually do?',
+    a: 'You pick a route, a window, and a target price. We watch every inventory refresh until the offer beats your target, then we alert you — or auto-book if you set that. You can cancel anytime.',
   },
   {
-    q: 'Can I pay with cryptocurrency?',
-    a: 'Yes. Elite plan users can deposit USDC into a smart contract escrow on Base, Optimism, Arbitrum, or Polygon. The funds remain in your custody until the agent finds your deal. Every booking generates a verifiable on-chain receipt.',
+    q: 'Why does Flyeas keep commissions instead of rebating them?',
+    a: 'We keep a small partner commission, and we return a meaningful share as loyalty points (redeemable against future trips). This keeps the tool free to use while keeping incentives aligned.',
   },
   {
-    q: 'How is this different from Google Flights or Skyscanner?',
-    a: 'Those tools show you prices right now. Flyeas monitors prices over time, predicts optimal buy moments using statistical models, and can auto-book when the price hits your target — even at 3am. Think of it as a personal trading bot, but for flights.',
+    q: 'Can I cancel Pro anytime?',
+    a: 'Yes. No contracts, no lock-in. If you cancel mid-cycle you keep Pro until the period ends.',
   },
   {
-    q: 'Is my data secure?',
-    a: 'We use Stripe for card payments (PCI-DSS compliant, no card data touches our servers) and Supabase for data storage with row-level security. Crypto payments are non-custodial — you retain your private keys at all times.',
+    q: 'Do you support my currency and language?',
+    a: '32 languages and 85+ currencies. Switch anytime from the header. Conversions use live rates refreshed every six hours.',
   },
 ];
 
-/* ── Features ─────────────────────────────── */
-const FEATURES = [
-  { icon: Eye, title: 'AI Price Monitoring', desc: 'Agents scan live flight and hotel prices around the clock, tracking drops and availability in real time.', color: '#E8A317' },
-  { icon: Zap, title: 'Auto-Buy System', desc: 'Set your budget and rules. When the perfect deal appears, our agent books instantly so you never miss it.', color: '#F97316' },
-  { icon: ShieldCheck, title: 'Secure Payments', desc: 'Pay with Stripe or USDC. Card is authorized but not charged until a deal is found. Full PCI compliance.', color: '#10B981' },
-  { icon: BarChart3, title: 'Statistical Predictions', desc: 'Z-scores, percentile rankings, and trend analysis tell you exactly when to buy vs. when to wait.', color: '#3B82F6' },
-  { icon: Globe, title: '400+ Airlines', desc: 'Real-time prices from major carriers and low-cost airlines worldwide. No cached or stale data.', color: '#8B5CF6' },
-  { icon: Wallet, title: 'Crypto & Card', desc: 'Pay with USDC on Base, Optimism, Arbitrum, or Polygon. Every booking generates a verifiable on-chain receipt.', color: '#EF4444' },
+/* ── Editorial greetings (rotates in the hero eyebrow) ── */
+const GREETINGS = [
+  { text: 'Hello', lang: 'English' },
+  { text: 'Bonjour', lang: 'Français' },
+  { text: 'Guten Tag', lang: 'Deutsch' },
+  { text: 'Hola', lang: 'Español' },
+  { text: 'Ciao', lang: 'Italiano' },
+  { text: 'こんにちは', lang: '日本語' },
+  { text: '안녕하세요', lang: '한국어' },
+  { text: 'مرحباً', lang: 'العربية' },
+  { text: 'Olá', lang: 'Português' },
 ];
 
-export default function HomePage() {
-  const router = useRouter();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [greetingIndex, setGreetingIndex] = useState(0);
-  const [fade, setFade] = useState(true);
-  // FAQ state removed — now using Accordion component
-  const [email, setEmail] = useState('');
-  const [subscribed, setSubscribed] = useState(false);
-  const [subscribing, setSubscribing] = useState(false);
+export default function LandingPage() {
+  const [gi, setGi] = useState(0);
+  const [visible, setVisible] = useState(true);
+  const totalSaved = useSavingsStore((s) => s.totalSaved);
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem('sv_user');
-      if (stored) {
-        const user = JSON.parse(stored);
-        if (user.firstName) setIsLoggedIn(true);
-      }
-    } catch (_) {}
+    const t = setInterval(() => {
+      setVisible(false);
+      setTimeout(() => {
+        setGi((p) => (p + 1) % GREETINGS.length);
+        setVisible(true);
+      }, 300);
+    }, 3200);
+    return () => clearInterval(t);
   }, []);
 
-  useEffect(() => {
-    if (isLoggedIn) return;
-    const interval = setInterval(() => {
-      setFade(false);
-      setTimeout(() => {
-        setGreetingIndex((prev) => (prev + 1) % greetings.length);
-        setFade(true);
-      }, 350);
-    }, 2200);
-    return () => clearInterval(interval);
-  }, [isLoggedIn]);
+  return (
+    <div className="min-h-screen bg-ink-950 text-pen-1">
+      <TopNav />
 
-  async function handleSubscribe(e: React.FormEvent) {
-    e.preventDefault();
-    if (!email || subscribing) return;
-    setSubscribing(true);
-    try {
-      await fetch('/api/subscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
-      });
-      setSubscribed(true);
-    } catch (_) {} finally {
-      setSubscribing(false);
-    }
-  }
+      {/* ───────────────────────────────── Hero ───────────────────────────────── */}
+      <section className="border-b border-line-1">
+        <div className="mx-auto max-w-wide px-6 lg:px-12 py-16 lg:py-24">
+          <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-12 lg:gap-16 items-center">
+            {/* Left — editorial copy */}
+            <div>
+              <div className="flex items-center gap-3 mb-6">
+                <span className="flex items-center gap-2 text-micro uppercase text-pen-3">
+                  <span className="relative flex h-1.5 w-1.5">
+                    <span className="absolute inline-flex h-full w-full rounded-full bg-success opacity-60 animate-ping" />
+                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-success" />
+                  </span>
+                  Live · 400+ carriers
+                </span>
+                <span className="text-micro uppercase text-pen-3">
+                  <span
+                    className={`inline-block transition-opacity duration-300 ${visible ? 'opacity-100' : 'opacity-0'}`}
+                  >
+                    {GREETINGS[gi].text}
+                  </span>
+                </span>
+              </div>
 
-  if (isLoggedIn) {
-    return (
-      <main className="min-h-screen flex flex-col">
-        <nav className="relative z-10 mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-5 md:px-10">
-          <Link href="/" className="flex items-center gap-2.5">
-            <LogoIcon size={36} />
-            <LogoText size="xl" />
-          </Link>
-          <Link href="/dashboard" className="inline-flex items-center gap-2 bg-gradient-to-r from-accent-light to-accent-dark text-white rounded-xl px-6 py-2.5 text-sm font-semibold shadow-glow hover:shadow-glow-lg transition-all">
-            Go to Dashboard
-          </Link>
-        </nav>
-        <div className="flex flex-1 items-center justify-center px-6">
-          <div className="text-center">
-            <h1 className="text-4xl font-bold font-display md:text-5xl text-text-primary tracking-tight">Welcome back!</h1>
-            <p className="mt-4 text-text-muted">Your AI travel agent is ready.</p>
-            <Link href="/dashboard" className="mt-8 inline-flex items-center gap-2 bg-gradient-to-r from-accent-light to-accent-dark text-white rounded-2xl px-10 py-4 text-base font-semibold shadow-glow hover:shadow-glow-lg hover:-translate-y-0.5 transition-all">
-              Open Dashboard
-              <ArrowRight className="w-[18px] h-[18px]" />
-            </Link>
+              <h1 className="editorial text-[40px] md:text-display leading-[1.05]">
+                Watch prices.<br />
+                Book on <em className="italic text-accent">your</em> terms.
+              </h1>
+
+              <p className="mt-6 text-body-lg text-pen-2 max-w-[540px]">
+                Flyeas is a travel concierge that watches flight and hotel prices around the clock,
+                so you never book on the wrong day again. Set a target. Let the mission run.
+                Buy when it makes sense.
+              </p>
+
+              <div className="mt-8 flex flex-wrap items-center gap-3">
+                <Link
+                  href="/onboarding"
+                  className="premium-button inline-flex items-center gap-2 rounded-md px-5 py-3 text-body"
+                >
+                  Begin
+                  <ArrowRight className="h-4 w-4" strokeWidth={2} />
+                </Link>
+                <Link
+                  href="/flights"
+                  className="secondary-button inline-flex items-center gap-2 rounded-md px-5 py-3 text-body"
+                >
+                  Browse flights
+                </Link>
+              </div>
+
+              <div className="mt-10 flex items-center gap-6 text-caption text-pen-3">
+                <span>No credit card required</span>
+                <span className="h-1 w-1 rounded-full bg-pen-3/60" />
+                <span>32 languages · 85+ currencies</span>
+              </div>
+            </div>
+
+            {/* Right — editorial visual (minimalist globe with a single arc) */}
+            <div className="order-first lg:order-last">
+              <HeroVisual />
+            </div>
           </div>
         </div>
-      </main>
-    );
-  }
+      </section>
 
-  return (
-    <main className="min-h-screen overflow-hidden">
-      {/* Background orb — static, no animation */}
-      <div className="pointer-events-none fixed left-1/2 top-1/3 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full opacity-40"
-        style={{
-          background: 'radial-gradient(circle, color-mix(in srgb, var(--flyeas-accent) 8%, transparent) 0%, transparent 70%)',
-          filter: 'blur(80px)',
-        }}
+      {/* ─────────────────────────── Try it — natural language ─────────────────────────── */}
+      <section className="border-b border-line-1 bg-ink-900">
+        <div className="mx-auto max-w-wide px-6 lg:px-12 py-16 lg:py-20">
+          <div className="max-w-[680px] mb-10">
+            <p className="text-micro uppercase text-pen-3 mb-3">Try it now</p>
+            <h2 className="editorial text-h1">
+              Tell us where you're going. Get prices in seconds.
+            </h2>
+            <p className="mt-3 text-body text-pen-2">
+              One sentence is enough. Real flights, real hotels, real prices.
+            </p>
+          </div>
+          <TripPlannerHero />
+        </div>
+      </section>
+
+      {/* ─────────────────────────────── Product 1 ─────────────────────────────── */}
+      <ProductSection
+        eyebrow="Around the clock"
+        title="The search that never sleeps"
+        body="Airlines change prices up to 30 times a day. We check every route you care about every few minutes, and tell you the moment a better fare appears. No browser tabs, no refresh button, no second-guessing."
+        stat={
+          totalSaved > 0
+            ? { label: 'Saved by our users this year', value: totalSaved * 120, currencyConvert: true }
+            : { label: 'Routes monitored this week', value: 128_400, currencyConvert: false }
+        }
+        align="left"
       />
 
-      {/* ═══ NAVBAR ═══ */}
-      <nav className="relative z-10 mx-auto flex max-w-7xl items-center justify-between px-6 py-5 md:px-10">
-        <Link href="/" className="flex items-center gap-2.5">
-          <LogoIcon size={36} />
-          <LogoText size="xl" />
-        </Link>
-        <div className="hidden items-center gap-8 md:flex">
-          <a href="#features" className="text-sm text-text-muted transition hover:text-text-primary">Features</a>
-          <a href="#how" className="text-sm text-text-muted transition hover:text-text-primary">How it Works</a>
-          <a href="#pricing" className="text-sm text-text-muted transition hover:text-text-primary">Pricing</a>
-          <a href="#testimonials" className="text-sm text-text-muted transition hover:text-text-primary">Why Flyeas</a>
-          <Link href="/about" className="text-sm text-text-muted transition hover:text-text-primary">About</Link>
-        </div>
-        <Link href="/onboarding" className="bg-gradient-to-r from-accent-light to-accent-dark text-white rounded-xl px-6 py-2.5 text-sm font-semibold shadow-glow hover:shadow-glow-lg hover:-translate-y-0.5 transition-all">
-          Sign Up
-        </Link>
-      </nav>
+      {/* ─────────────────────────────── Product 2 ─────────────────────────────── */}
+      <ProductSection
+        eyebrow="The mission"
+        title="A concierge that closes the deal"
+        body="Pick a route, a window, a price you'd happily pay. We watch. When the market moves, you're the first to know. Set auto-book and we close the deal the moment it beats your number — even at 3 a.m."
+        visual={<MissionVisual />}
+        align="right"
+      />
 
-      {/* ═══ HERO ═══ */}
-      <section className="relative z-10 mx-auto max-w-5xl px-6 pt-10 pb-16 md:pt-16 md:px-10">
-        <div className="text-center mb-10">
-          <div className="h-[60px] md:h-[80px] flex items-center justify-center mb-3">
-            <h1
-              className="text-4xl md:text-6xl font-bold font-display gradient-text transition-all"
-              style={{
-                opacity: fade ? 1 : 0,
-                transform: fade ? 'translateY(0)' : 'translateY(12px)',
-                transitionDuration: '350ms',
-              }}
-            >
-              {greetings[greetingIndex].text}
-            </h1>
-          </div>
+      {/* ─────────────────────────────── Product 3 ─────────────────────────────── */}
+      <ProductSection
+        eyebrow="Transparent pricing"
+        title="One number. End to end."
+        body="The price on the card is the price on your statement. Taxes, required fees, currency — all included from the first screen. If we think a partner will add a surprise charge later, we warn you before you click book."
+        visual={<PriceBreakdownVisual />}
+        align="left"
+      />
 
-          <h2 className="font-display text-xl md:text-3xl font-semibold text-text-primary/90 max-w-2xl mx-auto leading-tight tracking-tight">
-            The world&apos;s first{' '}
-            <span className="gradient-text">AI travel agent</span>{' '}
-            that plans your trip from one sentence.
+      {/* ─────────────────────────────── Comparison ─────────────────────────────── */}
+      <section className="border-y border-line-1 bg-ink-900">
+        <div className="mx-auto max-w-content px-6 lg:px-12 py-20 lg:py-24">
+          <p className="text-micro uppercase text-pen-3 mb-4">How we differ</p>
+          <h2 className="editorial text-h1 max-w-[720px]">
+            Skyscanner tells you. Google helps you decide.<br />
+            <em className="italic text-accent">We book.</em>
           </h2>
-
-          <p className="mt-4 text-sm md:text-base text-text-muted max-w-xl mx-auto">
-            Real flights, real hotels, real prices — live from 400+ airlines and 150,000+ hotels worldwide.
-          </p>
-
-          {/* Live status */}
-          <div className="mt-5 flex items-center justify-center gap-4 text-xs text-text-muted">
-            <span className="flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              Live prices from 400+ airlines
-            </span>
-            <span className="hidden sm:flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
-              Updated every 30 minutes
-            </span>
+          <div className="mt-10 grid md:grid-cols-3 gap-8 md:gap-12 text-body text-pen-2">
+            <p>
+              Most aggregators hand you off to a partner the moment you decide. We stay with you —
+              monitoring, predicting, and closing — until you've actually flown.
+            </p>
+            <p>
+              Instead of stale "typical prices," we show you 180 days of real history for the exact
+              route and date you're looking at. You decide with data, not guesses.
+            </p>
+            <p>
+              We earn from airline and hotel partners, not from hiding extras.
+              That's why the price you see is the price you pay.
+            </p>
           </div>
         </div>
+      </section>
 
-        <TripPlannerHero />
-
-        <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
-          <div className="flex flex-col items-center">
-            <span className="inline-block text-[10px] text-emerald-400 font-medium mb-2">
-              + 50 bonus points on signup
-            </span>
-            <Link href="/onboarding" className="w-full sm:w-auto bg-gradient-to-r from-accent-light to-accent-dark text-white rounded-2xl px-8 py-3.5 text-sm font-semibold inline-flex items-center justify-center gap-2 shadow-glow hover:shadow-glow-lg hover:-translate-y-0.5 transition-all">
-              Create Free Account
-              <ArrowRight className="w-[18px] h-[18px]" />
-            </Link>
+      {/* ─────────────────────────────── Social proof ─────────────────────────────── */}
+      <section className="border-b border-line-1">
+        <div className="mx-auto max-w-wide px-6 lg:px-12 py-16">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <Stat value="400+" label="Airlines tracked" />
+            <Stat value="2M+" label="Hotels worldwide" />
+            <Stat value="32" label="Languages" />
+            <Stat value="85+" label="Currencies" />
           </div>
-          <a href="#features" className="w-full sm:w-auto inline-flex items-center justify-center rounded-2xl px-8 py-3.5 text-sm font-semibold text-text-secondary transition hover:text-text-primary hover:bg-white/5 border border-border-default">
-            See features
-          </a>
         </div>
       </section>
 
-      {/* ═══ LIVE DEALS ═══ */}
-      <LiveDeals />
+      {/* ─────────────────────────────── Pricing ─────────────────────────────── */}
+      <section className="border-b border-line-1">
+        <div className="mx-auto max-w-wide px-6 lg:px-12 py-20 lg:py-24">
+          <div className="max-w-[640px] mb-12">
+            <p className="text-micro uppercase text-pen-3 mb-3">Membership</p>
+            <h2 className="editorial text-h1">Three tiers. No surprises.</h2>
+            <p className="mt-3 text-body text-pen-2">
+              Start free. Upgrade when the missions pay for themselves — usually on the second trip.
+            </p>
+          </div>
 
-      {/* ═══ TRUSTED BY / PARTNERS ═══ */}
-      <section className="relative z-10 mx-auto max-w-4xl px-6 pb-16 md:px-10">
-        <p className="text-center text-xs text-text-muted/60 uppercase tracking-[0.15em] mb-8 font-medium">Powered by industry leaders</p>
-        <div className="flex flex-wrap items-center justify-center gap-8 md:gap-14">
-          {['Kiwi.com', 'Stripe', 'Supabase', 'Vercel', 'Resend'].map((name) => (
-            <span key={name} className="text-sm font-medium text-text-muted/40 hover:text-text-muted/70 transition">{name}</span>
-          ))}
+          <div className="grid md:grid-cols-3 gap-4">
+            {TIERS.map((tier) => (
+              <PricingCard key={tier.name} tier={tier} />
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* ═══ TRUST BADGES ═══ */}
-      <section className="relative z-10 mx-auto max-w-4xl px-6 pb-12 md:px-10">
-        <div className="flex flex-wrap items-center justify-center gap-6 md:gap-10">
-          {[
-            { label: 'Stripe Verified Payments', icon: ShieldCheck },
-            { label: '256-bit SSL Encryption', icon: ShieldCheck },
-            { label: 'GDPR Compliant', icon: Globe },
-            { label: 'No Hidden Fees', icon: CheckCircle },
-          ].map((badge) => (
-            <div key={badge.label} className="flex items-center gap-1.5 text-text-muted/30">
-              <badge.icon className="w-4 h-4" strokeWidth={1.5} />
-              <span className="text-[11px]">{badge.label}</span>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ═══ FEATURES ═══ */}
-      <section id="features" className="relative z-10 mx-auto max-w-6xl px-6 pb-24 md:px-10">
-        <h2 className="text-center font-display text-2xl md:text-4xl font-semibold mb-4 text-text-primary tracking-tight">Smart Travel, Simplified</h2>
-        <p className="text-center text-text-muted mb-14 max-w-md mx-auto text-sm">Powered by AI agents that never sleep.</p>
-
-        {/* Bento grid */}
-        <div className="grid gap-4 md:grid-cols-3">
-          {FEATURES.map((f, i) => {
-            const Icon = f.icon;
-            const isLarge = i === 0 || i === 3;
-            return (
-              <div
-                key={f.title}
-                className={`bg-surface-card border border-border-subtle rounded-2xl p-7 group cursor-default transition-all hover:border-border-default ${isLarge ? 'md:col-span-2' : ''}`}
-              >
-                <div
-                  className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl transition-transform group-hover:scale-105"
-                  style={{ background: `${f.color}12`, color: f.color }}
-                >
-                  <Icon className="w-6 h-6" strokeWidth={1.5} />
-                </div>
-                <h3 className="text-base font-semibold font-display mb-2 text-text-primary">{f.title}</h3>
-                <p className="text-sm leading-relaxed text-text-secondary">{f.desc}</p>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* ═══ HOW IT WORKS ═══ */}
-      <section id="how" className="relative z-10 mx-auto max-w-4xl px-6 pb-24 md:px-10">
-        <h2 className="text-center font-display text-2xl md:text-4xl font-semibold mb-4 text-text-primary tracking-tight">How it Works</h2>
-        <p className="text-center text-text-muted mb-14 text-sm">Three steps to smarter travel.</p>
-
-        <div className="grid gap-4 md:grid-cols-3">
-          {[
-            { n: '01', title: 'Describe Your Trip', desc: 'Type a sentence like "Paris to Tokyo, next March, under $600". Our AI understands dates, budgets, and preferences.', icon: Search },
-            { n: '02', title: 'AI Monitors 24/7', desc: 'Your personal agent tracks live prices, analyzes trends, and calculates the statistical probability of further drops.', icon: Activity },
-            { n: '03', title: 'Book or Auto-Buy', desc: 'Review AI recommendations with full reasoning, or enable auto-buy to capture deals instantly — even while you sleep.', icon: CheckCircle },
-          ].map((s) => {
-            const Icon = s.icon;
-            return (
-              <div key={s.n} className="bg-surface-card border border-border-subtle rounded-2xl p-7 text-center">
-                <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-accent/8 text-accent">
-                  <Icon className="w-6 h-6" strokeWidth={1.5} />
-                </div>
-                <span className="text-sm font-bold text-text-muted/40 font-display">Step {s.n}</span>
-                <h3 className="mt-2 text-base font-semibold font-display text-text-primary">{s.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-text-secondary">{s.desc}</p>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* ═══ WHY FLYEAS ═══ */}
-      <section id="testimonials" className="relative z-10 mx-auto max-w-5xl px-6 pb-24 md:px-10">
-        <h2 className="text-center font-display text-2xl md:text-4xl font-semibold mb-4 text-text-primary tracking-tight">Why Travelers Choose Flyeas</h2>
-        <p className="text-center text-text-muted mb-14 text-sm">Real capabilities, no marketing fluff.</p>
-
-        <div className="grid gap-4 md:grid-cols-3">
-          {[
-            { stat: '400+', label: 'Airlines searched in real time', desc: 'Live prices from Kiwi.com and Sky-Scrapper APIs. No cached or stale data — every search hits real availability.', icon: Globe },
-            { stat: '24/7', label: 'AI monitoring on your missions', desc: 'Set a budget and let the agent watch prices around the clock. It uses z-scores and trend analysis to find the optimal buy moment.', icon: Activity },
-            { stat: '$0', label: 'Charged until a deal is found', desc: 'Your card is authorized but never charged until the agent finds a flight within your budget. Cancel anytime, full release.', icon: ShieldCheck },
-          ].map((item) => {
-            const Icon = item.icon;
-            return (
-              <div key={item.label} className="bg-surface-card border border-border-subtle rounded-2xl p-7 text-center">
-                <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-accent/8 text-accent">
-                  <Icon className="w-6 h-6" strokeWidth={1.5} />
-                </div>
-                <p className="text-3xl font-bold font-display mb-1 gradient-text">{item.stat}</p>
-                <p className="text-sm font-semibold text-text-primary/80 mb-3">{item.label}</p>
-                <p className="text-sm text-text-secondary leading-relaxed">{item.desc}</p>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* ═══ HOW FLYEAS COMPARES ═══ */}
-      <section className="relative z-10 mx-auto max-w-5xl px-6 pb-24 md:px-10">
-        <h2 className="text-center font-display text-2xl md:text-4xl font-semibold mb-4 text-text-primary tracking-tight">How Flyeas Compares</h2>
-        <p className="text-center text-text-muted mb-14 text-sm">Feature-by-feature against the industry leaders</p>
-
-        <div className="bg-surface-card border border-border-subtle rounded-2xl overflow-hidden overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-border-subtle">
-                <th className="px-5 py-4 text-left text-xs font-semibold text-text-muted uppercase tracking-wider">Feature</th>
-                {['Flyeas', 'Skyscanner', 'Kiwi', 'Google Flights', 'Hopper'].map((name) => (
-                  <th
-                    key={name}
-                    className={`px-4 py-4 text-center text-xs font-semibold uppercase tracking-wider ${name === 'Flyeas' ? 'text-text-primary' : 'text-text-muted'}`}
-                    style={name === 'Flyeas' ? { background: 'rgba(232,163,23,0.08)' } : undefined}
-                  >
-                    {name}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {([
-                { feature: 'AI Agent 24/7', values: ['check', 'dash', 'dash', 'dash', 'dash'] },
-                { feature: 'Auto-Buy', values: ['check', 'dash', 'dash', 'dash', 'dash'] },
-                { feature: 'Price Predictions', values: ['check', 'dash', 'dash', 'basic', 'basic'] },
-                { feature: 'Transparent AI', values: ['check', 'dash', 'dash', 'dash', 'dash'] },
-                { feature: 'Crypto Payments', values: ['check', 'dash', 'dash', 'dash', 'dash'] },
-                { feature: 'Flights + Hotels', values: ['check', 'check', 'check', 'check', 'check'] },
-                { feature: 'No Redirect Booking', values: ['dash', 'dash', 'check', 'dash', 'check'] },
-              ] as const).map((row, i) => (
-                <tr key={row.feature} className={i < 6 ? 'border-b border-border-subtle' : ''}>
-                  <td className="px-5 py-3.5 text-text-secondary font-medium">{row.feature}</td>
-                  {row.values.map((val, j) => (
-                    <td
-                      key={j}
-                      className="px-4 py-3.5 text-center"
-                      style={j === 0 ? { background: 'rgba(232,163,23,0.05)' } : undefined}
-                    >
-                      {val === 'check' ? (
-                        <Check className="w-[18px] h-[18px] text-emerald-500 inline-block" strokeWidth={2.5} />
-                      ) : val === 'basic' ? (
-                        <span className="text-xs font-medium text-accent">Basic</span>
-                      ) : (
-                        <span className="text-text-muted/30">&mdash;</span>
-                      )}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      {/* ═══ PRICING ═══ */}
-      <section id="pricing" className="relative z-10 mx-auto max-w-5xl px-6 pb-24 md:px-10">
-        <h2 className="text-center font-display text-2xl md:text-4xl font-semibold mb-4 text-text-primary tracking-tight">Simple, Transparent Pricing</h2>
-        <p className="text-center text-text-muted mb-14 text-sm">Start free. Upgrade when you need more power.</p>
-
-        <div className="grid gap-4 md:grid-cols-3">
-          {TIERS.map((tier) => (
-            <div
-              key={tier.name}
-              className={`rounded-2xl p-7 flex flex-col transition-all ${
-                tier.highlight
-                  ? 'bg-surface-card border-2 border-accent/30 shadow-glow scale-[1.02]'
-                  : 'bg-surface-card border border-border-subtle'
-              }`}
-            >
-              {tier.badge && (
-                <span className="inline-block self-start text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full mb-4 bg-accent/15 text-accent">
-                  {tier.badge}
-                </span>
-              )}
-              <h3 className="text-lg font-bold font-display text-text-primary">{tier.name}</h3>
-              <div className="mt-2 mb-1">
-                <span className="text-3xl font-bold font-display text-text-primary">{tier.price === 0 ? 'Free' : `$${tier.price}`}</span>
-                {tier.price > 0 && <span className="text-sm text-text-muted">/month</span>}
-              </div>
-              <p className="text-xs text-text-muted mb-6">{tier.desc}</p>
-              <ul className="space-y-2.5 mb-8 flex-1">
-                {tier.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2.5 text-sm text-text-secondary">
-                    <Check className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" strokeWidth={2.5} />
-                    {f}
-                  </li>
-                ))}
-              </ul>
-              <Link
-                href="/onboarding"
-                className={`w-full text-center rounded-xl py-3 text-sm font-semibold transition-all min-h-[44px] flex items-center justify-center ${
-                  tier.highlight
-                    ? 'bg-gradient-to-r from-accent-light to-accent-dark text-white shadow-glow hover:shadow-glow-lg'
-                    : 'border border-border-default text-text-secondary hover:bg-white/5 hover:text-text-primary'
-                }`}
-              >
-                {tier.cta}
-              </Link>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ═══ FAQ ═══ */}
-      <section id="faq" className="relative z-10 mx-auto max-w-3xl px-6 pb-24 md:px-10">
-        <h2 className="text-center font-display text-2xl md:text-4xl font-semibold mb-4 text-text-primary tracking-tight">Frequently Asked Questions</h2>
-        <p className="text-center text-text-muted mb-14 text-sm">Everything you need to know.</p>
-
-        <div className="bg-surface-card border border-border-subtle rounded-2xl px-6">
+      {/* ─────────────────────────────── FAQ ─────────────────────────────── */}
+      <section className="border-b border-line-1 bg-ink-900">
+        <div className="mx-auto max-w-prose px-6 lg:px-12 py-20 lg:py-24">
+          <p className="text-micro uppercase text-pen-3 mb-3">Questions, briefly answered</p>
+          <h2 className="editorial text-h1 mb-8">Frequently asked.</h2>
           <Accordion>
-            {FAQ_ITEMS.map((item, i) => (
-              <AccordionItem key={i} title={item.q}>
-                {item.a}
+            {FAQ.map((item, idx) => (
+              <AccordionItem
+                key={idx}
+                title={item.q}
+                defaultOpen={idx === 0}
+              >
+                <p className="text-body text-pen-2 leading-relaxed">{item.a}</p>
               </AccordionItem>
             ))}
           </Accordion>
         </div>
       </section>
 
-      {/* ═══ BOTTOM CTA ═══ */}
-      <section className="relative z-10 mx-auto max-w-2xl px-6 pb-24 md:px-10">
-        <div className="glass-premium rounded-3xl p-10 md:p-14 text-center">
-          <h2 className="font-display text-2xl md:text-3xl font-semibold text-text-primary tracking-tight">Ready to save on your next trip?</h2>
-          <p className="mt-4 text-text-muted text-sm max-w-sm mx-auto">
-            Let AI find the best deals. Create your free account in 30 seconds.
-          </p>
-          <Link href="/onboarding" className="mt-8 inline-flex items-center gap-2 bg-gradient-to-r from-accent-light to-accent-dark text-white rounded-2xl px-10 py-4 text-base font-semibold shadow-glow hover:shadow-glow-lg hover:-translate-y-0.5 transition-all">
-            Get Started Free
-            <ArrowRight className="w-[18px] h-[18px]" />
-          </Link>
+      {/* ─────────────────────────────── Final CTA ─────────────────────────────── */}
+      <section className="border-b border-line-1">
+        <div className="mx-auto max-w-wide px-6 lg:px-12 py-24 text-center">
+          <h2 className="editorial text-[36px] md:text-display leading-[1.05] max-w-[780px] mx-auto">
+            The next trip starts with a number.<br />
+            <em className="italic text-accent">Name it.</em>
+          </h2>
+          <div className="mt-10 flex flex-wrap justify-center gap-3">
+            <Link
+              href="/onboarding"
+              className="premium-button inline-flex items-center gap-2 rounded-md px-6 py-3.5"
+            >
+              Start your first mission
+              <ArrowRight className="h-4 w-4" strokeWidth={2} />
+            </Link>
+          </div>
         </div>
       </section>
 
-      {/* ═══ FOOTER ═══ */}
-      <footer className="relative z-10 border-t border-border-subtle px-6 py-12 md:px-10">
-        <div className="mx-auto max-w-7xl">
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-10">
-            {/* Brand */}
-            <div className="col-span-2 md:col-span-1">
-              <div className="flex items-center gap-2 mb-4">
-                <LogoIcon size={32} />
-                <LogoText size="lg" />
-              </div>
-              <p className="text-xs text-text-muted/60 leading-relaxed max-w-xs">
-                AI-powered travel agent that monitors prices 24/7, predicts optimal buy moments, and auto-books within your budget.
-              </p>
-              {/* Social icons */}
-              <div className="flex gap-3 mt-5">
-                <a href="https://twitter.com/flyeasapp" target="_blank" rel="noopener noreferrer" className="p-2 rounded-lg hover:bg-white/5 transition text-text-muted/40 hover:text-text-muted">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-                </a>
-                <a href="https://github.com/flyeas" target="_blank" rel="noopener noreferrer" className="p-2 rounded-lg hover:bg-white/5 transition text-text-muted/40 hover:text-text-muted">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
-                </a>
-              </div>
-            </div>
-
-            {/* Product */}
-            <div>
-              <h4 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-4">Product</h4>
-              <ul className="space-y-2.5">
-                <li><a href="#features" className="text-xs text-text-muted/50 hover:text-text-secondary transition">Features</a></li>
-                <li><Link href="/pricing" className="text-xs text-text-muted/50 hover:text-text-secondary transition">Pricing</Link></li>
-                <li><a href="#how" className="text-xs text-text-muted/50 hover:text-text-secondary transition">How it Works</a></li>
-                <li><a href="#faq" className="text-xs text-text-muted/50 hover:text-text-secondary transition">FAQ</a></li>
-              </ul>
-            </div>
-
-            {/* Company */}
-            <div>
-              <h4 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-4">Company</h4>
-              <ul className="space-y-2.5">
-                <li><Link href="/about" className="text-xs text-text-muted/50 hover:text-text-secondary transition">About</Link></li>
-                <li><Link href="/blog" className="text-xs text-text-muted/50 hover:text-text-secondary transition">Blog</Link></li>
-                <li><a href="mailto:hello@flyeas.app" className="text-xs text-text-muted/50 hover:text-text-secondary transition">Contact</a></li>
-              </ul>
-            </div>
-
-            {/* Popular Routes */}
-            <div>
-              <h4 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-4">Popular Routes</h4>
-              <ul className="space-y-2.5">
-                <li><Link href="/flights" className="text-xs text-text-muted/50 hover:text-text-secondary transition">Flights from Paris</Link></li>
-                <li><Link href="/flights" className="text-xs text-text-muted/50 hover:text-text-secondary transition">Flights from London</Link></li>
-                <li><Link href="/hotels" className="text-xs text-text-muted/50 hover:text-text-secondary transition">Hotels in Dubai</Link></li>
-                <li><Link href="/hotels" className="text-xs text-text-muted/50 hover:text-text-secondary transition">Hotels in Barcelona</Link></li>
-                <li><Link href="/flights" className="text-xs text-text-muted/50 hover:text-text-secondary transition">Cheap flights to Tokyo</Link></li>
-                <li><Link href="/flights" className="text-xs text-text-muted/50 hover:text-text-secondary transition">Cheap flights to New York</Link></li>
-              </ul>
-            </div>
-
-            {/* Legal + Newsletter */}
-            <div>
-              <h4 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-4">Legal</h4>
-              <ul className="space-y-2.5 mb-6">
-                <li><Link href="/legal/terms" className="text-xs text-text-muted/50 hover:text-text-secondary transition">Terms of Service</Link></li>
-                <li><Link href="/legal/privacy" className="text-xs text-text-muted/50 hover:text-text-secondary transition">Privacy Policy</Link></li>
-              </ul>
-
-              <h4 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-3">Newsletter</h4>
-              {subscribed ? (
-                <p className="text-xs text-emerald-400">Subscribed. Welcome aboard!</p>
-              ) : (
-                <form onSubmit={handleSubscribe} className="flex gap-2">
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="you@email.com"
-                    className="flex-1 min-w-0 rounded-lg px-3 py-2 text-xs text-text-primary outline-none bg-surface-card border border-border-subtle focus:border-accent/30 transition"
-                  />
-                  <button type="submit" disabled={subscribing} className="bg-gradient-to-r from-accent-light to-accent-dark text-white rounded-lg px-3 py-2 text-xs font-semibold">
-                    {subscribing ? '...' : 'Join'}
-                  </button>
-                </form>
-              )}
-            </div>
-          </div>
-
-          <div className="border-t border-border-subtle pt-6 flex flex-col md:flex-row items-center justify-between gap-3">
-            <p className="text-[11px] text-text-muted/40">
-              &copy; {new Date().getFullYear()} Flyeas. All rights reserved.
-            </p>
-            <p className="text-[11px] text-text-muted/30">
-              Built with Next.js, Supabase, Stripe, and AI.
-            </p>
-          </div>
-        </div>
-      </footer>
-    </main>
-  );
-}
-
-/* ── Small reusable components ──────────────────────────── */
-
-function LogoIcon({ size = 36 }: { size?: number }) {
-  return (
-    <div
-      className="flex items-center justify-center rounded-xl bg-gradient-to-br from-accent-light to-accent-dark"
-      style={{ width: size, height: size }}
-    >
-      <Plane className="text-white" style={{ width: size * 0.45, height: size * 0.45 }} strokeWidth={2} />
+      <Footer />
     </div>
   );
 }
 
-function LogoText({ size = 'xl' }: { size?: string }) {
+/* ──────────────────────────────────────────────────────────
+   Components
+   ────────────────────────────────────────────────────────── */
+
+function TopNav() {
   return (
-    <span className={`${size === 'xl' ? 'text-xl' : 'text-lg'} font-bold font-display tracking-tight gradient-text`}>
-      Flyeas
+    <header className="topbar-glass sticky top-0 z-40">
+      <div className="mx-auto max-w-wide px-6 lg:px-12 flex items-center justify-between h-16">
+        <Link href="/" className="flex items-center gap-2">
+          <LogoMark />
+          <span className="editorial text-body-lg text-pen-1 tracking-tight">Flyeas</span>
+        </Link>
+        <nav className="hidden md:flex items-center gap-8">
+          <Link href="/flights" className="text-body text-pen-2 hover:text-pen-1 transition">Flights</Link>
+          <Link href="/hotels" className="text-body text-pen-2 hover:text-pen-1 transition">Hotels</Link>
+          <Link href="/missions" className="text-body text-pen-2 hover:text-pen-1 transition">Missions</Link>
+          <Link href="/#pricing" className="text-body text-pen-2 hover:text-pen-1 transition">Pricing</Link>
+        </nav>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/onboarding"
+            className="text-body text-pen-2 hover:text-pen-1 transition px-3 py-2"
+          >
+            Sign in
+          </Link>
+          <Link
+            href="/onboarding"
+            className="premium-button inline-flex items-center gap-2 rounded-md px-4 py-2 text-body"
+          >
+            Begin
+          </Link>
+        </div>
+      </div>
+    </header>
+  );
+}
+
+function LogoMark() {
+  return (
+    <span
+      className="flex items-center justify-center w-7 h-7 rounded-md"
+      style={{ background: 'var(--ink-700)', border: '1px solid var(--line-2)' }}
+      aria-hidden="true"
+    >
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z" />
+      </svg>
     </span>
+  );
+}
+
+/* ─── Hero visual: a minimalist globe with a single arc ─── */
+function HeroVisual() {
+  return (
+    <div
+      className="relative rounded-xl overflow-hidden border border-line-1"
+      style={{
+        background: 'var(--ink-900)',
+        aspectRatio: '1 / 1',
+        maxWidth: '560px',
+        margin: '0 auto',
+      }}
+    >
+      <svg viewBox="0 0 400 400" className="w-full h-full">
+        <defs>
+          <radialGradient id="globeFill" cx="0.45" cy="0.4" r="0.6">
+            <stop offset="0%" stopColor="#1D1D22" />
+            <stop offset="100%" stopColor="#0B0B0D" />
+          </radialGradient>
+          <linearGradient id="arcFill" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor="#D4A24C" stopOpacity="0" />
+            <stop offset="50%" stopColor="#D4A24C" stopOpacity="0.9" />
+            <stop offset="100%" stopColor="#D4A24C" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+
+        {/* Globe */}
+        <circle cx="200" cy="200" r="140" fill="url(#globeFill)" stroke="#252528" strokeWidth="1" />
+
+        {/* Meridians */}
+        {[-60, -30, 0, 30, 60].map((rot) => (
+          <ellipse
+            key={rot}
+            cx="200"
+            cy="200"
+            rx={140 * Math.abs(Math.cos((rot * Math.PI) / 180))}
+            ry="140"
+            fill="none"
+            stroke="#1A1A1D"
+            strokeWidth="0.8"
+          />
+        ))}
+
+        {/* Parallels */}
+        {[40, 80, 120].map((r) => (
+          <ellipse
+            key={r}
+            cx="200"
+            cy="200"
+            rx="140"
+            ry={r}
+            fill="none"
+            stroke="#1A1A1D"
+            strokeWidth="0.8"
+          />
+        ))}
+
+        {/* Horizon line */}
+        <line x1="60" y1="200" x2="340" y2="200" stroke="#252528" strokeWidth="0.8" />
+
+        {/* Single elegant arc — the flight */}
+        <path
+          d="M 90 210 Q 200 70 320 195"
+          fill="none"
+          stroke="url(#arcFill)"
+          strokeWidth="1.5"
+          strokeDasharray="6 4"
+        >
+          <animate attributeName="stroke-dashoffset" from="0" to="-20" dur="4s" repeatCount="indefinite" />
+        </path>
+
+        {/* Origin + destination markers */}
+        <circle cx="90" cy="210" r="3.5" fill="#D4A24C" />
+        <circle cx="90" cy="210" r="8" fill="none" stroke="#D4A24C" strokeWidth="1" opacity="0.3" />
+        <circle cx="320" cy="195" r="3.5" fill="#D4A24C" />
+        <circle cx="320" cy="195" r="8" fill="none" stroke="#D4A24C" strokeWidth="1" opacity="0.3" />
+
+        {/* Tiny plane icon travelling along the arc */}
+        <g>
+          <animateMotion dur="6s" repeatCount="indefinite" path="M 90 210 Q 200 70 320 195" rotate="auto" />
+          <path d="M -4 0 L 4 0 L 6 -2 L 7 -2 L 6 0 L 7 0 L 7 1 L 6 1 L 7 3 L 6 3 L 4 1 L -4 1 L -6 2 L -7 2 L -6 1 L -7 1 L -7 0 L -6 0 L -7 -2 L -6 -2 Z" fill="#F5F5F1" transform="scale(0.9)" />
+        </g>
+
+        {/* Label — handwritten feel */}
+        <text x="90" y="235" fill="#A9A9A4" fontSize="11" fontFamily="var(--font-editorial)" fontStyle="italic">Paris</text>
+        <text x="290" y="175" fill="#A9A9A4" fontSize="11" fontFamily="var(--font-editorial)" fontStyle="italic">Tokyo</text>
+      </svg>
+
+      {/* Subtle caption */}
+      <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between">
+        <div>
+          <p className="text-micro uppercase text-pen-3">Watching since</p>
+          <p className="text-caption text-pen-2 font-mono mt-0.5">03:12 GMT</p>
+        </div>
+        <div className="text-right">
+          <p className="text-micro uppercase text-pen-3">Best today</p>
+          <p className="text-body text-pen-1 font-mono mt-0.5">$642</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Reusable editorial product section ─── */
+function ProductSection({
+  eyebrow,
+  title,
+  body,
+  visual,
+  stat,
+  align,
+}: {
+  eyebrow: string;
+  title: string;
+  body: string;
+  visual?: React.ReactNode;
+  stat?: { label: string; value: number; currencyConvert?: boolean };
+  align: 'left' | 'right';
+}) {
+  const copyOrder = align === 'left' ? 'lg:order-first' : 'lg:order-last';
+  const visualOrder = align === 'left' ? 'lg:order-last' : 'lg:order-first';
+
+  return (
+    <section className="border-b border-line-1">
+      <div className="mx-auto max-w-wide px-6 lg:px-12 py-20 lg:py-28">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+          <div className={copyOrder}>
+            <p className="text-micro uppercase text-pen-3 mb-3">{eyebrow}</p>
+            <h2 className="editorial text-h1">{title}</h2>
+            <p className="mt-5 text-body-lg text-pen-2 max-w-[520px]">{body}</p>
+          </div>
+          <div className={visualOrder}>
+            {visual ? (
+              visual
+            ) : stat ? (
+              <StatVisual stat={stat} />
+            ) : null}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function StatVisual({ stat }: { stat: { label: string; value: number; currencyConvert?: boolean } }) {
+  return (
+    <div
+      className="rounded-xl p-10 md:p-12 border border-line-1"
+      style={{ background: 'var(--ink-900)' }}
+    >
+      <p className="text-micro uppercase text-pen-3">{stat.label}</p>
+      <div className="mt-3">
+        {stat.currencyConvert ? (
+          <PriceDisplay usd={stat.value} size="2xl" className="editorial !font-medium text-[56px] leading-none" />
+        ) : (
+          <span className="editorial text-[56px] leading-none text-pen-1 font-medium">
+            {stat.value.toLocaleString()}
+          </span>
+        )}
+      </div>
+      <div className="mt-6 pt-6 border-t border-line-1">
+        <p className="text-caption text-pen-3">
+          Updated every six hours. Figures are real and verifiable in your account once you sign in.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function MissionVisual() {
+  return (
+    <div
+      className="rounded-xl overflow-hidden border border-line-1"
+      style={{ background: 'var(--ink-900)' }}
+    >
+      {/* Mock mission cockpit */}
+      <div className="p-6 border-b border-line-1 flex items-center justify-between">
+        <div>
+          <p className="text-micro uppercase text-pen-3">Mission</p>
+          <p className="editorial text-h2 mt-1">Paris → Tokyo</p>
+          <p className="text-caption text-pen-3 mt-1">Dec 14 – Dec 22 · Business</p>
+        </div>
+        <span className="highlight-badge">Watching</span>
+      </div>
+
+      <div className="p-6 space-y-4">
+        <div className="flex items-baseline justify-between">
+          <span className="text-caption text-pen-3">Target</span>
+          <span className="font-mono text-body text-pen-1">$2,400</span>
+        </div>
+        <div className="flex items-baseline justify-between">
+          <span className="text-caption text-pen-3">Current best</span>
+          <span className="font-mono text-body-lg text-accent">$2,510</span>
+        </div>
+        <div className="flex items-baseline justify-between">
+          <span className="text-caption text-pen-3">30-day low</span>
+          <span className="font-mono text-body text-pen-2">$2,340</span>
+        </div>
+
+        {/* Sparkline — clean minimal */}
+        <div className="pt-4 border-t border-line-1">
+          <svg viewBox="0 0 200 40" className="w-full h-10">
+            <polyline
+              points="0,28 25,22 50,24 75,18 100,14 125,20 150,12 175,16 200,10"
+              fill="none"
+              stroke="#D4A24C"
+              strokeWidth="1.2"
+              strokeLinejoin="round"
+              strokeLinecap="round"
+            />
+            <polyline
+              points="0,28 25,22 50,24 75,18 100,14 125,20 150,12 175,16 200,10 200,40 0,40"
+              fill="#D4A24C"
+              fillOpacity="0.06"
+            />
+          </svg>
+          <div className="flex justify-between mt-2 text-micro uppercase text-pen-3">
+            <span>Nov 14</span>
+            <span>Today</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PriceBreakdownVisual() {
+  return (
+    <div
+      className="rounded-xl overflow-hidden border border-line-1"
+      style={{ background: 'var(--ink-900)' }}
+    >
+      <div className="p-6 border-b border-line-1">
+        <p className="text-micro uppercase text-pen-3">Invoice</p>
+        <p className="editorial text-h2 mt-1">Total due</p>
+      </div>
+      <div className="p-6 space-y-3 font-mono text-body">
+        <Row label="Base fare" value="$486.00" />
+        <Row label="Taxes" value="$87.40" />
+        <Row label="Carrier fees" value="$12.00" />
+        <Row label="Seat (12A)" value="$32.00" />
+        <Row label="Baggage (1 × 23kg)" value="$45.00" />
+        <div className="h-px bg-line-1 my-2" />
+        <Row label="Payment processing" value="included" muted />
+        <Row label="Flyeas service" value="included" muted />
+        <div className="h-px bg-line-1 my-2" />
+        <div className="flex items-baseline justify-between pt-2">
+          <span className="text-body font-sans text-pen-1 font-medium">Total</span>
+          <span className="text-body-lg text-pen-1 font-medium">$662.40</span>
+        </div>
+        <p className="text-caption text-pen-3 font-sans pt-2">No fees added at checkout.</p>
+      </div>
+    </div>
+  );
+}
+
+function Row({ label, value, muted = false }: { label: string; value: string; muted?: boolean }) {
+  return (
+    <div className={`flex justify-between items-baseline ${muted ? 'text-pen-3' : 'text-pen-2'}`}>
+      <span className="font-sans text-caption">{label}</span>
+      <span>{value}</span>
+    </div>
+  );
+}
+
+function Stat({ value, label }: { value: string; label: string }) {
+  return (
+    <div>
+      <p className="editorial text-[32px] md:text-[40px] leading-none text-pen-1 font-medium">{value}</p>
+      <p className="mt-2 text-caption text-pen-3">{label}</p>
+    </div>
+  );
+}
+
+function PricingCard({ tier }: { tier: typeof TIERS[number] }) {
+  const isHighlight = tier.highlight;
+  return (
+    <div
+      className={`rounded-lg border p-8 transition-colors ${
+        isHighlight ? 'border-line-3' : 'border-line-1 hover:border-line-2'
+      }`}
+      style={{
+        background: isHighlight ? 'var(--ink-700)' : 'var(--ink-800)',
+      }}
+    >
+      <div className="flex items-center justify-between mb-4">
+        <p className="editorial text-h2 text-pen-1">{tier.name}</p>
+        {isHighlight && <span className="highlight-badge">Recommended</span>}
+      </div>
+      <div className="flex items-baseline gap-2 mb-2">
+        {tier.price === 0 ? (
+          <span className="editorial text-[40px] leading-none text-pen-1">Free</span>
+        ) : (
+          <>
+            <span className="editorial text-[40px] leading-none text-pen-1">${tier.price}</span>
+            <span className="text-caption text-pen-3">{tier.cadence}</span>
+          </>
+        )}
+      </div>
+      <p className="text-body text-pen-2 mb-8">{tier.pitch}</p>
+      <Link
+        href={tier.ctaHref}
+        className={`block text-center w-full rounded-md py-3 text-body font-medium transition ${
+          isHighlight
+            ? 'premium-button'
+            : 'secondary-button'
+        }`}
+      >
+        {tier.cta}
+      </Link>
+      <ul className="mt-8 space-y-3 border-t border-line-1 pt-6">
+        {tier.items.map((item) => (
+          <li key={item} className="flex items-start gap-3 text-caption text-pen-2">
+            <Check className="w-4 h-4 text-pen-3 shrink-0 mt-px" strokeWidth={1.8} />
+            <span>{item}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function Footer() {
+  return (
+    <footer className="bg-ink-900">
+      <div className="mx-auto max-w-wide px-6 lg:px-12 py-16">
+        <div className="grid md:grid-cols-[1.5fr_1fr_1fr_1fr] gap-10 md:gap-16 mb-12">
+          <div>
+            <Link href="/" className="flex items-center gap-2 mb-4">
+              <LogoMark />
+              <span className="editorial text-body-lg text-pen-1">Flyeas</span>
+            </Link>
+            <p className="text-caption text-pen-2 max-w-[320px] leading-relaxed">
+              A travel concierge that watches prices, negotiates with inventory, and books on your terms.
+            </p>
+          </div>
+          <FooterColumn
+            title="Product"
+            items={[
+              { href: '/flights', label: 'Flights' },
+              { href: '/hotels', label: 'Hotels' },
+              { href: '/cars', label: 'Cars' },
+              { href: '/insurance', label: 'Insurance' },
+              { href: '/missions', label: 'Missions' },
+              { href: '/rewards', label: 'Rewards' },
+              { href: '/referral', label: 'Invite & earn' },
+            ]}
+          />
+          <FooterColumn
+            title="Company"
+            items={[
+              { href: '/about', label: 'About' },
+              { href: '/blog', label: 'Journal' },
+              { href: '/legal/terms', label: 'Terms' },
+              { href: '/legal/privacy', label: 'Privacy' },
+            ]}
+          />
+          <FooterColumn
+            title="Account"
+            items={[
+              { href: '/onboarding', label: 'Sign in' },
+              { href: '/onboarding', label: 'Create account' },
+              { href: '/#pricing', label: 'Pricing' },
+              { href: '/settings', label: 'Preferences' },
+            ]}
+          />
+        </div>
+
+        <div className="pt-8 border-t border-line-1 flex flex-wrap items-center justify-between gap-4">
+          <p className="text-caption text-pen-3">© {new Date().getFullYear()} Flyeas. All rights reserved.</p>
+          <p className="text-caption text-pen-3">Prices in live USD, converted to your currency.</p>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+function FooterColumn({ title, items }: { title: string; items: Array<{ href: string; label: string }> }) {
+  return (
+    <div>
+      <p className="text-micro uppercase text-pen-3 mb-4">{title}</p>
+      <ul className="space-y-2.5">
+        {items.map((i) => (
+          <li key={i.label}>
+            <Link href={i.href} className="text-caption text-pen-2 hover:text-pen-1 transition">
+              {i.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }

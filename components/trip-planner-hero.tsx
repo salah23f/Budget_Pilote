@@ -487,7 +487,7 @@ export default function TripPlannerHero() {
                               rel="noopener noreferrer"
                               className="text-xs px-3 py-1.5 rounded-lg font-semibold transition"
                               style={{
-                                background: 'linear-gradient(135deg, #E8A317, #F97316)',
+                                background: 'linear-gradient(135deg, #D4A24C, #F97316)',
                                 color: 'white',
                               }}
                             >

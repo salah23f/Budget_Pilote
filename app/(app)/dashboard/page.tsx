@@ -85,14 +85,14 @@ export default function DashboardPage() {
       title: 'Search Flights',
       desc: 'Live prices from 400+ airlines worldwide',
       icon: Plane,
-      color: '#E8A317',
+      color: '#D4A24C',
     },
     {
       href: '/hotels',
       title: 'Search Hotels',
       desc: 'Photos, ratings & verified guest reviews',
       icon: Building2,
-      color: '#F97316',
+      color: '#DFAE5B',
     },
     {
       href: '/missions/new',
@@ -184,96 +184,89 @@ export default function DashboardPage() {
 
   return (
     <div className="py-2">
-      <div className="mx-auto max-w-5xl">
-        {/* Header */}
+      <div className="mx-auto max-w-content">
+        {/* ───── Editorial header ───── */}
         <div className="mb-10">
-          <h1 className="text-2xl sm:text-3xl font-semibold font-display text-text-primary tracking-tight">
-            {greeting}, {name}
+          <p className="text-micro uppercase text-pen-3 mb-3">{today}</p>
+          <h1 className="editorial text-[32px] md:text-[44px] leading-[1.05] text-pen-1">
+            {greeting}, <em className="italic text-accent">{name}</em>.
           </h1>
-          <p className="mt-1.5 text-sm text-text-muted">{today}</p>
         </div>
 
-        {/* ───── Cockpit Row — Radar + Gauge + Level ───── */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          {/* Flight Radar */}
-          <div
-            className="rounded-2xl p-5 flex flex-col items-center justify-center"
-            style={{
-              background:
-                'linear-gradient(135deg, rgba(232,163,23,0.04) 0%, rgba(9,9,11,0.8) 100%)',
-              border: '1px solid rgba(232,163,23,0.12)',
-            }}
-          >
-            <FlightRadar activeMissions={activeMissionCount} size={180} />
+        {/* ───── Command bar — compact, replaces tiled quick actions ───── */}
+        <div
+          className="mb-10 flex flex-wrap items-center gap-1 rounded-md border border-line-1 bg-ink-900 p-1.5"
+        >
+          <CommandLink href="/flights" label="Search flights" />
+          <CommandLink href="/hotels" label="Search hotels" />
+          <CommandLink href="/missions/new" label="New mission" />
+          <CommandLink href="/favorites" label="Favorites" />
+          <CommandLink href="/bookings" label="Bookings" />
+          <span className="ml-auto hidden md:flex items-center gap-2 text-micro uppercase text-pen-3 px-3">
+            <kbd className="px-1.5 py-0.5 rounded bg-ink-800 border border-line-1 text-caption font-mono text-pen-2">⌘K</kbd>
+            for everything
+          </span>
+        </div>
+
+        {/* ───── Cockpit — clean surfaces, no accent backgrounds ───── */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          <div className="rounded-lg border border-line-1 bg-ink-800 p-6 flex flex-col items-center">
+            <FlightRadar activeMissions={activeMissionCount} size={170} />
             <Link
               href="/missions"
-              className="mt-3 text-xs text-[#E8A317] hover:text-[#F5BE3A] transition font-medium flex items-center gap-1"
+              className="mt-4 text-caption text-pen-2 hover:text-pen-1 transition inline-flex items-center gap-1"
             >
               View all missions
-              <ArrowRight className="w-3 h-3" strokeWidth={2} />
+              <ArrowRight className="w-3 h-3" strokeWidth={1.8} />
             </Link>
           </div>
 
-          {/* Savings Gauge */}
-          <div
-            className="rounded-2xl p-5 flex flex-col items-center justify-between"
-            style={{
-              background:
-                'linear-gradient(135deg, rgba(16,185,129,0.04) 0%, rgba(9,9,11,0.8) 100%)',
-              border: '1px solid rgba(16,185,129,0.12)',
-            }}
-          >
-            <SavingsGauge totalSavedUsd={totalSaved || 0} size={200} />
+          <div className="rounded-lg border border-line-1 bg-ink-800 p-6 flex flex-col items-center justify-between">
+            <SavingsGauge totalSavedUsd={totalSaved || 0} size={190} />
           </div>
 
-          {/* Level + Referral Stack */}
           <div className="flex flex-col gap-3">
             <LevelWidget />
 
             <Link
               href="/referral"
-              className="group flex items-center gap-3 rounded-2xl p-4 transition hover:-translate-y-0.5"
-              style={{
-                background: 'linear-gradient(135deg, rgba(232,163,23,0.08), rgba(249,115,22,0.04))',
-                border: '1px solid rgba(232,163,23,0.18)',
-              }}
+              className="group flex items-center gap-3 rounded-lg p-4 border border-line-1 bg-ink-800 hover:border-line-2 transition"
             >
               <div
-                className="flex h-9 w-9 items-center justify-center rounded-xl shrink-0"
-                style={{ background: 'linear-gradient(135deg, #E8A317, #F97316)' }}
+                className="flex h-9 w-9 items-center justify-center rounded-md shrink-0 border border-line-2 bg-ink-700"
               >
-                <Rocket className="w-4 h-4 text-white" strokeWidth={2} />
+                <Rocket className="w-4 h-4 text-accent" strokeWidth={1.8} />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold text-white truncate">
-                  Earn $10 per friend
+                <p className="text-body text-pen-1 truncate">
+                  Invite · earn <span className="font-mono">$10</span> each
                 </p>
-                <p className="text-[11px] text-white/40 truncate">
-                  Invite & unlock Pro + Elite
+                <p className="text-caption text-pen-3 truncate">
+                  Pro and Elite unlock with friends
                 </p>
               </div>
               <ArrowRight
-                className="w-4 h-4 text-[#E8A317] shrink-0 group-hover:translate-x-0.5 transition-transform"
+                className="w-4 h-4 text-pen-3 shrink-0 group-hover:text-pen-1 group-hover:translate-x-0.5 transition"
                 strokeWidth={1.8}
               />
             </Link>
           </div>
         </div>
 
-        {/* World Map — user routes */}
-        <div
-          className="rounded-2xl p-5 mb-10 relative overflow-hidden"
-          style={{
-            background: 'rgba(255,255,255,0.02)',
-            border: '1px solid rgba(255,255,255,0.06)',
-          }}
-        >
-          <div className="flex items-center justify-between mb-3">
+        {/* ───── Your week — a thin 7-day activity strip ───── */}
+        <WeekStrip className="mb-10" />
+
+        {/* ───── Featured destination this week ───── */}
+        <FeaturedDestination className="mb-10" />
+
+        {/* ───── World Map — user routes ───── */}
+        <div className="rounded-lg border border-line-1 bg-ink-800 p-6 mb-10 overflow-hidden">
+          <div className="flex items-center justify-between mb-4">
             <div>
-              <p className="text-[10px] uppercase tracking-widest text-white/30 font-medium">
-                {userRoutes.length > 0 ? 'Your travel map' : 'Popular routes right now'}
+              <p className="text-micro uppercase text-pen-3">
+                {userRoutes.length > 0 ? 'Your travel map' : 'Routes we watched this week'}
               </p>
-              <h2 className="text-base font-semibold text-white mt-0.5">
+              <h2 className="editorial text-h2 text-pen-1 mt-1">
                 {userRoutes.length > 0
                   ? `${userRoutes.length} ${userRoutes.length === 1 ? 'route' : 'routes'} explored`
                   : 'Discover the world'}
@@ -281,10 +274,10 @@ export default function DashboardPage() {
             </div>
             <Link
               href="/flights"
-              className="text-xs text-[#E8A317] hover:text-[#F5BE3A] transition font-medium flex items-center gap-1"
+              className="text-caption text-pen-2 hover:text-pen-1 transition inline-flex items-center gap-1"
             >
               Explore
-              <ArrowRight className="w-3 h-3" strokeWidth={2} />
+              <ArrowRight className="w-3 h-3" strokeWidth={1.8} />
             </Link>
           </div>
           <WorldMap routes={userRoutes.length > 0 ? userRoutes : undefined} />
@@ -333,7 +326,7 @@ export default function DashboardPage() {
           <div className="flex items-center gap-4 min-w-0">
             <div
               className="flex h-11 w-11 items-center justify-center rounded-xl shrink-0"
-              style={{ background: 'linear-gradient(135deg, #E8A317, #F97316)' }}
+              style={{ background: 'linear-gradient(135deg, #D4A24C, #DFAE5B)' }}
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="20 12 20 22 4 22 4 12" />
@@ -346,14 +339,14 @@ export default function DashboardPage() {
             <div className="min-w-0">
               <p className="text-[15px] font-semibold text-white flex items-center gap-2">
                 Invite friends, earn $10 each
-                <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#E8A317]/20 text-[#E8A317] font-bold uppercase tracking-wider">New</span>
+                <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#D4A24C]/20 text-[#D4A24C] font-bold uppercase tracking-wider">New</span>
               </p>
               <p className="mt-0.5 text-xs text-white/50 truncate">
                 Unlock Pro, Elite & lifetime VIP as your network grows
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2 text-[#E8A317] group-hover:translate-x-0.5 transition-transform shrink-0">
+          <div className="flex items-center gap-2 text-[#D4A24C] group-hover:translate-x-0.5 transition-transform shrink-0">
             <span className="text-xs font-semibold hidden sm:inline">Get started</span>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="5" y1="12" x2="19" y2="12" />
@@ -385,7 +378,7 @@ export default function DashboardPage() {
                         className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
                         style={{
                           background: r.kind === 'flight' ? 'rgba(232,163,23,0.08)' : 'rgba(249,115,22,0.08)',
-                          color: r.kind === 'flight' ? '#E8A317' : '#F97316',
+                          color: r.kind === 'flight' ? '#D4A24C' : '#DFAE5B',
                         }}
                       >
                         {r.kind === 'flight' ? (
@@ -503,6 +496,177 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+/* ── CommandLink: compact text-only pill for the command bar ── */
+function CommandLink({ href, label }: { href: string; label: string }) {
+  return (
+    <Link
+      href={href}
+      className="px-3 py-2 rounded-md text-caption text-pen-2 hover:text-pen-1 hover:bg-ink-800 transition"
+    >
+      {label}
+    </Link>
+  );
+}
+
+/* ── Your week — 7 minimalist bars showing last 7 days of activity ── */
+function WeekStrip({ className = '' }: { className?: string }) {
+  const weekActivity = useStreakStore((s) => s.weekActivity);
+  const currentStreak = useStreakStore((s) => s.currentStreak);
+
+  // 7 buckets. Value comes from weekActivity bool array if present, else 0.
+  const today = new Date();
+  const dayLabels = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(today);
+    d.setDate(today.getDate() - (6 - i));
+    return { short: d.toLocaleDateString('en-US', { weekday: 'short' }).slice(0, 1), date: d.getDate() };
+  });
+
+  return (
+    <div className={`rounded-lg border border-line-1 bg-ink-800 p-6 ${className}`}>
+      <div className="flex items-end justify-between mb-5">
+        <div>
+          <p className="text-micro uppercase text-pen-3">Your week</p>
+          <h2 className="editorial text-h2 text-pen-1 mt-1">
+            {currentStreak > 0 ? (
+              <>
+                {currentStreak}-day streak <em className="italic text-accent">in progress</em>
+              </>
+            ) : (
+              'Start your first streak'
+            )}
+          </h2>
+        </div>
+        <Link href="/rewards" className="text-caption text-pen-2 hover:text-pen-1 transition inline-flex items-center gap-1">
+          Rewards
+          <ArrowRight className="w-3 h-3" strokeWidth={1.8} />
+        </Link>
+      </div>
+      <div className="flex items-end gap-2">
+        {dayLabels.map((d, i) => {
+          const active = (weekActivity as boolean[] | undefined)?.[i] ?? false;
+          const isToday = i === 6;
+          return (
+            <div key={i} className="flex-1 flex flex-col items-center gap-2">
+              <div
+                className="w-full rounded-sm transition-colors"
+                style={{
+                  height: active ? '32px' : '8px',
+                  background: active
+                    ? isToday
+                      ? 'var(--accent)'
+                      : 'var(--ink-500)'
+                    : 'var(--line-1)',
+                }}
+              />
+              <span className={`text-micro ${isToday ? 'text-pen-1' : 'text-pen-3'}`}>
+                {d.short}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+/* ── Featured destination — editorial magazine module ── */
+function FeaturedDestination({ className = '' }: { className?: string }) {
+  // Small curated rotation — we could source this from an API later
+  const destinations = [
+    {
+      city: 'Lisbon',
+      country: 'Portugal',
+      month: 'this winter',
+      headline: 'Long afternoons by the Tagus.',
+      body: "Mild weather, fewer crowds, and the best pastéis de nata of the year. Direct flights from most European hubs under $140.",
+      cta: 'Plan a Lisbon trip',
+      img: '/api/og?title=Lisbon&subtitle=Portugal', // placeholder, uses app's own OG endpoint
+    },
+    {
+      city: 'Kyoto',
+      country: 'Japan',
+      month: 'autumn',
+      headline: 'Maple red, stone paths, quiet mornings.',
+      body: 'Peak koyo season runs late October through early December. Book early — the good ryokan fill six months out.',
+      cta: 'Plan a Kyoto trip',
+      img: '/api/og?title=Kyoto&subtitle=Japan',
+    },
+    {
+      city: 'Marrakech',
+      country: 'Morocco',
+      month: 'spring',
+      headline: "Roses in the medina, 22°C at noon.",
+      body: 'March and April are a sweet spot: orange blossom in the air, no midsummer heat. Fares from $280 from most of Europe.',
+      cta: 'Plan a Marrakech trip',
+      img: '/api/og?title=Marrakech&subtitle=Morocco',
+    },
+  ];
+
+  // Stable-per-week pick so the same user sees the same feature within a week
+  const weekIndex = Math.floor(Date.now() / (7 * 24 * 60 * 60 * 1000));
+  const d = destinations[weekIndex % destinations.length];
+
+  return (
+    <article className={`rounded-lg border border-line-1 bg-ink-900 overflow-hidden ${className}`}>
+      <div className="grid md:grid-cols-[1fr_1.1fr]">
+        {/* Photo frame — gradient placeholder until we wire real imagery */}
+        <div
+          className="relative aspect-[4/3] md:aspect-auto"
+          style={{
+            background:
+              'linear-gradient(180deg, #1D1D22 0%, #0B0B0D 100%)',
+          }}
+        >
+          <DestinationSketch name={d.city} />
+          <div className="absolute top-4 left-4">
+            <span className="badge highlight-badge">Featured {d.month}</span>
+          </div>
+        </div>
+
+        <div className="p-8 md:p-10 flex flex-col justify-center">
+          <p className="text-micro uppercase text-pen-3">{d.country}</p>
+          <h3 className="editorial text-h1 text-pen-1 mt-2 leading-[1.1]">{d.city}</h3>
+          <p className="editorial italic text-body-lg text-pen-2 mt-4 max-w-[380px]">
+            {d.headline}
+          </p>
+          <p className="text-body text-pen-2 mt-4 max-w-[460px] leading-relaxed">{d.body}</p>
+          <div className="mt-6">
+            <Link
+              href={`/flights?destination=${encodeURIComponent(d.city)}`}
+              className="premium-button inline-flex items-center gap-2 rounded-md px-4 py-2.5 text-body"
+            >
+              {d.cta}
+              <ArrowRight className="w-4 h-4" strokeWidth={2} />
+            </Link>
+          </div>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+/* ── DestinationSketch — a subtle line sketch of an iconic silhouette ── */
+function DestinationSketch({ name }: { name: string }) {
+  // Use first letter as a design element — big editorial initial
+  return (
+    <div className="absolute inset-0 flex items-center justify-center">
+      <span
+        className="editorial text-pen-3 select-none"
+        style={{
+          fontSize: 'min(260px, 60vw)',
+          lineHeight: 1,
+          letterSpacing: '-0.05em',
+          opacity: 0.1,
+          fontWeight: 400,
+          fontStyle: 'italic',
+        }}
+      >
+        {name.charAt(0)}
+      </span>
     </div>
   );
 }
@@ -688,7 +852,7 @@ function DashboardStats() {
       label: 'Searches',
       value: searchesCount.toLocaleString(),
       sub: 'Flight lookups',
-      color: '#E8A317',
+      color: '#D4A24C',
       icon: Search,
     },
     {
@@ -790,7 +954,7 @@ function TravelStats({ recent }: { recent: RecentSearch[] }) {
       {/* Quick stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
         {[
-          { label: 'Total Searches', value: searchesCount.toLocaleString(), color: '#E8A317', icon: Search },
+          { label: 'Total Searches', value: searchesCount.toLocaleString(), color: '#D4A24C', icon: Search },
           { label: 'Deals Found', value: dealsFound.toLocaleString(), color: '#8B5CF6', icon: Star },
           { label: 'Total Saved', value: totalSaved > 0 ? `$${Math.round(totalSaved).toLocaleString()}` : '$0', color: '#10B981', icon: TrendingUp },
           { label: 'Current Streak', value: `${currentStreak} day${currentStreak !== 1 ? 's' : ''}`, color: '#EF4444', icon: Zap },
@@ -860,7 +1024,7 @@ function TravelStats({ recent }: { recent: RecentSearch[] }) {
                       className="text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded"
                       style={{
                         background: i === 0 ? 'rgba(232,163,23,0.12)' : 'rgba(255,255,255,0.04)',
-                        color: i === 0 ? '#E8A317' : 'rgba(255,255,255,0.35)',
+                        color: i === 0 ? '#D4A24C' : 'rgba(255,255,255,0.35)',
                       }}
                     >
                       {i + 1}

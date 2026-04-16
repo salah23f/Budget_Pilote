@@ -198,20 +198,16 @@ export default function RewardsPage() {
   return (
     <div className="min-h-screen pb-20">
       <Breadcrumb items={[{ label: 'Home', href: '/dashboard' }, { label: 'Rewards' }]} />
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center gap-3 mb-2">
-          <div
-            className="w-10 h-10 rounded-xl flex items-center justify-center"
-            style={{ background: 'linear-gradient(135deg, #E8A317, #F97316)' }}
-          >
-            <StarIcon size={22} className="text-white" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-white tracking-tight">Rewards</h1>
-            <p className="text-sm text-white/50">Earn points, unlock badges, redeem rewards</p>
-          </div>
-        </div>
+      {/* Header — editorial */}
+      <div className="mb-10">
+        <p className="text-micro uppercase text-pen-3 mb-3">Member since 2026</p>
+        <h1 className="editorial text-[32px] md:text-[44px] leading-[1.05] text-pen-1">
+          Your <em className="italic text-accent">rewards</em>.
+        </h1>
+        <p className="mt-3 text-body text-pen-2 max-w-[540px]">
+          Every search, every mission, every booking moves you forward.
+          Unlock benefits you&apos;ll actually use.
+        </p>
       </div>
 
       {/* Current Level + Stats Row */}
@@ -224,7 +220,7 @@ export default function RewardsPage() {
               className="w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0"
               style={{
                 background: currentLevel
-                  ? 'linear-gradient(135deg, #E8A317, #F97316, #EF4444)'
+                  ? 'linear-gradient(135deg, #D4A24C, #DFAE5B, #EF4444)'
                   : 'rgba(255,255,255,0.05)',
               }}
             >
@@ -244,7 +240,7 @@ export default function RewardsPage() {
                 {currentLevel && (
                   <span
                     className="px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider"
-                    style={{ background: 'rgba(245,158,11,0.15)', color: '#E8A317' }}
+                    style={{ background: 'rgba(245,158,11,0.15)', color: '#D4A24C' }}
                   >
                     Current Level
                   </span>
@@ -270,7 +266,7 @@ export default function RewardsPage() {
                       className="h-full rounded-full transition-all duration-500"
                       style={{
                         width: `${progressToNext}%`,
-                        background: 'linear-gradient(90deg, #E8A317, #F97316)',
+                        background: 'linear-gradient(90deg, #D4A24C, #DFAE5B)',
                       }}
                     />
                   </div>
@@ -322,13 +318,13 @@ export default function RewardsPage() {
       {/* Earn More Points — Action Grid */}
       <div className="mb-6">
         <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-          <Zap className="w-5 h-5 text-[#E8A317]" strokeWidth={1.8} /> Earn more points
+          <Zap className="w-5 h-5 text-[#D4A24C]" strokeWidth={1.8} /> Earn more points
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
           {[
             { href: '/flights', icon: Plane, label: 'Search a flight', pts: 5, color: '#60a5fa' },
             { href: '/hotels', icon: Building2, label: 'Search a hotel', pts: 5, color: '#a78bfa' },
-            { href: '/missions/new', icon: Target, label: 'Create a mission', pts: 25, color: '#E8A317' },
+            { href: '/missions/new', icon: Target, label: 'Create a mission', pts: 25, color: '#D4A24C' },
             { href: '/favorites', icon: Heart, label: 'Add a favorite', pts: 10, color: '#f472b6' },
             { href: '/referral', icon: Users, label: 'Invite a friend', pts: 100, color: '#10b981' },
             { href: '/flights', icon: Share2, label: 'Share a deal', pts: 15, color: '#22d3ee' },
@@ -391,7 +387,7 @@ export default function RewardsPage() {
                   className="w-14 h-14 rounded-full flex items-center justify-center mb-2"
                   style={{
                     background: isEarned
-                      ? 'linear-gradient(135deg, #E8A317, #F97316)'
+                      ? 'linear-gradient(135deg, #D4A24C, #DFAE5B)'
                       : 'rgba(255,255,255,0.04)',
                   }}
                 >
@@ -408,7 +404,7 @@ export default function RewardsPage() {
                 {isEarned ? (
                   <span
                     className="mt-2 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider"
-                    style={{ background: 'rgba(245,158,11,0.15)', color: '#E8A317' }}
+                    style={{ background: 'rgba(245,158,11,0.15)', color: '#D4A24C' }}
                   >
                     Unlocked
                   </span>
@@ -494,7 +490,7 @@ export default function RewardsPage() {
                     className="flex-shrink-0 px-4 py-1.5 rounded-lg text-xs font-semibold transition-all"
                     style={{
                       background: canAfford
-                        ? 'linear-gradient(135deg, #E8A317, #F97316)'
+                        ? 'linear-gradient(135deg, #D4A24C, #DFAE5B)'
                         : 'rgba(255,255,255,0.04)',
                       color: canAfford ? 'white' : 'rgba(255,255,255,0.2)',
                       cursor: canAfford ? 'pointer' : 'not-allowed',
