@@ -168,24 +168,253 @@ export interface Recommendation {
   explanation: Explanation;
 }
 
-/* ── User preference profile ────────────────────────────── */
+/* ── User preference profile (v1 — retained for back-compat) ── */
 
 export type PersonaCohort = 'explorer' | 'planner' | 'decisive' | 'newcomer';
 
 export interface UserPreferenceProfile {
   userId: string;
-  priceSensitivity: number;        // 0..1
-  convenienceSensitivity: number;  // 0..1
-  certaintySensitivity: number;    // 0..1
-  airlines: Record<string, number>; // airline code -> affinity 0..1
+  priceSensitivity: number;
+  convenienceSensitivity: number;
+  certaintySensitivity: number;
+  airlines: Record<string, number>;
   departureTimes: Record<'morning' | 'afternoon' | 'evening' | 'redeye', number>;
   cabins: Record<CabinClass, number>;
-  destinations: Record<string, number>; // IATA or country -> affinity
+  destinations: Record<string, number>;
   durations: { mean: number; stdev: number };
   cohort: PersonaCohort;
   updatedAt: number;
-  /** Number of behavior events observed. Used for cold-start. */
   observationCount: number;
+}
+
+/* ── User travel profile (v2 — the real user model) ────────── */
+
+/** Score with explicit confidence — always 0..1 for value, 0..1 for confidence. */
+export interface AffinityScore {
+  value: number;
+  confidence: number;
+  lastUpdatedAt: number;
+}
+
+export type UserCohort = 'newcomer' | 'explorer' | 'planner' | 'decisive' | 'dormant';
+
+export interface UserTravelProfile {
+  userId: string;
+  deviceId: string;
+  firstSeenAt: number;
+  lastActiveAt: number;
+
+  /** 0..1 — how much we actually know. Drives cold-start shrinkage. */
+  dataRichness: number;
+  observationCount: number;
+  cohort: UserCohort;
+
+  // Persona sensitivities
+  priceSensitivity: AffinityScore;
+  convenienceSensitivity: AffinityScore;
+  certaintySensitivity: AffinityScore;
+  hotelSensitivity: AffinityScore;
+  explorationVsFamiliar: AffinityScore;
+  spontaneityVsPlanning: AffinityScore;
+  aspirationGap: AffinityScore;
+
+  // Budget signature
+  typicalTripBudgetUsd: {
+    median: number;
+    p25: number;
+    p75: number;
+    confidence: number;
+  };
+  budgetPerRoute: Record<string, { median: number; n: number; lastAt: number }>;
+
+  // Temporal
+  typicalLeadDays: { median: number; stdev: number; n: number };
+  typicalDurationDays: { median: number; stdev: number; n: number };
+  seasonAffinity: Record<'spring' | 'summer' | 'autumn' | 'winter', AffinityScore>;
+
+  // Entities
+  destinations: Record<string, AffinityScore>;
+  destinationFatigue: Record<string, number>;
+  destinationsSavedNotBooked: Record<string, number>;
+  airlines: Record<string, AffinityScore>;
+  cabins: Record<CabinClass, AffinityScore>;
+  departureTimes: Record<'morning' | 'afternoon' | 'evening' | 'redeye', AffinityScore>;
+
+  // Regional preferences
+  preferredOriginRegions: Array<{ region: string; confidence: number }>;
+  preferredDestRegions: Array<{ region: string; confidence: number }>;
+}
+
+/* ── Session intent + fusion ─────────────────────────────── */
+
+export interface SessionIntent {
+  sessionId: string;
+  dominantGoal: 'cheapest' | 'convenience' | 'specific_destination' | 'exploration' | 'escape' | 'unknown';
+  urgency: number;           // 0..1
+  priceFlexibility: number;  // 0..1
+  dateFlexibilityHint: number;
+  destFlexibilityHint: number;
+  hotelImportance: number;
+  confidence: number;
+}
+
+export type ContradictionField = 'budget' | 'dates' | 'region' | 'cabin' | 'duration' | 'destination';
+
+export interface Contradiction {
+  field: ContradictionField;
+  stated: unknown;
+  profileExpected: unknown;
+  severity: number; // 0..1
+  resolution: 'trust_stated' | 'nudge_user' | 'soft_override' | 'refuse_until_confirmed';
+  message: string;
+}
+
+export interface FusedIntent {
+  stated: TravelIntent;
+  session: SessionIntent;
+  /** What the engine actually uses downstream. */
+  effective: TravelIntent;
+  contradictions: Contradiction[];
+  /** Confidence in the fusion overall. */
+  confidence: number;
+}
+
+/* ── Realism v2 ─────────────────────────────────────────── */
+
+export interface RealismV2 extends FeasibilityAssessment {
+  profileBudgetAlignment: number;
+  historicalPressure: number;
+  dataSufficiency: number;
+  regionFlexibilityHeadroom: number;
+  dateFlexibilityHeadroom: number;
+  bottleneck: 'budget' | 'dates' | 'airports' | 'duration' | 'data' | null;
+}
+
+/* ── Enriched candidate ─────────────────────────────────── */
+
+export interface CandidateFeatures {
+  // Price
+  priceUsd: number;
+  priceVsRouteMedian: number;
+  priceVsUserTypical: number;
+  priceVsBudget: number;
+  priceValueZ: number;
+
+  // Convenience
+  stops: number;
+  durationMin: number;
+  layoverQuality: number;
+  redEye: boolean;
+  weekendTravel: boolean;
+  originAirportBurden: number;
+  destAirportBurden: number;
+
+  // Trust
+  baselineDataPoints: number;
+  baselineAgeDays: number;
+  sourceDiversity: number;
+  partnerReliability: number;
+  refundability: 'refundable' | 'partial' | 'none';
+  baggageIncluded: boolean;
+
+  // Fit
+  airlineAffinity: number;
+  cabinAffinity: number;
+  timeAffinity: number;
+  destAffinity: number;
+  seasonAffinity: number;
+  durationAffinity: number;
+  leadTimeAffinity: number;
+
+  // Regret-risk primitives
+  compromiseCount: number;
+  extremeness: number;
+  hiddenCostRisk: number;
+
+  // Trip-level (if bundled)
+  hotelQualityScore?: number;
+  bundleSavingsVsSeparate?: number;
+  budgetAllocationRatio?: number;
+
+  // Meta
+  sourceExpansion: 'exact' | 'date_flex' | 'airport_region' | 'adjacent_dest' | 'duration_flex' | 'bundle';
+  destinationKey: string;
+  tripDurationDays?: number;
+}
+
+export interface EnrichedCandidate {
+  offerId: string;
+  raw: OfferFeatures;
+  features: CandidateFeatures;
+  sourceExpansion: CandidateFeatures['sourceExpansion'];
+}
+
+/* ── 15-score ranking ───────────────────────────────────── */
+
+export interface RankingScores {
+  feasibilityScore: number;
+  budgetRealismScore: number;
+  flightFitScore: number;
+  hotelFitScore: number;
+  tripFitScore: number;
+  convenienceScore: number;
+  preferenceMatchScore: number;
+  confidenceScore: number;
+  regretRiskScore: number;
+  discoveryScore: number;
+  valueForMoneyScore: number;
+  aspirationMatchScore: number;
+  timingFitScore: number;
+  conversionLikelihoodScore: number;
+  overallRecommendationScore: number;
+}
+
+/* ── Extended cohorts ───────────────────────────────────── */
+
+export type CohortV2 =
+  | 'SMARTEST'
+  | 'CHEAPEST_SANE'
+  | 'SAFEST'
+  | 'BEST_FIT'
+  | 'PREMIUM_WORTH_IT'
+  | 'HIDDEN_GEM'
+  | 'WIDEN_TO_UNLOCK'
+  | 'NOT_RECOMMENDED';
+
+/* ── Ranked recommendation (v2) ─────────────────────────── */
+
+export interface RankedRecommendation {
+  offerId: string;
+  features: CandidateFeatures;
+  scores: RankingScores;
+  cohorts: CohortV2[];
+  safeToSurface: boolean;
+  safeguardVeto?: string;
+  explanation: {
+    headline: string;
+    why: string;
+    evidence: string[];
+    caveats: string[];
+    contrarian?: string;
+    cohort: CohortV2;
+    confidence: number;
+  };
+}
+
+/* ── Safeguard result ───────────────────────────────────── */
+
+export type SafeguardReason =
+  | 'price_temptation_low_fit'
+  | 'hotel_veto'
+  | 'regret_risk_for_certainty_user'
+  | 'low_confidence_no_price_compensation'
+  | 'blows_budget'
+  | 'hidden_cost_trap'
+  | 'fit_too_low';
+
+export interface SafeguardResult {
+  safe: boolean;
+  reason?: SafeguardReason;
 }
 
 /* ── Behavior events ────────────────────────────────────── */

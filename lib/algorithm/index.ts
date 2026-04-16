@@ -12,6 +12,8 @@
  */
 
 export * from './types';
+
+// v1 engine — retained for back-compat with existing callers
 export {
   assessFeasibility,
   scoreBudgetRealism,
@@ -24,6 +26,77 @@ export {
 } from './feasibility';
 export { assignCohorts, type CohortInput } from './cohorts';
 export { explain, verdictCopy, type ExplainInput } from './explain';
+
+// v2 engine — the travel intelligence engine
+export {
+  createNeutralProfile,
+  applyEvent,
+  decayProfile,
+  adaptWeights,
+  BASE_WEIGHTS,
+  updateAffinity,
+  decay,
+  neutral,
+  inferCohort,
+  type RankingWeights,
+} from './user-model';
+
+export {
+  fuseIntent,
+  neutralSession,
+  inferSessionIntent,
+  requiresUserConfirmation,
+} from './intent';
+
+export {
+  enrichCandidate,
+  type EnrichInput,
+} from './enrich';
+
+export {
+  computeAllScores,
+  feasibilityScore,
+  budgetRealismScore,
+  flightFitScore,
+  hotelFitScore,
+  tripFitScore,
+  convenienceScore,
+  preferenceMatchScore,
+  confidenceScore,
+  regretRiskScore,
+  discoveryScore,
+  valueForMoneyScore,
+  aspirationMatchScore,
+  timingFitScore,
+  conversionLikelihoodScore,
+  overallRecommendationScore,
+  type ScoreAllInput,
+} from './ranking';
+
+export {
+  isSafeToSurface,
+  reasonCopy,
+  type IsSafeInput,
+} from './safeguards';
+
+export {
+  generateExplanation,
+  type ExplanationV2,
+  type ExplainV2Input,
+} from './explain-v2';
+
+export {
+  ingestEvent,
+  ingestBatch,
+  inferUrgency,
+  runningMean,
+} from './learning';
+
+export {
+  runEngine,
+  type RunEngineInput,
+  type RunEngineOutput,
+} from './engine';
 
 import type {
   FeasibilityAssessment,
