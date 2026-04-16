@@ -1,14 +1,19 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { getRecentSearches, type RecentSearch } from '@/lib/recent-searches';
 import { useSavingsStore } from '@/lib/store/savings-store';
 import { useStreakStore } from '@/lib/store/streak-store';
+import { useMissionStore } from '@/lib/store/mission-store';
 import { ReferralCard } from '@/components/referral-card';
 import { StreakWidget } from '@/components/streak-widget';
 import { DashboardSkeleton } from '@/components/skeletons';
 import { Card } from '@/components/ui/card';
+import { FlightRadar } from '@/components/dashboard/flight-radar';
+import { SavingsGauge } from '@/components/dashboard/savings-gauge';
+import { WorldMap } from '@/components/dashboard/world-map';
+import { LevelWidget } from '@/components/dashboard/level-widget';
 import {
   Plane,
   Building2,
@@ -30,6 +35,28 @@ export default function DashboardPage() {
   const [recent, setRecent] = useState<RecentSearch[]>([]);
   const [mounted, setMounted] = useState(false);
   const [pendingCity, setPendingCity] = useState<string | null>(null);
+  const missions = useMissionStore((s) => s.missions);
+  const totalSaved = useSavingsStore((s) => s.totalSaved);
+
+  // Extract routes from recent searches for world map
+  const userRoutes = useMemo(() => {
+    const seen = new Set<string>();
+    const routes: Array<{ from: string; to: string }> = [];
+    for (const r of recent) {
+      if (r.kind !== 'flight' || !r.origin || !r.destination) continue;
+      const key = `${r.origin}-${r.destination}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      routes.push({ from: r.origin, to: r.destination });
+      if (routes.length >= 5) break;
+    }
+    return routes;
+  }, [recent]);
+
+  const activeMissionCount = useMemo(
+    () => missions.filter((m) => m.status === 'monitoring' || m.status === 'proposal_pending').length,
+    [missions]
+  );
 
   useEffect(() => {
     setMounted(true);
@@ -164,6 +191,103 @@ export default function DashboardPage() {
             {greeting}, {name}
           </h1>
           <p className="mt-1.5 text-sm text-text-muted">{today}</p>
+        </div>
+
+        {/* ───── Cockpit Row — Radar + Gauge + Level ───── */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          {/* Flight Radar */}
+          <div
+            className="rounded-2xl p-5 flex flex-col items-center justify-center"
+            style={{
+              background:
+                'linear-gradient(135deg, rgba(232,163,23,0.04) 0%, rgba(9,9,11,0.8) 100%)',
+              border: '1px solid rgba(232,163,23,0.12)',
+            }}
+          >
+            <FlightRadar activeMissions={activeMissionCount} size={180} />
+            <Link
+              href="/missions"
+              className="mt-3 text-xs text-[#E8A317] hover:text-[#F5BE3A] transition font-medium flex items-center gap-1"
+            >
+              View all missions
+              <ArrowRight className="w-3 h-3" strokeWidth={2} />
+            </Link>
+          </div>
+
+          {/* Savings Gauge */}
+          <div
+            className="rounded-2xl p-5 flex flex-col items-center justify-between"
+            style={{
+              background:
+                'linear-gradient(135deg, rgba(16,185,129,0.04) 0%, rgba(9,9,11,0.8) 100%)',
+              border: '1px solid rgba(16,185,129,0.12)',
+            }}
+          >
+            <SavingsGauge totalSavedUsd={totalSaved || 0} size={200} />
+          </div>
+
+          {/* Level + Referral Stack */}
+          <div className="flex flex-col gap-3">
+            <LevelWidget />
+
+            <Link
+              href="/referral"
+              className="group flex items-center gap-3 rounded-2xl p-4 transition hover:-translate-y-0.5"
+              style={{
+                background: 'linear-gradient(135deg, rgba(232,163,23,0.08), rgba(249,115,22,0.04))',
+                border: '1px solid rgba(232,163,23,0.18)',
+              }}
+            >
+              <div
+                className="flex h-9 w-9 items-center justify-center rounded-xl shrink-0"
+                style={{ background: 'linear-gradient(135deg, #E8A317, #F97316)' }}
+              >
+                <Rocket className="w-4 h-4 text-white" strokeWidth={2} />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold text-white truncate">
+                  Earn $10 per friend
+                </p>
+                <p className="text-[11px] text-white/40 truncate">
+                  Invite & unlock Pro + Elite
+                </p>
+              </div>
+              <ArrowRight
+                className="w-4 h-4 text-[#E8A317] shrink-0 group-hover:translate-x-0.5 transition-transform"
+                strokeWidth={1.8}
+              />
+            </Link>
+          </div>
+        </div>
+
+        {/* World Map — user routes */}
+        <div
+          className="rounded-2xl p-5 mb-10 relative overflow-hidden"
+          style={{
+            background: 'rgba(255,255,255,0.02)',
+            border: '1px solid rgba(255,255,255,0.06)',
+          }}
+        >
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <p className="text-[10px] uppercase tracking-widest text-white/30 font-medium">
+                {userRoutes.length > 0 ? 'Your travel map' : 'Popular routes right now'}
+              </p>
+              <h2 className="text-base font-semibold text-white mt-0.5">
+                {userRoutes.length > 0
+                  ? `${userRoutes.length} ${userRoutes.length === 1 ? 'route' : 'routes'} explored`
+                  : 'Discover the world'}
+              </h2>
+            </div>
+            <Link
+              href="/flights"
+              className="text-xs text-[#E8A317] hover:text-[#F5BE3A] transition font-medium flex items-center gap-1"
+            >
+              Explore
+              <ArrowRight className="w-3 h-3" strokeWidth={2} />
+            </Link>
+          </div>
+          <WorldMap routes={userRoutes.length > 0 ? userRoutes : undefined} />
         </div>
 
         {/* Stats Row */}

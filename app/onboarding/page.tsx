@@ -237,14 +237,17 @@ export default function OnboardingPage() {
 
       localStorage.setItem('sv_user', JSON.stringify(userData));
 
-      // Award 50 welcome bonus points on first signup
+      // Award 50 welcome bonus points on first signup (initial signup bonus —
+      // onboarding completion gives another +50 on /personalize)
       const { totalPoints, addPoints } = useStreakStore.getState();
       if (totalPoints === 0) {
         addPoints(50, 'Welcome bonus');
       }
 
       setSuccess(true);
-      setTimeout(() => router.push('/dashboard'), 1800);
+      // Route to the gamified personalization flow first — it drops the user
+      // onto /dashboard (or /missions/new) when done.
+      setTimeout(() => router.push('/personalize'), 1800);
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Error');
     } finally {
