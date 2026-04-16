@@ -14,6 +14,7 @@ import { FlightRadar } from '@/components/dashboard/flight-radar';
 import { SavingsGauge } from '@/components/dashboard/savings-gauge';
 import { WorldMap } from '@/components/dashboard/world-map';
 import { LevelWidget } from '@/components/dashboard/level-widget';
+import { ResumeBanner } from '@/components/watch/resume-banner';
 import {
   Plane,
   Building2,
@@ -185,6 +186,9 @@ export default function DashboardPage() {
   return (
     <div className="py-2">
       <div className="mx-auto max-w-content">
+        {/* ───── Resume banner (if draft exists) ───── */}
+        <ResumeBanner className="mb-4" />
+
         {/* ───── Editorial header ───── */}
         <div className="mb-10">
           <p className="text-micro uppercase text-pen-3 mb-3">{today}</p>

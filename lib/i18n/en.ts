@@ -7,7 +7,7 @@ const en: Record<string, string> = {
   'sidebar.cars': 'Cars',
   'sidebar.groupTrip': 'Group Trip',
   'sidebar.insurance': 'Insurance',
-  'sidebar.missions': 'Missions',
+  'sidebar.missions': 'Watches',
   'sidebar.favorites': 'Favorites',
   'sidebar.bookings': 'Bookings',
   'sidebar.rewards': 'Rewards',
@@ -30,7 +30,7 @@ const en: Record<string, string> = {
   'button.cancel': 'Cancel',
   'button.save': 'Save',
   'button.applyFilters': 'Apply Filters',
-  'button.createMission': 'Create Mission',
+  'button.createMission': 'Watch a trip',
   'button.retry': 'Try again',
   'button.back': 'Back',
   'button.next': 'Next',
@@ -45,7 +45,7 @@ const en: Record<string, string> = {
   'empty.noResults': 'No results found',
   'empty.noFavorites': 'No favorites yet',
   'empty.noBookings': 'No bookings yet',
-  'empty.noMissions': 'No missions yet',
+  'empty.noMissions': "You're not watching any trips yet",
 
   // Common
   'common.loading': 'Loading',
@@ -108,7 +108,7 @@ const en: Record<string, string> = {
   'misc.travelersSaving': 'travelers saving right now',
   'misc.freePlan': 'Free plan',
   'misc.quickAccess': 'Quick access',
-  'misc.newMission': 'New Mission',
+  'misc.newMission': 'Watch a trip',
   'misc.wallet': 'Wallet',
   'misc.terms': 'Terms',
   'misc.currency': 'Currency',
@@ -172,14 +172,14 @@ const en: Record<string, string> = {
   'insurance.evacuation': 'Emergency evacuation',
 
   // Missions
-  'missions.title': 'AI Missions',
+  'missions.title': 'Watches',
   'missions.subtitle': 'Set a target. We watch the fare. You book on your terms.',
-  'missions.active': 'Active',
-  'missions.completed': 'Completed',
+  'missions.active': 'Live',
+  'missions.completed': 'Closed',
   'missions.paused': 'Paused',
-  'missions.targetPrice': 'Target price',
-  'missions.currentPrice': 'Current price',
-  'missions.autoBuy': 'Auto-buy enabled',
+  'missions.targetPrice': 'Your target',
+  'missions.currentPrice': 'Today',
+  'missions.autoBuy': 'Auto-book on my behalf',
 
   // Rewards
   'rewards.title': 'Rewards',
@@ -217,7 +217,7 @@ const en: Record<string, string> = {
   'chat.findHotel': 'Find a hotel',
   'chat.bestTime': 'Best time to book?',
   'chat.howItWorks': 'How it works',
-  'chat.createMission': 'Create a mission',
+  'chat.createMission': 'Watch a trip',
   'chat.comparePrices': 'Compare prices',
 
   // Command palette

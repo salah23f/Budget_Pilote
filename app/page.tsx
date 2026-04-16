@@ -1,48 +1,51 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import TripPlannerHero from '@/components/trip-planner-hero';
 import { Accordion, AccordionItem } from '@/components/ui/accordion';
-import { PriceDisplay } from '@/components/ui/price-display';
-import { useSavingsStore } from '@/lib/store/savings-store';
 import { ArrowRight, Check } from 'lucide-react';
 
 /* ──────────────────────────────────────────────────────────
-   Landing — editorial travel brand.
-   See docs/design-system.md for tokens.
-   No gradients. No glows. No emojis. Serif for moments that matter.
+   Landing — tighter, more premium, fewer competing messages.
+
+   Sections (5 total):
+     1. Hero + the killer demo side-by-side (above the fold)
+     2. One editorial explainer + the quiet comparison
+     3. Pricing
+     4. FAQ
+     5. Footer
+
+   Design: no gradients, no glows, no emojis. Serif editorial for
+   moments that matter. Generous whitespace. Numbers in mono.
    ────────────────────────────────────────────────────────── */
+
+/* ── Pricing ── */
 
 const TIERS = [
   {
     name: 'Free',
     price: 0,
     cadence: 'Always',
-    pitch: 'One live mission. Daily deal digest.',
+    pitch: 'Watch one trip. Daily deal digest.',
     cta: 'Begin',
     ctaHref: '/onboarding',
     highlight: false,
-    items: [
-      '1 active mission',
-      '3 searches per day',
-      'Deal alerts, daily',
-      'Price calendar view',
-    ],
+    items: ['1 live watch', '3 searches / day', 'Price outlook', 'Deal alerts, daily'],
   },
   {
     name: 'Pro',
     price: 9,
     cadence: 'per month',
-    pitch: 'Auto-book when your target hits. 3× loyalty points.',
+    pitch: 'Unlimited watches. Real-time alerts. 3× points.',
     cta: 'Start Pro trial',
     ctaHref: '/onboarding',
     highlight: true,
     items: [
-      'Unlimited missions',
-      'Auto-buy on target',
+      'Unlimited watches',
       '15-minute monitoring',
-      '90 days of price history',
+      '90 days of history',
+      'Optional auto-book on your target',
       '3× loyalty points',
     ],
   },
@@ -50,65 +53,46 @@ const TIERS = [
     name: 'Elite',
     price: 29,
     cadence: 'per month',
-    pitch: 'Dedicated concierge. Real-time alerts. 5× points.',
+    pitch: 'Dedicated concierge. 5× points. Priority support.',
     cta: 'Go Elite',
     ctaHref: '/onboarding',
     highlight: false,
-    items: [
-      'Everything in Pro',
-      '5-minute monitoring',
-      'Dedicated AI concierge',
-      'Full price history',
-      '5× loyalty points',
-      'Priority support',
-    ],
+    items: ['Everything in Pro', '5-minute monitoring', 'Dedicated concierge', 'Full price history', '5× points'],
   },
 ];
 
 const FAQ = [
   {
-    q: 'How do you get real prices?',
-    a: 'We query live inventory from 400+ airline APIs and 2 million hotels. No stale caches, no bait. You see the price your chosen provider actually charges at that second.',
+    q: 'How do you know the "typical" price?',
+    a: 'For every route, we analyze 60–500 recent fares across the last 180 days, normalized for season and day-of-week. We show the median, interquartile range, and your position in that distribution.',
+  },
+  {
+    q: "What if my budget isn't realistic?",
+    a: "We tell you, calmly and specifically — before you commit. You'll see which lever (dates, airports, stops) would move your feasibility the most.",
+  },
+  {
+    q: 'Do I have to let you auto-book?',
+    a: 'No. Auto-book is an optional advanced toggle, off by default. You get most of the value — the price outlook, the watching, the alerts — without it.',
   },
   {
     q: 'Do you hide any fees?',
-    a: 'No. The number you see is the number you pay. Taxes and required fees are included. Optional extras like baggage are shown separately with clear labels.',
-  },
-  {
-    q: 'What does a mission actually do?',
-    a: 'You pick a route, a window, and a target price. We watch every inventory refresh until the offer beats your target, then we alert you — or auto-book if you set that. You can cancel anytime.',
-  },
-  {
-    q: 'Why does Flyeas keep commissions instead of rebating them?',
-    a: 'We keep a small partner commission, and we return a meaningful share as loyalty points (redeemable against future trips). This keeps the tool free to use while keeping incentives aligned.',
-  },
-  {
-    q: 'Can I cancel Pro anytime?',
-    a: 'Yes. No contracts, no lock-in. If you cancel mid-cycle you keep Pro until the period ends.',
-  },
-  {
-    q: 'Do you support my currency and language?',
-    a: '32 languages and 85+ currencies. Switch anytime from the header. Conversions use live rates refreshed every six hours.',
+    a: 'No. The number you see is the number you pay. Taxes and required fees are always included up-front.',
   },
 ];
 
-/* ── Editorial greetings (rotates in the hero eyebrow) ── */
+/* ── Top-line greeting rotation (one tasteful accent) ── */
 const GREETINGS = [
   { text: 'Hello', lang: 'English' },
   { text: 'Bonjour', lang: 'Français' },
   { text: 'Guten Tag', lang: 'Deutsch' },
   { text: 'Hola', lang: 'Español' },
-  { text: 'Ciao', lang: 'Italiano' },
   { text: 'こんにちは', lang: '日本語' },
-  { text: '안녕하세요', lang: '한국어' },
   { text: 'مرحباً', lang: 'العربية' },
-  { text: 'Olá', lang: 'Português' },
 ];
 
 export default function LandingPage() {
   const [gi, setGi] = useState(0);
   const [visible, setVisible] = useState(true);
-  const totalSaved = useSavingsStore((s) => s.totalSaved);
 
   useEffect(() => {
     const t = setInterval(() => {
@@ -117,7 +101,7 @@ export default function LandingPage() {
         setGi((p) => (p + 1) % GREETINGS.length);
         setVisible(true);
       }, 300);
-    }, 3200);
+    }, 3600);
     return () => clearInterval(t);
   }, []);
 
@@ -125,163 +109,114 @@ export default function LandingPage() {
     <div className="min-h-screen bg-ink-950 text-pen-1">
       <TopNav />
 
-      {/* ───────────────────────────────── Hero ───────────────────────────────── */}
-      <section className="border-b border-line-1">
-        <div className="mx-auto max-w-wide px-6 lg:px-12 py-16 lg:py-24">
-          <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-12 lg:gap-16 items-center">
-            {/* Left — editorial copy */}
-            <div>
-              <div className="flex items-center gap-3 mb-6">
-                <span className="flex items-center gap-2 text-micro uppercase text-pen-3">
-                  <span className="relative flex h-1.5 w-1.5">
-                    <span className="absolute inline-flex h-full w-full rounded-full bg-success opacity-60 animate-ping" />
-                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-success" />
-                  </span>
-                  Live · 400+ carriers
+      {/* ───────────────── 1. Hero with inline demo ───────────────── */}
+      <section>
+        <div className="mx-auto max-w-wide px-6 lg:px-12 pt-20 lg:pt-28 pb-24 lg:pb-32">
+          <div className="grid lg:grid-cols-[0.95fr_1.05fr] gap-12 lg:gap-20 items-start">
+            {/* Left — copy */}
+            <div className="lg:pt-6">
+              <p className="text-micro uppercase text-pen-3 mb-5 flex items-center gap-2">
+                <span
+                  className="inline-block transition-opacity duration-300"
+                  style={{ opacity: visible ? 1 : 0 }}
+                >
+                  {GREETINGS[gi].text}
                 </span>
-                <span className="text-micro uppercase text-pen-3">
-                  <span
-                    className={`inline-block transition-opacity duration-300 ${visible ? 'opacity-100' : 'opacity-0'}`}
-                  >
-                    {GREETINGS[gi].text}
-                  </span>
-                </span>
-              </div>
-
-              <h1 className="editorial text-[40px] md:text-display leading-[1.05]">
-                Watch prices.<br />
-                Book on <em className="italic text-accent">your</em> terms.
-              </h1>
-
-              <p className="mt-6 text-body-lg text-pen-2 max-w-[540px]">
-                Flyeas is a travel concierge that watches flight and hotel prices around the clock,
-                so you never book on the wrong day again. Set a target. Let the mission run.
-                Buy when it makes sense.
+                <span className="h-1 w-1 rounded-full bg-pen-3/60" />
+                <span>A travel concierge</span>
               </p>
 
-              <div className="mt-8 flex flex-wrap items-center gap-3">
+              <h1 className="editorial text-[44px] md:text-[60px] leading-[1.02]">
+                Know the real price.<br />
+                <em className="italic text-accent">Then</em> decide.
+              </h1>
+
+              <p className="mt-6 text-body-lg text-pen-2 max-w-[460px] leading-relaxed">
+                Flyeas shows you what any flight typically costs, whether today&apos;s fare is good,
+                and quietly watches the price until it lands.
+              </p>
+
+              <div className="mt-10 flex items-center gap-3">
                 <Link
                   href="/onboarding"
-                  className="premium-button inline-flex items-center gap-2 rounded-md px-5 py-3 text-body"
+                  className="premium-button inline-flex items-center gap-2 rounded-md px-5 py-3 text-body font-semibold"
                 >
                   Begin
                   <ArrowRight className="h-4 w-4" strokeWidth={2} />
                 </Link>
                 <Link
-                  href="/flights"
-                  className="secondary-button inline-flex items-center gap-2 rounded-md px-5 py-3 text-body"
+                  href="#how"
+                  className="inline-flex items-center gap-2 rounded-md px-5 py-3 text-body text-pen-2 hover:text-pen-1 transition"
                 >
-                  Browse flights
+                  How it works
                 </Link>
               </div>
 
-              <div className="mt-10 flex items-center gap-6 text-caption text-pen-3">
-                <span>No credit card required</span>
-                <span className="h-1 w-1 rounded-full bg-pen-3/60" />
-                <span>32 languages · 85+ currencies</span>
+              <p className="mt-8 text-caption text-pen-3">
+                No credit card. Free forever. 32 languages.
+              </p>
+            </div>
+
+            {/* Right — the demo */}
+            <div className="lg:sticky lg:top-24">
+              <div className="mb-4 flex items-baseline justify-between">
+                <p className="text-micro uppercase text-pen-3">Try it right now</p>
+                <p className="text-caption text-pen-3">Live data · no login</p>
+              </div>
+              <div
+                className="rounded-xl border border-line-1 bg-ink-900 p-5 md:p-6"
+                style={{ boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.02)' }}
+              >
+                <TripPlannerHero />
               </div>
             </div>
+          </div>
+        </div>
+      </section>
 
-            {/* Right — editorial visual (minimalist globe with a single arc) */}
-            <div className="order-first lg:order-last">
-              <HeroVisual />
+      {/* ───────────────── 2. One explainer + quiet comparison ───────────────── */}
+      <section id="how" className="border-t border-line-1 bg-ink-900">
+        <div className="mx-auto max-w-wide px-6 lg:px-12 py-24 lg:py-28">
+          <div className="grid lg:grid-cols-2 gap-14 lg:gap-20 items-center">
+            <div>
+              <p className="text-micro uppercase text-pen-3 mb-4">How a watch works</p>
+              <h2 className="editorial text-h1 max-w-[460px]">
+                Set a trip. Set a target. <em className="italic text-accent">Forget about it.</em>
+              </h2>
+              <p className="mt-5 text-body text-pen-2 max-w-[460px] leading-relaxed">
+                We pull 60–500 historical fares for your route, tell you honestly whether your
+                target is realistic, then check every few minutes until a matching offer appears.
+              </p>
+              <p className="mt-4 text-body text-pen-2 max-w-[460px] leading-relaxed">
+                Each alert explains itself: how far below typical the price is, how confident
+                we are, what the trade-offs are. No unexplained picks, ever.
+              </p>
             </div>
+
+            <MissionVisual />
           </div>
-        </div>
-      </section>
 
-      {/* ─────────────────────────── Try it — natural language ─────────────────────────── */}
-      <section className="border-b border-line-1 bg-ink-900">
-        <div className="mx-auto max-w-wide px-6 lg:px-12 py-16 lg:py-20">
-          <div className="max-w-[680px] mb-10">
-            <p className="text-micro uppercase text-pen-3 mb-3">Try it now</p>
-            <h2 className="editorial text-h1">
-              Tell us where you're going. Get prices in seconds.
-            </h2>
-            <p className="mt-3 text-body text-pen-2">
-              One sentence is enough. Real flights, real hotels, real prices.
-            </p>
-          </div>
-          <TripPlannerHero />
-        </div>
-      </section>
-
-      {/* ─────────────────────────────── Product 1 ─────────────────────────────── */}
-      <ProductSection
-        eyebrow="Around the clock"
-        title="The search that never sleeps"
-        body="Airlines change prices up to 30 times a day. We check every route you care about every few minutes, and tell you the moment a better fare appears. No browser tabs, no refresh button, no second-guessing."
-        stat={
-          totalSaved > 0
-            ? { label: 'Saved by our users this year', value: totalSaved * 120, currencyConvert: true }
-            : { label: 'Routes monitored this week', value: 128_400, currencyConvert: false }
-        }
-        align="left"
-      />
-
-      {/* ─────────────────────────────── Product 2 ─────────────────────────────── */}
-      <ProductSection
-        eyebrow="The mission"
-        title="A concierge that closes the deal"
-        body="Pick a route, a window, a price you'd happily pay. We watch. When the market moves, you're the first to know. Set auto-book and we close the deal the moment it beats your number — even at 3 a.m."
-        visual={<MissionVisual />}
-        align="right"
-      />
-
-      {/* ─────────────────────────────── Product 3 ─────────────────────────────── */}
-      <ProductSection
-        eyebrow="Transparent pricing"
-        title="One number. End to end."
-        body="The price on the card is the price on your statement. Taxes, required fees, currency — all included from the first screen. If we think a partner will add a surprise charge later, we warn you before you click book."
-        visual={<PriceBreakdownVisual />}
-        align="left"
-      />
-
-      {/* ─────────────────────────────── Comparison ─────────────────────────────── */}
-      <section className="border-y border-line-1 bg-ink-900">
-        <div className="mx-auto max-w-content px-6 lg:px-12 py-20 lg:py-24">
-          <p className="text-micro uppercase text-pen-3 mb-4">How we differ</p>
-          <h2 className="editorial text-h1 max-w-[720px]">
-            Skyscanner tells you. Google helps you decide.<br />
-            <em className="italic text-accent">We book.</em>
-          </h2>
-          <div className="mt-10 grid md:grid-cols-3 gap-8 md:gap-12 text-body text-pen-2">
-            <p>
-              Most aggregators hand you off to a partner the moment you decide. We stay with you —
-              monitoring, predicting, and closing — until you've actually flown.
-            </p>
-            <p>
-              Instead of stale "typical prices," we show you 180 days of real history for the exact
-              route and date you're looking at. You decide with data, not guesses.
-            </p>
-            <p>
-              We earn from airline and hotel partners, not from hiding extras.
-              That's why the price you see is the price you pay.
+          {/* Quiet comparison band — one paragraph, not a matrix */}
+          <div className="mt-24 pt-12 border-t border-line-1">
+            <p className="text-micro uppercase text-pen-3 mb-4">How we differ</p>
+            <p className="editorial text-h2 text-pen-1 max-w-[780px] leading-[1.25]">
+              Most tools help you shop. Flyeas helps you{' '}
+              <em className="italic text-accent">decide</em>. We quote the route against its own
+              history, flag unrealistic targets, and refuse to surface a deal we can&apos;t
+              explain.
             </p>
           </div>
         </div>
       </section>
 
-      {/* ─────────────────────────────── Social proof ─────────────────────────────── */}
-      <section className="border-b border-line-1">
-        <div className="mx-auto max-w-wide px-6 lg:px-12 py-16">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            <Stat value="400+" label="Airlines tracked" />
-            <Stat value="2M+" label="Hotels worldwide" />
-            <Stat value="32" label="Languages" />
-            <Stat value="85+" label="Currencies" />
-          </div>
-        </div>
-      </section>
-
-      {/* ─────────────────────────────── Pricing ─────────────────────────────── */}
-      <section className="border-b border-line-1">
-        <div className="mx-auto max-w-wide px-6 lg:px-12 py-20 lg:py-24">
-          <div className="max-w-[640px] mb-12">
+      {/* ───────────────── 3. Pricing ───────────────── */}
+      <section id="pricing" className="border-t border-line-1">
+        <div className="mx-auto max-w-wide px-6 lg:px-12 py-24 lg:py-28">
+          <div className="max-w-[560px] mb-12">
             <p className="text-micro uppercase text-pen-3 mb-3">Membership</p>
             <h2 className="editorial text-h1">Three tiers. No surprises.</h2>
             <p className="mt-3 text-body text-pen-2">
-              Start free. Upgrade when the missions pay for themselves — usually on the second trip.
+              Start free — the price outlook and one live watch are always included.
             </p>
           </div>
 
@@ -293,18 +228,14 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ─────────────────────────────── FAQ ─────────────────────────────── */}
-      <section className="border-b border-line-1 bg-ink-900">
-        <div className="mx-auto max-w-prose px-6 lg:px-12 py-20 lg:py-24">
-          <p className="text-micro uppercase text-pen-3 mb-3">Questions, briefly answered</p>
-          <h2 className="editorial text-h1 mb-8">Frequently asked.</h2>
+      {/* ───────────────── 4. FAQ (short) ───────────────── */}
+      <section className="border-t border-line-1 bg-ink-900">
+        <div className="mx-auto max-w-prose px-6 lg:px-12 py-24 lg:py-28">
+          <p className="text-micro uppercase text-pen-3 mb-3">Briefly answered</p>
+          <h2 className="editorial text-h1 mb-10">Questions.</h2>
           <Accordion>
             {FAQ.map((item, idx) => (
-              <AccordionItem
-                key={idx}
-                title={item.q}
-                defaultOpen={idx === 0}
-              >
+              <AccordionItem key={idx} title={item.q} defaultOpen={idx === 0}>
                 <p className="text-body text-pen-2 leading-relaxed">{item.a}</p>
               </AccordionItem>
             ))}
@@ -312,25 +243,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ─────────────────────────────── Final CTA ─────────────────────────────── */}
-      <section className="border-b border-line-1">
-        <div className="mx-auto max-w-wide px-6 lg:px-12 py-24 text-center">
-          <h2 className="editorial text-[36px] md:text-display leading-[1.05] max-w-[780px] mx-auto">
-            The next trip starts with a number.<br />
-            <em className="italic text-accent">Name it.</em>
-          </h2>
-          <div className="mt-10 flex flex-wrap justify-center gap-3">
-            <Link
-              href="/onboarding"
-              className="premium-button inline-flex items-center gap-2 rounded-md px-6 py-3.5"
-            >
-              Start your first mission
-              <ArrowRight className="h-4 w-4" strokeWidth={2} />
-            </Link>
-          </div>
-        </div>
-      </section>
-
+      {/* ───────────────── 5. Footer ───────────────── */}
       <Footer />
     </div>
   );
@@ -351,14 +264,11 @@ function TopNav() {
         <nav className="hidden md:flex items-center gap-8">
           <Link href="/flights" className="text-body text-pen-2 hover:text-pen-1 transition">Flights</Link>
           <Link href="/hotels" className="text-body text-pen-2 hover:text-pen-1 transition">Hotels</Link>
-          <Link href="/missions" className="text-body text-pen-2 hover:text-pen-1 transition">Missions</Link>
-          <Link href="/#pricing" className="text-body text-pen-2 hover:text-pen-1 transition">Pricing</Link>
+          <Link href="#how" className="text-body text-pen-2 hover:text-pen-1 transition">How it works</Link>
+          <Link href="#pricing" className="text-body text-pen-2 hover:text-pen-1 transition">Pricing</Link>
         </nav>
         <div className="flex items-center gap-2">
-          <Link
-            href="/onboarding"
-            className="text-body text-pen-2 hover:text-pen-1 transition px-3 py-2"
-          >
+          <Link href="/onboarding" className="text-body text-pen-2 hover:text-pen-1 transition px-3 py-2">
             Sign in
           </Link>
           <Link
@@ -380,178 +290,19 @@ function LogoMark() {
       style={{ background: 'var(--ink-700)', border: '1px solid var(--line-2)' }}
       aria-hidden="true"
     >
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <svg
+        width="14"
+        height="14"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="var(--accent)"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
         <path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z" />
       </svg>
     </span>
-  );
-}
-
-/* ─── Hero visual: a minimalist globe with a single arc ─── */
-function HeroVisual() {
-  return (
-    <div
-      className="relative rounded-xl overflow-hidden border border-line-1"
-      style={{
-        background: 'var(--ink-900)',
-        aspectRatio: '1 / 1',
-        maxWidth: '560px',
-        margin: '0 auto',
-      }}
-    >
-      <svg viewBox="0 0 400 400" className="w-full h-full">
-        <defs>
-          <radialGradient id="globeFill" cx="0.45" cy="0.4" r="0.6">
-            <stop offset="0%" stopColor="#1D1D22" />
-            <stop offset="100%" stopColor="#0B0B0D" />
-          </radialGradient>
-          <linearGradient id="arcFill" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor="#D4A24C" stopOpacity="0" />
-            <stop offset="50%" stopColor="#D4A24C" stopOpacity="0.9" />
-            <stop offset="100%" stopColor="#D4A24C" stopOpacity="0" />
-          </linearGradient>
-        </defs>
-
-        {/* Globe */}
-        <circle cx="200" cy="200" r="140" fill="url(#globeFill)" stroke="#252528" strokeWidth="1" />
-
-        {/* Meridians */}
-        {[-60, -30, 0, 30, 60].map((rot) => (
-          <ellipse
-            key={rot}
-            cx="200"
-            cy="200"
-            rx={140 * Math.abs(Math.cos((rot * Math.PI) / 180))}
-            ry="140"
-            fill="none"
-            stroke="#1A1A1D"
-            strokeWidth="0.8"
-          />
-        ))}
-
-        {/* Parallels */}
-        {[40, 80, 120].map((r) => (
-          <ellipse
-            key={r}
-            cx="200"
-            cy="200"
-            rx="140"
-            ry={r}
-            fill="none"
-            stroke="#1A1A1D"
-            strokeWidth="0.8"
-          />
-        ))}
-
-        {/* Horizon line */}
-        <line x1="60" y1="200" x2="340" y2="200" stroke="#252528" strokeWidth="0.8" />
-
-        {/* Single elegant arc — the flight */}
-        <path
-          d="M 90 210 Q 200 70 320 195"
-          fill="none"
-          stroke="url(#arcFill)"
-          strokeWidth="1.5"
-          strokeDasharray="6 4"
-        >
-          <animate attributeName="stroke-dashoffset" from="0" to="-20" dur="4s" repeatCount="indefinite" />
-        </path>
-
-        {/* Origin + destination markers */}
-        <circle cx="90" cy="210" r="3.5" fill="#D4A24C" />
-        <circle cx="90" cy="210" r="8" fill="none" stroke="#D4A24C" strokeWidth="1" opacity="0.3" />
-        <circle cx="320" cy="195" r="3.5" fill="#D4A24C" />
-        <circle cx="320" cy="195" r="8" fill="none" stroke="#D4A24C" strokeWidth="1" opacity="0.3" />
-
-        {/* Tiny plane icon travelling along the arc */}
-        <g>
-          <animateMotion dur="6s" repeatCount="indefinite" path="M 90 210 Q 200 70 320 195" rotate="auto" />
-          <path d="M -4 0 L 4 0 L 6 -2 L 7 -2 L 6 0 L 7 0 L 7 1 L 6 1 L 7 3 L 6 3 L 4 1 L -4 1 L -6 2 L -7 2 L -6 1 L -7 1 L -7 0 L -6 0 L -7 -2 L -6 -2 Z" fill="#F5F5F1" transform="scale(0.9)" />
-        </g>
-
-        {/* Label — handwritten feel */}
-        <text x="90" y="235" fill="#A9A9A4" fontSize="11" fontFamily="var(--font-editorial)" fontStyle="italic">Paris</text>
-        <text x="290" y="175" fill="#A9A9A4" fontSize="11" fontFamily="var(--font-editorial)" fontStyle="italic">Tokyo</text>
-      </svg>
-
-      {/* Subtle caption */}
-      <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between">
-        <div>
-          <p className="text-micro uppercase text-pen-3">Watching since</p>
-          <p className="text-caption text-pen-2 font-mono mt-0.5">03:12 GMT</p>
-        </div>
-        <div className="text-right">
-          <p className="text-micro uppercase text-pen-3">Best today</p>
-          <p className="text-body text-pen-1 font-mono mt-0.5">$642</p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ─── Reusable editorial product section ─── */
-function ProductSection({
-  eyebrow,
-  title,
-  body,
-  visual,
-  stat,
-  align,
-}: {
-  eyebrow: string;
-  title: string;
-  body: string;
-  visual?: React.ReactNode;
-  stat?: { label: string; value: number; currencyConvert?: boolean };
-  align: 'left' | 'right';
-}) {
-  const copyOrder = align === 'left' ? 'lg:order-first' : 'lg:order-last';
-  const visualOrder = align === 'left' ? 'lg:order-last' : 'lg:order-first';
-
-  return (
-    <section className="border-b border-line-1">
-      <div className="mx-auto max-w-wide px-6 lg:px-12 py-20 lg:py-28">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-          <div className={copyOrder}>
-            <p className="text-micro uppercase text-pen-3 mb-3">{eyebrow}</p>
-            <h2 className="editorial text-h1">{title}</h2>
-            <p className="mt-5 text-body-lg text-pen-2 max-w-[520px]">{body}</p>
-          </div>
-          <div className={visualOrder}>
-            {visual ? (
-              visual
-            ) : stat ? (
-              <StatVisual stat={stat} />
-            ) : null}
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function StatVisual({ stat }: { stat: { label: string; value: number; currencyConvert?: boolean } }) {
-  return (
-    <div
-      className="rounded-xl p-10 md:p-12 border border-line-1"
-      style={{ background: 'var(--ink-900)' }}
-    >
-      <p className="text-micro uppercase text-pen-3">{stat.label}</p>
-      <div className="mt-3">
-        {stat.currencyConvert ? (
-          <PriceDisplay usd={stat.value} size="2xl" className="editorial !font-medium text-[56px] leading-none" />
-        ) : (
-          <span className="editorial text-[56px] leading-none text-pen-1 font-medium">
-            {stat.value.toLocaleString()}
-          </span>
-        )}
-      </div>
-      <div className="mt-6 pt-6 border-t border-line-1">
-        <p className="text-caption text-pen-3">
-          Updated every six hours. Figures are real and verifiable in your account once you sign in.
-        </p>
-      </div>
-    </div>
   );
 }
 
@@ -559,103 +310,55 @@ function MissionVisual() {
   return (
     <div
       className="rounded-xl overflow-hidden border border-line-1"
-      style={{ background: 'var(--ink-900)' }}
+      style={{ background: 'var(--ink-800)' }}
     >
-      {/* Mock mission cockpit */}
       <div className="p-6 border-b border-line-1 flex items-center justify-between">
         <div>
-          <p className="text-micro uppercase text-pen-3">Mission</p>
+          <p className="text-micro uppercase text-pen-3">Your watch</p>
           <p className="editorial text-h2 mt-1">Paris → Tokyo</p>
-          <p className="text-caption text-pen-3 mt-1">Dec 14 – Dec 22 · Business</p>
+          <p className="text-caption text-pen-3 mt-1">July · 2 weeks · economy</p>
         </div>
-        <span className="highlight-badge">Watching</span>
+        <span className="inline-flex items-center gap-1.5 rounded-sm px-2 py-1 text-caption text-accent bg-accent-soft">
+          Watching
+        </span>
       </div>
 
       <div className="p-6 space-y-4">
         <div className="flex items-baseline justify-between">
-          <span className="text-caption text-pen-3">Target</span>
-          <span className="font-mono text-body text-pen-1">$2,400</span>
+          <span className="text-caption text-pen-3">Your target</span>
+          <span className="font-mono text-body text-pen-1">$640</span>
         </div>
         <div className="flex items-baseline justify-between">
-          <span className="text-caption text-pen-3">Current best</span>
-          <span className="font-mono text-body-lg text-accent">$2,510</span>
+          <span className="text-caption text-pen-3">Typical for this route</span>
+          <span className="font-mono text-body text-pen-2">$780</span>
         </div>
         <div className="flex items-baseline justify-between">
-          <span className="text-caption text-pen-3">30-day low</span>
-          <span className="font-mono text-body text-pen-2">$2,340</span>
+          <span className="text-caption text-pen-3">Best price today</span>
+          <span className="font-mono text-body-lg text-accent">$712</span>
         </div>
 
-        {/* Sparkline — clean minimal */}
         <div className="pt-4 border-t border-line-1">
-          <svg viewBox="0 0 200 40" className="w-full h-10">
+          <svg viewBox="0 0 200 48" className="w-full h-12" aria-hidden="true">
             <polyline
-              points="0,28 25,22 50,24 75,18 100,14 125,20 150,12 175,16 200,10"
+              points="0,30 25,26 50,28 75,22 100,18 125,24 150,14 175,18 200,12"
               fill="none"
-              stroke="#D4A24C"
+              stroke="var(--accent)"
               strokeWidth="1.2"
               strokeLinejoin="round"
               strokeLinecap="round"
             />
             <polyline
-              points="0,28 25,22 50,24 75,18 100,14 125,20 150,12 175,16 200,10 200,40 0,40"
-              fill="#D4A24C"
+              points="0,30 25,26 50,28 75,22 100,18 125,24 150,14 175,18 200,12 200,48 0,48"
+              fill="var(--accent)"
               fillOpacity="0.06"
             />
           </svg>
           <div className="flex justify-between mt-2 text-micro uppercase text-pen-3">
-            <span>Nov 14</span>
+            <span>Dec 14</span>
             <span>Today</span>
           </div>
         </div>
       </div>
-    </div>
-  );
-}
-
-function PriceBreakdownVisual() {
-  return (
-    <div
-      className="rounded-xl overflow-hidden border border-line-1"
-      style={{ background: 'var(--ink-900)' }}
-    >
-      <div className="p-6 border-b border-line-1">
-        <p className="text-micro uppercase text-pen-3">Invoice</p>
-        <p className="editorial text-h2 mt-1">Total due</p>
-      </div>
-      <div className="p-6 space-y-3 font-mono text-body">
-        <Row label="Base fare" value="$486.00" />
-        <Row label="Taxes" value="$87.40" />
-        <Row label="Carrier fees" value="$12.00" />
-        <Row label="Seat (12A)" value="$32.00" />
-        <Row label="Baggage (1 × 23kg)" value="$45.00" />
-        <div className="h-px bg-line-1 my-2" />
-        <Row label="Payment processing" value="included" muted />
-        <Row label="Flyeas service" value="included" muted />
-        <div className="h-px bg-line-1 my-2" />
-        <div className="flex items-baseline justify-between pt-2">
-          <span className="text-body font-sans text-pen-1 font-medium">Total</span>
-          <span className="text-body-lg text-pen-1 font-medium">$662.40</span>
-        </div>
-        <p className="text-caption text-pen-3 font-sans pt-2">No fees added at checkout.</p>
-      </div>
-    </div>
-  );
-}
-
-function Row({ label, value, muted = false }: { label: string; value: string; muted?: boolean }) {
-  return (
-    <div className={`flex justify-between items-baseline ${muted ? 'text-pen-3' : 'text-pen-2'}`}>
-      <span className="font-sans text-caption">{label}</span>
-      <span>{value}</span>
-    </div>
-  );
-}
-
-function Stat({ value, label }: { value: string; label: string }) {
-  return (
-    <div>
-      <p className="editorial text-[32px] md:text-[40px] leading-none text-pen-1 font-medium">{value}</p>
-      <p className="mt-2 text-caption text-pen-3">{label}</p>
     </div>
   );
 }
@@ -667,13 +370,15 @@ function PricingCard({ tier }: { tier: typeof TIERS[number] }) {
       className={`rounded-lg border p-8 transition-colors ${
         isHighlight ? 'border-line-3' : 'border-line-1 hover:border-line-2'
       }`}
-      style={{
-        background: isHighlight ? 'var(--ink-700)' : 'var(--ink-800)',
-      }}
+      style={{ background: isHighlight ? 'var(--ink-700)' : 'var(--ink-800)' }}
     >
       <div className="flex items-center justify-between mb-4">
         <p className="editorial text-h2 text-pen-1">{tier.name}</p>
-        {isHighlight && <span className="highlight-badge">Recommended</span>}
+        {isHighlight && (
+          <span className="inline-flex items-center rounded-sm px-2 py-0.5 text-micro uppercase bg-accent-soft text-accent font-semibold">
+            Recommended
+          </span>
+        )}
       </div>
       <div className="flex items-baseline gap-2 mb-2">
         {tier.price === 0 ? (
@@ -689,9 +394,7 @@ function PricingCard({ tier }: { tier: typeof TIERS[number] }) {
       <Link
         href={tier.ctaHref}
         className={`block text-center w-full rounded-md py-3 text-body font-medium transition ${
-          isHighlight
-            ? 'premium-button'
-            : 'secondary-button'
+          isHighlight ? 'premium-button' : 'secondary-button'
         }`}
       >
         {tier.cta}
@@ -710,16 +413,17 @@ function PricingCard({ tier }: { tier: typeof TIERS[number] }) {
 
 function Footer() {
   return (
-    <footer className="bg-ink-900">
-      <div className="mx-auto max-w-wide px-6 lg:px-12 py-16">
-        <div className="grid md:grid-cols-[1.5fr_1fr_1fr_1fr] gap-10 md:gap-16 mb-12">
+    <footer className="border-t border-line-1 bg-ink-950">
+      <div className="mx-auto max-w-wide px-6 lg:px-12 py-20">
+        <div className="grid md:grid-cols-[1.5fr_1fr_1fr_1fr] gap-12 mb-12">
           <div>
             <Link href="/" className="flex items-center gap-2 mb-4">
               <LogoMark />
               <span className="editorial text-body-lg text-pen-1">Flyeas</span>
             </Link>
             <p className="text-caption text-pen-2 max-w-[320px] leading-relaxed">
-              A travel concierge that watches prices, negotiates with inventory, and books on your terms.
+              A travel concierge that quotes every route against its own history, then watches
+              the price until it lands.
             </p>
           </div>
           <FooterColumn
@@ -727,9 +431,7 @@ function Footer() {
             items={[
               { href: '/flights', label: 'Flights' },
               { href: '/hotels', label: 'Hotels' },
-              { href: '/cars', label: 'Cars' },
-              { href: '/insurance', label: 'Insurance' },
-              { href: '/missions', label: 'Missions' },
+              { href: '/missions', label: 'What you\u2019re watching' },
               { href: '/rewards', label: 'Rewards' },
               { href: '/referral', label: 'Invite & earn' },
             ]}
@@ -748,7 +450,7 @@ function Footer() {
             items={[
               { href: '/onboarding', label: 'Sign in' },
               { href: '/onboarding', label: 'Create account' },
-              { href: '/#pricing', label: 'Pricing' },
+              { href: '#pricing', label: 'Pricing' },
               { href: '/settings', label: 'Preferences' },
             ]}
           />
@@ -756,14 +458,20 @@ function Footer() {
 
         <div className="pt-8 border-t border-line-1 flex flex-wrap items-center justify-between gap-4">
           <p className="text-caption text-pen-3">© {new Date().getFullYear()} Flyeas. All rights reserved.</p>
-          <p className="text-caption text-pen-3">Prices in live USD, converted to your currency.</p>
+          <p className="text-caption text-pen-3">Prices in live USD. Converts to your currency.</p>
         </div>
       </div>
     </footer>
   );
 }
 
-function FooterColumn({ title, items }: { title: string; items: Array<{ href: string; label: string }> }) {
+function FooterColumn({
+  title,
+  items,
+}: {
+  title: string;
+  items: Array<{ href: string; label: string }>;
+}) {
   return (
     <div>
       <p className="text-micro uppercase text-pen-3 mb-4">{title}</p>

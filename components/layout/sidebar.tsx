@@ -37,7 +37,7 @@ const navSections = [
     ],
   },
   {
-    label: 'AI',
+    label: 'Watches',
     items: [
       { labelKey: 'sidebar.missions', href: '/missions', icon: Target },
       { labelKey: 'sidebar.favorites', href: '/favorites', icon: Heart },
