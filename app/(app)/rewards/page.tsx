@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/card';
 import { useStreakStore, ALL_BADGES, type Badge } from '@/lib/store/streak-store';
 import { usePointsStore, formatPoints, pointsToUsd } from '@/lib/store/cashback-store';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
+import { Plane, Building2, Target, Heart, Share2, Users, CheckCircle, Zap } from 'lucide-react';
 
 /* ------------------------------------------------------------------ */
 /*  SVG Badge Icons                                                    */
@@ -316,6 +317,52 @@ export default function RewardsPage() {
             </div>
           </div>
         </Card>
+      </div>
+
+      {/* Earn More Points — Action Grid */}
+      <div className="mb-6">
+        <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+          <Zap className="w-5 h-5 text-[#E8A317]" strokeWidth={1.8} /> Earn more points
+        </h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+          {[
+            { href: '/flights', icon: Plane, label: 'Search a flight', pts: 5, color: '#60a5fa' },
+            { href: '/hotels', icon: Building2, label: 'Search a hotel', pts: 5, color: '#a78bfa' },
+            { href: '/missions/new', icon: Target, label: 'Create a mission', pts: 25, color: '#E8A317' },
+            { href: '/favorites', icon: Heart, label: 'Add a favorite', pts: 10, color: '#f472b6' },
+            { href: '/referral', icon: Users, label: 'Invite a friend', pts: 100, color: '#10b981' },
+            { href: '/flights', icon: Share2, label: 'Share a deal', pts: 15, color: '#22d3ee' },
+            { href: '/account', icon: CheckCircle, label: 'Complete profile', pts: 50, color: '#fbbf24' },
+            { href: '/dashboard', icon: Zap, label: 'Daily streak', pts: 1, color: '#f97316' },
+          ].map((action) => {
+            const Icon = action.icon;
+            return (
+              <Link
+                key={action.label}
+                href={action.href}
+                className="group rounded-2xl p-4 transition-all hover:-translate-y-0.5 hover:bg-white/[0.04]"
+                style={{
+                  background: 'rgba(255,255,255,0.02)',
+                  border: '1px solid rgba(255,255,255,0.06)',
+                }}
+              >
+                <div
+                  className="w-9 h-9 rounded-xl flex items-center justify-center mb-2.5"
+                  style={{
+                    background: `${action.color}15`,
+                    border: `1px solid ${action.color}30`,
+                  }}
+                >
+                  <Icon className="w-4 h-4" style={{ color: action.color }} strokeWidth={1.8} />
+                </div>
+                <p className="text-xs font-semibold text-white/85 truncate">{action.label}</p>
+                <p className="text-[10px] font-mono mt-1" style={{ color: action.color }}>
+                  +{action.pts} pts
+                </p>
+              </Link>
+            );
+          })}
+        </div>
       </div>
 
       {/* Badges Gallery */}

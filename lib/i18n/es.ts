@@ -10,6 +10,7 @@ const es: Record<string, string> = {
   'sidebar.favorites': 'Favoritos',
   'sidebar.bookings': 'Reservas',
   'sidebar.rewards': 'Recompensas',
+  'sidebar.referral': 'Invitar y Ganar',
   'sidebar.account': 'Cuenta',
   'sidebar.pricing': 'Precios',
   'sidebar.settings': 'Ajustes',

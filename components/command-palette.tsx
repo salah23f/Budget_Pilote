@@ -18,6 +18,7 @@ import {
   Map,
   Search,
   ArrowRight,
+  Gift,
 } from 'lucide-react';
 
 type CommandItem = {
@@ -47,6 +48,7 @@ export default function CommandPalette() {
     { id: 'favorites', label: t('sidebar.favorites'), icon: Heart, href: '/favorites', section: 'pages', keywords: 'saved liked' },
     { id: 'bookings', label: t('sidebar.bookings'), icon: Receipt, href: '/bookings', section: 'pages', keywords: 'reservation order' },
     { id: 'rewards', label: t('sidebar.rewards'), icon: Star, href: '/rewards', section: 'pages', keywords: 'points badges streak level' },
+    { id: 'referral', label: t('sidebar.referral'), icon: Gift, href: '/referral', section: 'pages', keywords: 'invite friends earn credits referral' },
     { id: 'insurance', label: t('sidebar.insurance'), icon: Shield, href: '/insurance', section: 'pages', keywords: 'protect coverage' },
     { id: 'group-trip', label: t('sidebar.groupTrip'), icon: Users, href: '/group-trip', section: 'pages', keywords: 'friends family share' },
     { id: 'trip-builder', label: t('sidebar.tripBuilder'), icon: Map, href: '/trip-builder', section: 'pages', keywords: 'plan itinerary' },

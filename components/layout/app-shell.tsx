@@ -14,6 +14,7 @@ const ChatPanel = lazy(() => import('@/components/chat/chat-panel'));
 const CommandPalette = lazy(() => import('@/components/command-palette'));
 const SavingsCelebration = lazy(() => import('@/components/savings-celebration').then(m => ({ default: m.SavingsCelebration })));
 const OnboardingTutorial = lazy(() => import('@/components/onboarding-tutorial').then(m => ({ default: m.OnboardingTutorial })));
+const OfflineBanner = lazy(() => import('@/components/offline-banner').then(m => ({ default: m.OfflineBanner })));
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -62,6 +63,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         <CommandPalette />
         <SavingsCelebration />
         <OnboardingTutorial />
+        <OfflineBanner />
       </Suspense>
 
       {/* Scroll to top button */}

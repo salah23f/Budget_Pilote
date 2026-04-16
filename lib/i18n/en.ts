@@ -11,6 +11,7 @@ const en: Record<string, string> = {
   'sidebar.favorites': 'Favorites',
   'sidebar.bookings': 'Bookings',
   'sidebar.rewards': 'Rewards',
+  'sidebar.referral': 'Invite & Earn',
   'sidebar.account': 'Account',
   'sidebar.pricing': 'Pricing',
   'sidebar.settings': 'Settings',

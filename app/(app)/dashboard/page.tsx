@@ -197,6 +197,47 @@ export default function DashboardPage() {
           })}
         </div>
 
+        {/* Referral widget — compact Revolut-style */}
+        <Link
+          href="/referral"
+          className="group mb-10 flex items-center justify-between gap-4 rounded-2xl p-5 transition-all hover:-translate-y-0.5 hover:bg-white/[0.04]"
+          style={{
+            background: 'linear-gradient(135deg, rgba(232,163,23,0.08) 0%, rgba(249,115,22,0.04) 100%)',
+            border: '1px solid rgba(232,163,23,0.2)',
+          }}
+        >
+          <div className="flex items-center gap-4 min-w-0">
+            <div
+              className="flex h-11 w-11 items-center justify-center rounded-xl shrink-0"
+              style={{ background: 'linear-gradient(135deg, #E8A317, #F97316)' }}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 12 20 22 4 22 4 12" />
+                <rect x="2" y="7" width="20" height="5" />
+                <line x1="12" y1="22" x2="12" y2="7" />
+                <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z" />
+                <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z" />
+              </svg>
+            </div>
+            <div className="min-w-0">
+              <p className="text-[15px] font-semibold text-white flex items-center gap-2">
+                Invite friends, earn $10 each
+                <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#E8A317]/20 text-[#E8A317] font-bold uppercase tracking-wider">New</span>
+              </p>
+              <p className="mt-0.5 text-xs text-white/50 truncate">
+                Unlock Pro, Elite & lifetime VIP as your network grows
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 text-[#E8A317] group-hover:translate-x-0.5 transition-transform shrink-0">
+            <span className="text-xs font-semibold hidden sm:inline">Get started</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
+            </svg>
+          </div>
+        </Link>
+
         {/* Recent Searches */}
         {mounted && recent.length > 0 && (
           <div className="mb-10">

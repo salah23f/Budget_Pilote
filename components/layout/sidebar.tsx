@@ -16,6 +16,7 @@ import {
   Heart,
   Receipt,
   Star,
+  Gift,
   UserCircle,
   Settings,
   LogOut,
@@ -47,6 +48,7 @@ const navSections = [
     label: 'You',
     items: [
       { labelKey: 'sidebar.rewards', href: '/rewards', icon: Star },
+      { labelKey: 'sidebar.referral', href: '/referral', icon: Gift },
       { labelKey: 'sidebar.account', href: '/account', icon: UserCircle },
       { labelKey: 'sidebar.settings', href: '/settings', icon: Settings },
     ],

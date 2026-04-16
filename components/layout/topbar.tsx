@@ -6,10 +6,9 @@ import { useWallet } from '@/components/wallet-provider';
 import { useUserStore } from '@/stores/user-store';
 import { useSavingsStore } from '@/lib/store/savings-store';
 import { useThemeStore } from '@/lib/store/theme-store';
-import { useLocale, SUPPORTED_LOCALES } from '@/lib/i18n';
-import type { Locale } from '@/lib/i18n';
-import { useCurrencyStore } from '@/lib/store/currency-store';
-import { CURRENCY_SYMBOLS, type CurrencyCode } from '@/lib/currency';
+import { useLocale } from '@/lib/i18n';
+import { LanguagePicker } from '@/components/language-picker';
+import { CurrencyPicker } from '@/components/currency-picker';
 import Link from 'next/link';
 import {
   Menu,
@@ -32,7 +31,7 @@ export default function Topbar({ onMenuToggle }: TopbarProps) {
   const router = useRouter();
   const { walletAddress } = useWallet();
   const { name, unreadNotifications } = useUserStore();
-  const { locale, setLocale, t } = useLocale();
+  const { t } = useLocale();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [searchFocused, setSearchFocused] = useState(false);
@@ -194,20 +193,13 @@ export default function Topbar({ onMenuToggle }: TopbarProps) {
                 </Link>
               ))}
               <div className="px-4 py-2 text-[13px] text-text-secondary">
-                <span className="text-text-muted text-[11px] block mb-1">{t('misc.language')}</span>
-                <select
-                  value={locale}
-                  onChange={(e) => { setLocale(e.target.value as Locale); setUserMenuOpen(false); }}
-                  className="w-full bg-white/[0.04] border border-border-subtle rounded-lg px-2 py-1.5 text-xs text-text-primary outline-none"
-                >
-                  {SUPPORTED_LOCALES.map((l) => (
-                    <option key={l.code} value={l.code}>
-                      {l.nativeName}
-                    </option>
-                  ))}
-                </select>
+                <span className="text-text-muted text-[11px] block mb-2">{t('misc.language')}</span>
+                <LanguagePicker onSelect={() => setUserMenuOpen(false)} />
               </div>
-              <CurrencyDropdownMenu />
+              <div className="px-4 py-2 text-[13px] text-text-secondary">
+                <span className="text-text-muted text-[11px] block mb-2">Currency</span>
+                <CurrencyPicker onSelect={() => setUserMenuOpen(false)} />
+              </div>
               <Link href="/legal/terms" className="block px-4 py-2 text-[13px] text-text-secondary hover:bg-white/5 hover:text-text-primary transition" onClick={() => setUserMenuOpen(false)}>
                 {t('misc.terms')}
               </Link>
@@ -253,35 +245,3 @@ function ThemeToggle() {
   );
 }
 
-const POPULAR_CURRENCIES: CurrencyCode[] = [
-  'USD', 'EUR', 'GBP', 'CHF', 'CAD', 'AUD', 'JPY', 'CNY',
-  'KRW', 'INR', 'BRL', 'MXN', 'TRY', 'SAR', 'AED',
-  'THB', 'SGD', 'HKD', 'NOK', 'SEK', 'DKK', 'PLN',
-  'CZK', 'HUF', 'MAD', 'EGP', 'ZAR', 'NZD',
-];
-
-function CurrencyDropdownMenu() {
-  const currency = useCurrencyStore((s) => s.currency);
-  const setCurrency = useCurrencyStore((s) => s.setCurrency);
-  const loadRates = useCurrencyStore((s) => s.loadRates);
-
-  return (
-    <div className="px-4 py-2 text-[13px] text-text-secondary">
-      <span className="text-text-muted text-[11px] block mb-1">Currency</span>
-      <select
-        value={currency}
-        onChange={(e) => {
-          setCurrency(e.target.value as CurrencyCode);
-          loadRates();
-        }}
-        className="w-full bg-white/[0.04] border border-border-subtle rounded-lg px-2 py-1.5 text-xs text-text-primary outline-none"
-      >
-        {POPULAR_CURRENCIES.map((c) => (
-          <option key={c} value={c}>
-            {CURRENCY_SYMBOLS[c]} {c}
-          </option>
-        ))}
-      </select>
-    </div>
-  );
-}
