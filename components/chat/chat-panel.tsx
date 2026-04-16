@@ -420,7 +420,7 @@ export default function ChatPanel() {
       {!open && showFab && (
         <button
           onClick={() => setOpen(true)}
-          className="fixed bottom-6 right-6 z-50 flex h-[52px] w-[52px] md:h-12 md:w-12 items-center justify-center rounded-full transition-all duration-300 hover:scale-105"
+          className="fixed bottom-20 right-4 lg:bottom-6 lg:right-6 z-50 flex h-[52px] w-[52px] md:h-12 md:w-12 items-center justify-center rounded-full transition-all duration-300 hover:scale-105"
           style={{
             background: 'rgba(232,163,23,0.15)',
             border: '1px solid rgba(232,163,23,0.3)',
