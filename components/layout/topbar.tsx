@@ -22,8 +22,6 @@ import {
   Building2,
   Target,
   Wallet,
-  Globe,
-  ChevronDown,
 } from 'lucide-react';
 
 type TopbarProps = {

@@ -18,7 +18,6 @@ import {
   Map,
   Search,
   ArrowRight,
-  Command,
 } from 'lucide-react';
 
 type CommandItem = {
