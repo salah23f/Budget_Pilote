@@ -98,6 +98,29 @@ function getCarbonLevel(kg: number): string {
   return 'High';
 }
 
+function PriceSparkline({ price, score }: { price: number; score: number }) {
+  const points = useMemo(() => {
+    const seed = price * 100 + score;
+    const trend = score > 70 ? -1 : score > 40 ? 0 : 1;
+    const pts: number[] = [];
+    for (let i = 0; i < 7; i++) {
+      const noise = Math.sin(seed + i * 1.7) * 15;
+      const trendOffset = trend * i * 3;
+      pts.push(50 + noise + trendOffset);
+    }
+    return pts;
+  }, [price, score]);
+
+  const path = points.map((y, i) => `${i === 0 ? 'M' : 'L'}${i * 6.5},${y / 5}`).join(' ');
+  const color = score >= 70 ? '#10b981' : score >= 40 ? '#E8A317' : '#ef4444';
+
+  return (
+    <svg width="40" height="20" viewBox="0 0 39 20" className="shrink-0">
+      <path d={path} fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 function normalizeFlights(data: any[]): Flight[] {
   return data.map((f) => {
     const raw = f.rawData || {};
@@ -1210,6 +1233,7 @@ export default function FlightsPage() {
                     <div className="flex flex-row md:flex-col items-center md:items-end gap-3 md:gap-2 md:min-w-[140px]">
                       <div className="text-right">
                         <div className="flex items-center justify-end gap-2">
+                          <PriceSparkline price={f.price} score={f.score} />
                           <p className="text-2xl font-bold text-white">
                             ${f.price}
                           </p>

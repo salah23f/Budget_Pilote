@@ -281,7 +281,7 @@ export default function TripPlannerHero() {
           rows={2}
           disabled={loading}
           className="w-full bg-transparent px-5 pt-4 pb-4 text-base md:text-lg text-white/90 placeholder:text-white/20 outline-none resize-none font-light tracking-wide"
-          style={{ fontFamily: 'inherit', lineHeight: '1.6' }
+          style={{ fontFamily: 'inherit', lineHeight: '1.6' }}
         />
 
         <div className="flex items-center justify-between px-5 pb-5 flex-wrap gap-3">

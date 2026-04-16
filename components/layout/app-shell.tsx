@@ -11,6 +11,7 @@ import { ChevronUp } from 'lucide-react';
 
 // Lazy-load heavy components for faster initial page load
 const ChatPanel = lazy(() => import('@/components/chat/chat-panel'));
+const CommandPalette = lazy(() => import('@/components/command-palette'));
 const SavingsCelebration = lazy(() => import('@/components/savings-celebration').then(m => ({ default: m.SavingsCelebration })));
 const OnboardingTutorial = lazy(() => import('@/components/onboarding-tutorial').then(m => ({ default: m.OnboardingTutorial })));
 
@@ -58,6 +59,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       {/* Lazy-loaded overlays — code-split for faster initial load */}
       <Suspense fallback={null}>
         <ChatPanel />
+        <CommandPalette />
         <SavingsCelebration />
         <OnboardingTutorial />
       </Suspense>
@@ -65,12 +67,19 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       {/* Scroll to top button */}
       <button
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        className={`fixed bottom-24 right-6 z-40 w-10 h-10 rounded-full flex items-center justify-center bg-gradient-to-br from-accent-light to-accent-dark shadow-glow transition-all duration-300 ${
+        className={`fixed bottom-24 right-6 z-40 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-105 ${
           showScrollTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'
         }`}
+        style={{
+          background: 'rgba(232,163,23,0.15)',
+          border: '1px solid rgba(232,163,23,0.3)',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
+          boxShadow: '0 0 20px rgba(232,163,23,0.15)',
+        }}
         aria-label="Scroll to top"
       >
-        <ChevronUp className="w-[18px] h-[18px] text-white" strokeWidth={2.5} />
+        <ChevronUp className="w-[18px] h-[18px] text-[#E8A317]" strokeWidth={2.5} />
       </button>
     </div>
   );

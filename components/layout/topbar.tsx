@@ -6,8 +6,10 @@ import { useWallet } from '@/components/wallet-provider';
 import { useUserStore } from '@/stores/user-store';
 import { useSavingsStore } from '@/lib/store/savings-store';
 import { useThemeStore } from '@/lib/store/theme-store';
-import { useLocale } from '@/lib/i18n';
+import { useLocale, SUPPORTED_LOCALES } from '@/lib/i18n';
 import type { Locale } from '@/lib/i18n';
+import { useCurrencyStore } from '@/lib/store/currency-store';
+import { CURRENCY_SYMBOLS, type CurrencyCode } from '@/lib/currency';
 import Link from 'next/link';
 import {
   Menu,
@@ -20,6 +22,8 @@ import {
   Building2,
   Target,
   Wallet,
+  Globe,
+  ChevronDown,
 } from 'lucide-react';
 
 type TopbarProps = {
@@ -191,14 +195,21 @@ export default function Topbar({ onMenuToggle }: TopbarProps) {
                   {item.label}
                 </Link>
               ))}
-              <div className="px-4 py-2 flex items-center gap-2 text-[13px] text-text-secondary">
-                <span className="text-text-muted">Lang:</span>
-                {(['en', 'fr', 'es'] as Locale[]).map((l) => (
-                  <button key={l} onClick={() => setLocale(l)} className={locale === l ? 'text-accent font-semibold' : 'hover:text-text-primary transition'}>
-                    {l.toUpperCase()}
-                  </button>
-                ))}
+              <div className="px-4 py-2 text-[13px] text-text-secondary">
+                <span className="text-text-muted text-[11px] block mb-1">{t('misc.language')}</span>
+                <select
+                  value={locale}
+                  onChange={(e) => { setLocale(e.target.value as Locale); setUserMenuOpen(false); }}
+                  className="w-full bg-white/[0.04] border border-border-subtle rounded-lg px-2 py-1.5 text-xs text-text-primary outline-none"
+                >
+                  {SUPPORTED_LOCALES.map((l) => (
+                    <option key={l.code} value={l.code}>
+                      {l.nativeName}
+                    </option>
+                  ))}
+                </select>
               </div>
+              <CurrencyDropdownMenu />
               <Link href="/legal/terms" className="block px-4 py-2 text-[13px] text-text-secondary hover:bg-white/5 hover:text-text-primary transition" onClick={() => setUserMenuOpen(false)}>
                 {t('misc.terms')}
               </Link>
@@ -241,5 +252,38 @@ function ThemeToggle() {
         <Moon className="w-[18px] h-[18px] text-text-secondary" strokeWidth={1.8} />
       )}
     </button>
+  );
+}
+
+const POPULAR_CURRENCIES: CurrencyCode[] = [
+  'USD', 'EUR', 'GBP', 'CHF', 'CAD', 'AUD', 'JPY', 'CNY',
+  'KRW', 'INR', 'BRL', 'MXN', 'TRY', 'SAR', 'AED',
+  'THB', 'SGD', 'HKD', 'NOK', 'SEK', 'DKK', 'PLN',
+  'CZK', 'HUF', 'MAD', 'EGP', 'ZAR', 'NZD',
+];
+
+function CurrencyDropdownMenu() {
+  const currency = useCurrencyStore((s) => s.currency);
+  const setCurrency = useCurrencyStore((s) => s.setCurrency);
+  const loadRates = useCurrencyStore((s) => s.loadRates);
+
+  return (
+    <div className="px-4 py-2 text-[13px] text-text-secondary">
+      <span className="text-text-muted text-[11px] block mb-1">Currency</span>
+      <select
+        value={currency}
+        onChange={(e) => {
+          setCurrency(e.target.value as CurrencyCode);
+          loadRates();
+        }}
+        className="w-full bg-white/[0.04] border border-border-subtle rounded-lg px-2 py-1.5 text-xs text-text-primary outline-none"
+      >
+        {POPULAR_CURRENCIES.map((c) => (
+          <option key={c} value={c}>
+            {CURRENCY_SYMBOLS[c]} {c}
+          </option>
+        ))}
+      </select>
+    </div>
   );
 }
