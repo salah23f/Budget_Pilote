@@ -237,6 +237,15 @@ export default function OnboardingPage() {
 
       localStorage.setItem('sv_user', JSON.stringify(userData));
 
+      // Populate the unified identity store so dashboard + all pages get the name
+      try {
+        const { useIdentityStore } = await import('@/lib/store/identity-store');
+        useIdentityStore.getState().update({
+          firstName,
+          email: email.trim().toLowerCase(),
+        });
+      } catch (_) {}
+
       // Award 50 welcome bonus points on first signup (initial signup bonus —
       // onboarding completion gives another +50 on /personalize)
       const { totalPoints, addPoints } = useStreakStore.getState();

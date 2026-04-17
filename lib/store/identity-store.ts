@@ -172,7 +172,7 @@ export function useIdentity() {
     firstName: identity?.firstName ?? '',
     lastName: identity?.lastName ?? '',
     email: identity?.email ?? '',
-    displayName: identity?.firstName?.trim() || 'there',
+    displayName: identity?.firstName?.trim() || '',
     initials: getInitials(identity?.firstName, identity?.lastName),
     isKnown,
   };

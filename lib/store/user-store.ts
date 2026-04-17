@@ -31,12 +31,12 @@ export const useUserStore = create<UserState>()(
       isAuthenticated: false,
       notifications: [],
       unreadCount: 0,
-      name: 'Traveler',
+      name: '',
       unreadNotifications: 0,
       currentChain: 'Base',
 
       setUser: (user) => {
-        const name = user ? `${user.firstName} ${user.lastName}`.trim() || 'Traveler' : 'Traveler';
+        const name = user ? `${user.firstName} ${user.lastName}`.trim() : '';
         set({ user, isAuthenticated: !!user, name });
       },
 

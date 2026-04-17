@@ -14,11 +14,11 @@ type UserStore = {
 };
 
 export const useUserStore = create<UserStore>((set) => ({
-  name: 'Traveler',
+  name: '',
   avatar: '',
   unreadNotifications: 0,
   currentChain: 'Base',
-  setName: (name) => set({ name }),
+  setName: (name) => set({ name: name || '' }),
   setAvatar: (avatar) => set({ avatar }),
   setUnreadNotifications: (count) => set({ unreadNotifications: count }),
   setCurrentChain: (chain) => set({ currentChain: chain }),

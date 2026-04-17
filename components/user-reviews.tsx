@@ -63,8 +63,8 @@ export function UserReviews({ itemId, itemType, itemName, className = '' }: User
     if (!title.trim() || !comment.trim()) return;
 
     const storedUser = typeof window !== 'undefined' ? localStorage.getItem('sv_user') : null;
-    let authorName = 'Traveler';
-    try { if (storedUser) authorName = JSON.parse(storedUser).firstName || 'Traveler'; } catch (_) {}
+    let authorName = 'Guest';
+    try { if (storedUser) authorName = JSON.parse(storedUser).firstName || 'Guest'; } catch (_) {}
 
     const review: Review = {
       id: `rev_${Date.now()}_${Math.random().toString(36).slice(2, 5)}`,
