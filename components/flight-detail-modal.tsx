@@ -176,7 +176,7 @@ export function FlightDetailModal({ flight, origin, destination, departDate, onC
               className="h-full rounded-full transition-all"
               style={{
                 width: `${f.score}%`,
-                background: f.score >= 85 ? 'linear-gradient(90deg, #10b981, #E8A317)' : f.score >= 70 ? 'linear-gradient(90deg, #E8A317, #F97316)' : 'linear-gradient(90deg, #f59e0b, #ef4444)',
+                background: f.score >= 85 ? 'linear-gradient(90deg, #10b981, #D4A24C)' : f.score >= 70 ? 'linear-gradient(90deg, #D4A24C, #F97316)' : 'linear-gradient(90deg, #f59e0b, #ef4444)',
               }}
             />
           </div>

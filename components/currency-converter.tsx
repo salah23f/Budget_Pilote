@@ -109,7 +109,7 @@ export function CurrencyConverter({
     <div className={`glass rounded-2xl p-5 space-y-4 ${className}`}>
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E8A317" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M15 9.5c-.8-1-2-1.5-3-1.5s-2.5.7-2.5 2c0 2.5 5 1.5 5 4 0 1.3-1.2 2-2.5 2s-2.2-.5-3-1.5"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D4A24C" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M15 9.5c-.8-1-2-1.5-3-1.5s-2.5.7-2.5 2c0 2.5 5 1.5 5 4 0 1.3-1.2 2-2.5 2s-2.2-.5-3-1.5"/></svg>
           Currency Converter
         </h3>
         <span className="text-[10px] text-white/25">Approximate rates</span>

@@ -93,15 +93,15 @@ export default function PWAInstallPrompt() {
       className="fixed bottom-4 left-4 right-4 md:left-auto md:right-6 md:bottom-6 md:max-w-sm z-[60] rounded-2xl p-4 fade-in"
       style={{
         background: 'rgba(12,10,9,0.96)',
-        border: '1px solid color-mix(in srgb, var(--flyeas-accent, #E8A317) 30%, transparent)',
-        boxShadow: '0 20px 60px color-mix(in srgb, var(--flyeas-accent, #E8A317) 15%, transparent)',
+        border: '1px solid color-mix(in srgb, var(--flyeas-accent, #D4A24C) 30%, transparent)',
+        boxShadow: '0 20px 60px color-mix(in srgb, var(--flyeas-accent, #D4A24C) 15%, transparent)',
         backdropFilter: 'blur(20px)',
       }}
     >
       <div className="flex items-start gap-3">
         <div
           className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-          style={{ background: 'var(--flyeas-gradient, linear-gradient(135deg, #E8A317, #F97316, #EF4444))' }}
+          style={{ background: 'var(--flyeas-gradient, linear-gradient(135deg, #D4A24C, #F97316, #EF4444))' }}
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
             <path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z" />
@@ -120,7 +120,7 @@ export default function PWAInstallPrompt() {
               <button
                 onClick={install}
                 className="px-3 py-1.5 rounded-lg text-xs font-semibold"
-                style={{ background: 'var(--flyeas-gradient, linear-gradient(135deg, #E8A317, #F97316))', color: 'white' }}
+                style={{ background: 'var(--flyeas-gradient, linear-gradient(135deg, #D4A24C, #F97316))', color: 'white' }}
               >
                 Install
               </button>

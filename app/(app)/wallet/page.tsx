@@ -91,7 +91,7 @@ function WalletContent() {
                 style={{
                   background: amount === String(preset) ? 'rgba(245,158,11,0.15)' : 'rgba(255,255,255,0.04)',
                   border: amount === String(preset) ? '1px solid rgba(245,158,11,0.3)' : '1px solid rgba(255,255,255,0.08)',
-                  color: amount === String(preset) ? '#E8A317' : 'rgba(255,255,255,0.6)',
+                  color: amount === String(preset) ? '#D4A24C' : 'rgba(255,255,255,0.6)',
                 }}
               >
                 ${preset}

@@ -136,7 +136,7 @@ export function AirportInput({ label, value, onChange, placeholder }: AirportInp
               className="w-full px-4 py-3 text-left transition-colors hover:bg-white/5 flex items-center gap-3"
               onClick={() => selectAirport(r)}
             >
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg text-xs font-bold flex-shrink-0" style={{ background: 'color-mix(in srgb, var(--flyeas-accent, #E8A317) 10%, transparent)', color: 'var(--flyeas-accent, #E8A317)' }}>
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg text-xs font-bold flex-shrink-0" style={{ background: 'color-mix(in srgb, var(--flyeas-accent, #D4A24C) 10%, transparent)', color: 'var(--flyeas-accent, #D4A24C)' }}>
                 {r.iata || r.skyId?.slice(0, 3)}
               </div>
               <div className="min-w-0 flex-1">

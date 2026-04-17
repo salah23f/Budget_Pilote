@@ -14,7 +14,7 @@ const slides = [
     ),
     title: 'Find the cheapest flights',
     desc: 'Compare 400+ airlines in real-time. Our AI finds deals you won\'t see anywhere else.',
-    color: '#E8A317',
+    color: '#D4A24C',
   },
   {
     icon: (

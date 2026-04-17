@@ -133,7 +133,7 @@ export default function CarsPage() {
       <div>
         <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: 'rgba(245,158,11,0.12)' }}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E8A317" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M5 17h14M5 17a2 2 0 01-2-2V9a1 1 0 011-1h1l2-4h10l2 4h1a1 1 0 011 1v6a2 2 0 01-2 2M5 17a2 2 0 002 2h10a2 2 0 002-2"/><circle cx="7.5" cy="15.5" r="1.5"/><circle cx="16.5" cy="15.5" r="1.5"/></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D4A24C" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M5 17h14M5 17a2 2 0 01-2-2V9a1 1 0 011-1h1l2-4h10l2 4h1a1 1 0 011 1v6a2 2 0 01-2 2M5 17a2 2 0 002 2h10a2 2 0 002-2"/><circle cx="7.5" cy="15.5" r="1.5"/><circle cx="16.5" cy="15.5" r="1.5"/></svg>
           </div>
           Car Rental
         </h1>

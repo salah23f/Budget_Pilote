@@ -280,7 +280,7 @@ function FlightCalendarContent() {
       <div className="flex items-center gap-3">
         <div
           className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-          style={{ background: 'color-mix(in srgb, var(--flyeas-accent, #E8A317) 15%, transparent)' }}
+          style={{ background: 'color-mix(in srgb, var(--flyeas-accent, #D4A24C) 15%, transparent)' }}
         >
           <CalendarIcon className="w-5 h-5 text-amber-400" />
         </div>

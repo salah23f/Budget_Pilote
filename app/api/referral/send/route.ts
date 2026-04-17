@@ -24,18 +24,18 @@ function buildEmail({ code, senderName, link }: { code: string; senderName?: str
     <table role="presentation" width="560" cellspacing="0" cellpadding="0" style="max-width:560px;width:100%;background:#111113;border:1px solid rgba(255,255,255,0.06);border-radius:20px;overflow:hidden;">
       <tr><td style="padding:32px 32px 0 32px;">
         <div style="display:inline-flex;align-items:center;gap:10px;">
-          <div style="width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,#E8A317,#F97316);display:inline-block;vertical-align:middle;"></div>
+          <div style="width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,#D4A24C,#F97316);display:inline-block;vertical-align:middle;"></div>
           <span style="font-size:18px;font-weight:700;letter-spacing:-0.3px;color:#fafaf9;vertical-align:middle;margin-left:6px;">Flyeas</span>
         </div>
       </td></tr>
       <tr><td style="padding:24px 32px 8px 32px;">
-        <p style="font-size:11px;text-transform:uppercase;letter-spacing:0.15em;color:#E8A317;font-weight:600;margin:0 0 16px 0;">Exclusive invite</p>
+        <p style="font-size:11px;text-transform:uppercase;letter-spacing:0.15em;color:#D4A24C;font-weight:600;margin:0 0 16px 0;">Exclusive invite</p>
         <h1 style="font-size:28px;font-weight:700;line-height:1.2;margin:0;color:#fafaf9;">
           ${from} invited you to Flyeas
         </h1>
         <p style="font-size:15px;line-height:1.6;color:rgba(250,250,249,0.65);margin:16px 0 0 0;">
           Flyeas watches flight & hotel prices 24/7 and books the moment they drop.
-          Use this code to get <strong style="color:#E8A317;">$10 in travel credit</strong> when you sign up — and they get $10 too.
+          Use this code to get <strong style="color:#D4A24C;">$10 in travel credit</strong> when you sign up — and they get $10 too.
         </p>
       </td></tr>
       <tr><td style="padding:24px 32px;">
@@ -45,7 +45,7 @@ function buildEmail({ code, senderName, link }: { code: string; senderName?: str
         </div>
       </td></tr>
       <tr><td align="center" style="padding:8px 32px 32px 32px;">
-        <a href="${link}" style="display:inline-block;background:linear-gradient(135deg,#E8A317,#F97316);color:white;text-decoration:none;font-weight:600;padding:14px 32px;border-radius:12px;font-size:15px;">Claim your $10 credit</a>
+        <a href="${link}" style="display:inline-block;background:linear-gradient(135deg,#D4A24C,#F97316);color:white;text-decoration:none;font-weight:600;padding:14px 32px;border-radius:12px;font-size:15px;">Claim your $10 credit</a>
       </td></tr>
       <tr><td style="padding:0 32px 32px 32px;">
         <table role="presentation" width="100%" cellspacing="0" cellpadding="0">

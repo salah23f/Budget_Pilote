@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useUserStore } from '@/stores/user-store';
+import { useIdentity } from '@/lib/store/identity-store';
 import { useStreakStore } from '@/lib/store/streak-store';
 import { useLocale } from '@/lib/i18n';
 import {
@@ -62,7 +63,7 @@ type SidebarProps = {
 
 export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
-  const name = useUserStore((s) => s.name);
+  const { displayName: name, initials: userInitials } = useIdentity();
   const { t } = useLocale();
 
   return (
@@ -146,9 +147,9 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             href="/account"
             className="flex items-center gap-3 px-2.5 py-2.5 rounded-lg hover:bg-white/[0.03] transition-colors group"
           >
-            <Avatar size="sm" fallback={name.charAt(0).toUpperCase()} />
+            <Avatar size="sm" fallback={userInitials || 'U'} />
             <div className="flex-1 min-w-0">
-              <div className="text-[13px] font-medium text-white/80 truncate leading-tight">{name}</div>
+              <div className="text-body font-medium text-pen-1 truncate leading-tight">{name || 'Account'}</div>
               <SidebarBadge />
             </div>
             <ChevronRight className="w-3.5 h-3.5 text-white/15 group-hover:text-white/30 transition-colors shrink-0" />

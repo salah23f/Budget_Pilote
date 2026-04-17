@@ -63,12 +63,12 @@ function ensureMarkerStyles() {
     }
     .hotel-price-marker:hover {
       transform: scale(1.15);
-      border-color: #E8A317;
+      border-color: #D4A24C;
       z-index: 1000 !important;
     }
     .hotel-price-marker.selected {
-      background: linear-gradient(135deg, #E8A317, #F97316);
-      border-color: #E8A317;
+      background: linear-gradient(135deg, #D4A24C, #F97316);
+      border-color: #D4A24C;
       color: white;
       transform: scale(1.2);
       z-index: 1000 !important;
@@ -169,7 +169,7 @@ export function HotelMap({ hotels, selectedId, onSelect, className = '' }: Hotel
         `<div style="font-family:Inter,system-ui;min-width:160px">
           <strong style="font-size:13px">${hotel.name}</strong><br/>
           <span style="color:#888;font-size:11px">${'★'.repeat(hotel.stars)} · ${hotel.rating.toFixed(1)}</span><br/>
-          <span style="font-size:15px;font-weight:700;color:#E8A317">$${hotel.pricePerNight}</span>
+          <span style="font-size:15px;font-weight:700;color:#D4A24C">$${hotel.pricePerNight}</span>
           <span style="color:#888;font-size:11px"> / night</span>
         </div>`,
         { closeButton: false, className: 'hotel-popup' }

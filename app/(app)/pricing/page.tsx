@@ -137,7 +137,7 @@ export default function PricingPage() {
                 <div
                   className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider"
                   style={{
-                    background: 'var(--flyeas-gradient, linear-gradient(135deg, #E8A317, #EF4444))',
+                    background: 'var(--flyeas-gradient, linear-gradient(135deg, #D4A24C, #EF4444))',
                     color: 'white',
                   }}
                 >
@@ -180,7 +180,7 @@ export default function PricingPage() {
                 }`}
                 style={{
                   background: tier.highlight
-                    ? 'var(--flyeas-gradient, linear-gradient(135deg, #E8A317, #F97316, #EF4444))'
+                    ? 'var(--flyeas-gradient, linear-gradient(135deg, #D4A24C, #F97316, #EF4444))'
                     : 'rgba(255,255,255,0.05)',
                   border: tier.highlight ? 'none' : '1px solid rgba(255,255,255,0.1)',
                   boxShadow: tier.highlight ? '0 6px 20px rgba(245,158,11,0.25)' : 'none',

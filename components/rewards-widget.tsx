@@ -126,7 +126,7 @@ export function RewardsWidget() {
             className="w-9 h-9 rounded-xl flex items-center justify-center"
             style={{
               background: currentLevel
-                ? 'linear-gradient(135deg, #E8A317, #F97316)'
+                ? 'linear-gradient(135deg, #D4A24C, #F97316)'
                 : 'rgba(255,255,255,0.06)',
             }}
           >
@@ -168,7 +168,7 @@ export function RewardsWidget() {
               className="h-full rounded-full transition-all duration-500"
               style={{
                 width: `${progressToNext}%`,
-                background: 'linear-gradient(90deg, #E8A317, #F97316)',
+                background: 'linear-gradient(90deg, #D4A24C, #F97316)',
               }}
             />
           </div>
@@ -181,7 +181,7 @@ export function RewardsWidget() {
         className="flex items-center justify-center gap-1.5 w-full py-2 rounded-lg text-xs font-medium transition-colors"
         style={{
           background: 'rgba(245,158,11,0.08)',
-          color: '#E8A317',
+          color: '#D4A24C',
           border: '1px solid rgba(245,158,11,0.12)',
         }}
       >

@@ -197,7 +197,7 @@ export default function MissionDetailPage() {
                                 className="h-full rounded-full"
                                 style={{
                                   width: `${offer.score}%`,
-                                  background: offer.score >= 85 ? 'linear-gradient(90deg, #E8A317, #10b981)' : 'linear-gradient(90deg, #F97316, #E8A317)',
+                                  background: offer.score >= 85 ? 'linear-gradient(90deg, #D4A24C, #10b981)' : 'linear-gradient(90deg, #F97316, #D4A24C)',
                                 }}
                               />
                             </div>
@@ -278,7 +278,7 @@ export default function MissionDetailPage() {
                     className="h-full rounded-full"
                     style={{
                       width: `${((mission.deposited - (mission.used ?? 0)) / mission.deposited) * 100}%`,
-                      background: 'linear-gradient(90deg, #E8A317, #10b981)',
+                      background: 'linear-gradient(90deg, #D4A24C, #10b981)',
                     }}
                   />
                 </div>

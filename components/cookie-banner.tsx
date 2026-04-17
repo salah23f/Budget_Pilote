@@ -46,7 +46,7 @@ export function CookieBanner() {
         <button
           onClick={accept}
           className="flex-1 px-4 py-2 rounded-xl text-sm font-semibold text-white"
-          style={{ background: 'var(--flyeas-gradient, linear-gradient(135deg, #E8A317, #EF4444))' }}
+          style={{ background: 'var(--flyeas-gradient, linear-gradient(135deg, #D4A24C, #EF4444))' }}
         >
           Accept
         </button>

@@ -21,7 +21,7 @@ export const posts: BlogPost[] = [
     category: 'Tips',
     readTime: '5 min',
     date: '2026-04-10',
-    color: '#E8A317',
+    color: '#D4A24C',
     content: [
       'Timing is everything when it comes to flight bookings. Our analysis of over 2 million fare searches reveals clear patterns that can save you 15-40% on your next flight.',
       '## The 54-Day Rule',

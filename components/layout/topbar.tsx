@@ -9,6 +9,7 @@ import { useThemeStore } from '@/lib/store/theme-store';
 import { useLocale } from '@/lib/i18n';
 import { LanguagePicker } from '@/components/language-picker';
 import { CurrencyPicker } from '@/components/currency-picker';
+import { useIdentity } from '@/lib/store/identity-store';
 import Link from 'next/link';
 import {
   Menu,
@@ -30,7 +31,8 @@ type TopbarProps = {
 export default function Topbar({ onMenuToggle }: TopbarProps) {
   const router = useRouter();
   const { walletAddress } = useWallet();
-  const { name, unreadNotifications } = useUserStore();
+  const { unreadNotifications } = useUserStore();
+  const { displayName, initials } = useIdentity();
   const { t } = useLocale();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -173,16 +175,16 @@ export default function Topbar({ onMenuToggle }: TopbarProps) {
         {/* User avatar */}
         <div className="relative" ref={userRef}>
           <button onClick={() => setUserMenuOpen(!userMenuOpen)} className="flex items-center p-0.5 rounded-xl hover:bg-white/5 transition">
-            <div className="w-8 h-8 rounded-xl flex items-center justify-center text-xs font-bold text-white bg-gradient-to-br from-accent-light to-accent-dark">
-              {name.charAt(0).toUpperCase()}
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold" style={{ background: 'var(--accent-soft)', color: 'var(--accent)' }}>
+              {initials || 'U'}
             </div>
           </button>
 
           {userMenuOpen && (
             <div className="absolute right-0 top-full mt-2 py-1.5 rounded-xl min-w-[180px] shadow-xl bg-surface-elevated border border-border-default">
-              <div className="px-4 py-2 mb-1 border-b border-border-subtle">
-                <p className="text-sm font-medium text-text-primary">{name}</p>
-                <p className="text-[11px] text-text-muted">{t('misc.freePlan')}</p>
+              <div className="px-4 py-2 mb-1 border-b border-line-1">
+                <p className="text-body font-medium text-pen-1">{displayName || 'Account'}</p>
+                <p className="text-caption text-pen-3">{t('misc.freePlan')}</p>
               </div>
               {[
                 { label: t('sidebar.settings'), href: '/settings' },

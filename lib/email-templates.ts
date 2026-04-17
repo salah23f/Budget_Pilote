@@ -10,7 +10,7 @@
 
 const BRAND = 'Flyeas';
 const SITE = 'faregenie.vercel.app';
-const GRADIENT = 'linear-gradient(135deg, #E8A317, #F97316)';
+const GRADIENT = 'linear-gradient(135deg, #D4A24C, #F97316)';
 
 const wrapper = (inner: string) => `
 <!DOCTYPE html>

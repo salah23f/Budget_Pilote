@@ -17,7 +17,7 @@ interface WeatherDay {
 }
 
 const CONDITIONS: Record<string, { icon: React.ReactNode; label: string }> = {
-  sunny: { icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E8A317" strokeWidth="1.8"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" strokeLinecap="round"/></svg>, label: 'Sunny' },
+  sunny: { icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D4A24C" strokeWidth="1.8"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" strokeLinecap="round"/></svg>, label: 'Sunny' },
   'partly-cloudy': { icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v2M4.93 4.93l1.41 1.41M20 12h2M17.66 17.66l1.41 1.41M2 12h2M6.34 17.66l-1.41 1.41M17.07 4.93l1.41-1.41"/><circle cx="12" cy="12" r="4"/><path d="M16 18a4 4 0 00-8 0"/></svg>, label: 'Partly Cloudy' },
   cloudy: { icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z"/></svg>, label: 'Cloudy' },
   rainy: { icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M16 13v8M8 13v8M12 15v8"/><path d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z" stroke="#64748B"/></svg>, label: 'Rainy' },
@@ -97,7 +97,7 @@ export function WeatherWidget({ destination, startDate, days = 7, className = ''
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E8A317" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D4A24C" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
             Weather {isReal ? 'Forecast' : 'Estimate'}
           </h3>
           <p className="text-[11px] text-white/35 mt-0.5">{cityName} · avg {avg}°C</p>

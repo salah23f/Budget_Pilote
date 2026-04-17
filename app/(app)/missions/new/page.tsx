@@ -432,7 +432,7 @@ export default function NewMissionPage() {
           <div className="flex flex-col items-center gap-5 py-8">
             <div
               className="w-16 h-16 rounded-full flex items-center justify-center"
-              style={{ background: 'linear-gradient(135deg, #10b981, #E8A317)' }}
+              style={{ background: 'linear-gradient(135deg, #10b981, #D4A24C)' }}
             >
               <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M8 16l6 6L24 10" />
@@ -496,7 +496,7 @@ export default function NewMissionPage() {
             className="h-full rounded-full transition-all duration-500"
             style={{
               width: `${((step + 1) / STEPS.length) * 100}%`,
-              background: 'linear-gradient(90deg, #E8A317, #F97316, #EF4444)',
+              background: 'linear-gradient(90deg, #D4A24C, #F97316, #EF4444)',
             }}
           />
         </div>
@@ -545,7 +545,7 @@ export default function NewMissionPage() {
                         </p>
                         <p className="text-xs text-white/40 mt-0.5">{opt.subtitle}</p>
                         {active && (
-                          <div className="absolute top-3 right-3 w-5 h-5 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #E8A317, #F97316)' }}>
+                          <div className="absolute top-3 right-3 w-5 h-5 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #D4A24C, #F97316)' }}>
                             <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                               <path d="M2 5l2 2 4-4" />
                             </svg>
@@ -891,7 +891,7 @@ export default function NewMissionPage() {
                     className="relative h-7 w-12 rounded-full transition-colors duration-200 flex-shrink-0 ml-4"
                     style={{
                       background: form.autoBuyEnabled
-                        ? 'linear-gradient(135deg, #E8A317, #F97316)'
+                        ? 'linear-gradient(135deg, #D4A24C, #F97316)'
                         : 'rgba(255,255,255,0.1)',
                     }}
                   >
@@ -1087,7 +1087,7 @@ export default function NewMissionPage() {
                 className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
                 style={{ background: 'linear-gradient(135deg, rgba(245,158,11,0.2), rgba(239,68,68,0.2))' }}
               >
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#E8A317" strokeWidth="1.5" strokeLinecap="round">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#D4A24C" strokeWidth="1.5" strokeLinecap="round">
                   <circle cx="8" cy="8" r="6" />
                   <path d="M8 5v3l2 1" />
                 </svg>

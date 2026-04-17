@@ -31,12 +31,12 @@ async function sendEmailViaResend(to: string, code: string, attempt = 1): Promis
         html: `
           <div style="font-family:-apple-system,sans-serif;max-width:420px;margin:0 auto;padding:40px 32px;background:#09090B;color:white;border-radius:20px;">
             <div style="text-align:center;margin-bottom:32px;">
-              <h1 style="margin:0;font-size:28px;color:#E8A317;">Flyeas</h1>
+              <h1 style="margin:0;font-size:28px;color:#D4A24C;">Flyeas</h1>
               <p style="color:#888;font-size:13px;margin:8px 0 0;">Your AI Travel Agent</p>
             </div>
             <p style="color:#ccc;font-size:15px;margin:0 0 24px;text-align:center;">Your verification code:</p>
             <div style="background:#1C1917;border:1px solid #2a2520;border-radius:16px;padding:24px;text-align:center;margin-bottom:28px;">
-              <span style="font-size:40px;font-weight:800;letter-spacing:10px;color:#E8A317;">${code}</span>
+              <span style="font-size:40px;font-weight:800;letter-spacing:10px;color:#D4A24C;">${code}</span>
             </div>
             <p style="color:#666;font-size:12px;margin:0;text-align:center;">This code expires in 10 minutes. If you didn't request this, ignore this email.</p>
           </div>

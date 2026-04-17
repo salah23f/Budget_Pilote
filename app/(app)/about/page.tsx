@@ -26,7 +26,7 @@ export default function AboutPage() {
         {/* Mission */}
         <Card padding="lg">
           <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E8A317" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D4A24C" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
             Our Mission
           </h2>
           <p className="text-sm text-white/60 leading-relaxed">
@@ -45,7 +45,7 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {[
               {
-                icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E8A317" strokeWidth="1.8"><path d="M12 2a10 10 0 1 0 10 10H12V2z" strokeLinecap="round" strokeLinejoin="round"/><path d="M20 12a8 8 0 0 0-8-8v8h8z" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+                icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#D4A24C" strokeWidth="1.8"><path d="M12 2a10 10 0 1 0 10 10H12V2z" strokeLinecap="round" strokeLinejoin="round"/><path d="M20 12a8 8 0 0 0-8-8v8h8z" strokeLinecap="round" strokeLinejoin="round"/></svg>,
                 title: 'Statistical Intelligence',
                 desc: 'Z-scores, percentile ranks, trend analysis, and departure-pressure modeling — real math, not marketing.',
               },
@@ -83,7 +83,7 @@ export default function AboutPage() {
         {/* Tech stack */}
         <Card padding="lg">
           <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E8A317" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D4A24C" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
             Built With
           </h2>
           <div className="flex flex-wrap gap-2">
@@ -96,7 +96,7 @@ export default function AboutPage() {
         {/* Founder */}
         <Card padding="lg" className="glass-premium">
           <h2 className="text-lg font-semibold text-white mb-5 flex items-center gap-2">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E8A317" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="5"/><path d="M3 21c0-4.4 4-8 9-8s9 3.6 9 8"/></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D4A24C" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="5"/><path d="M3 21c0-4.4 4-8 9-8s9 3.6 9 8"/></svg>
             Founder
           </h2>
           <div className="flex items-start gap-5">
@@ -127,7 +127,7 @@ export default function AboutPage() {
         {/* Trust signals */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {[
-            { value: '400+', label: 'Airlines searched', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E8A317" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2"/></svg> },
+            { value: '400+', label: 'Airlines searched', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D4A24C" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2"/></svg> },
             { value: '150K+', label: 'Hotels worldwide', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 21V7a2 2 0 012-2h14a2 2 0 012 2v14"/><path d="M1 21h22"/></svg> },
             { value: '24/7', label: 'Price monitoring', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> },
             { value: '0%', label: 'Hidden fees', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#06B6D4" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2l8 4v6c0 5.5-3.8 10.7-8 12-4.2-1.3-8-6.5-8-12V6l8-4z"/></svg> },

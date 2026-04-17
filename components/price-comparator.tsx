@@ -67,7 +67,7 @@ export function PriceComparator({ className = '', ...props }: PriceComparatorPro
     <div className={`glass rounded-2xl p-5 space-y-3 ${className}`}>
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E8A317" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D4A24C" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
             <path d="M3 3v18h18" /><path d="M7 16l4-8 4 4 4-8" />
           </svg>
           Compare Prices
