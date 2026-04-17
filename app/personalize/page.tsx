@@ -40,6 +40,7 @@ const TRAVEL_STYLES: Array<{
     subtitle: 'Budget-first, adventure everywhere',
     icon: Backpack,
     gradient: 'linear-gradient(135deg, #10b981, #059669)',
+    photo: 'https://source.unsplash.com/400x300/?backpacker,hiking,nature',
     description: "We'll prioritize the cheapest flights, hostels & hidden gems",
   },
   {
@@ -48,6 +49,7 @@ const TRAVEL_STYLES: Array<{
     subtitle: 'Fast, reliable, no-nonsense',
     icon: Briefcase,
     gradient: 'linear-gradient(135deg, #60a5fa, #2563eb)',
+    photo: 'https://source.unsplash.com/400x300/?business,lounge,airport',
     description: "We'll prioritize direct flights, quality hotels & flexibility",
   },
   {
@@ -56,6 +58,7 @@ const TRAVEL_STYLES: Array<{
     subtitle: 'Safe, fun, the whole tribe',
     icon: Users,
     gradient: 'linear-gradient(135deg, #a78bfa, #8b5cf6)',
+    photo: 'https://source.unsplash.com/400x300/?family,beach,vacation',
     description: "We'll prioritize family-friendly hotels, reasonable connections & kid-ready activities",
   },
   {
@@ -64,6 +67,7 @@ const TRAVEL_STYLES: Array<{
     subtitle: 'First class, five stars, nothing less',
     icon: Crown,
     gradient: 'linear-gradient(135deg, #D4A24C, #DFAE5B)',
+    photo: 'https://source.unsplash.com/400x300/?luxury,resort,pool',
     description: "We'll prioritize business class, 5-star hotels & private transfers",
   },
 ];
@@ -303,38 +307,39 @@ function StepTravelStyle({
             <button
               key={t.id}
               onClick={() => onSelect(t.id)}
-              className={`group relative rounded-2xl p-5 text-left transition-all ${
-                isSelected ? 'scale-[1.02]' : 'hover:-translate-y-1'
+              className={`group relative rounded-lg overflow-hidden text-left transition-all ${
+                isSelected ? 'scale-[1.02] ring-2 ring-accent' : 'hover:-translate-y-1'
               }`}
-              style={{
-                background: isSelected
-                  ? 'rgba(232,163,23,0.08)'
-                  : 'rgba(255,255,255,0.02)',
-                border: isSelected
-                  ? '1px solid rgba(232,163,23,0.4)'
-                  : '1px solid rgba(255,255,255,0.06)',
-              }}
+              style={{ border: '1px solid var(--line-1)' }}
             >
+              {/* Photo hero */}
               <div
-                className="flex h-11 w-11 items-center justify-center rounded-xl mb-4 transition-transform group-hover:scale-110"
-                style={{ background: t.gradient }}
+                className="aspect-[4/3] relative"
+                style={{
+                  backgroundImage: `url(${(t as any).photo})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundColor: 'var(--ink-700)',
+                }}
               >
-                <Icon className="w-5 h-5 text-white" strokeWidth={1.8} />
-              </div>
-              <p className="text-base font-bold text-white">{t.title}</p>
-              <p className="text-xs text-white/55 mt-1">{t.subtitle}</p>
-              {isSelected && (
-                <div className="mt-3 pt-3 flex items-start gap-2" style={{ borderTop: '1px solid rgba(232,163,23,0.2)' }}>
-                  <Sparkles className="w-3.5 h-3.5 text-[#D4A24C] shrink-0 mt-0.5" strokeWidth={1.8} />
-                  <p className="text-[11px] text-white/65 leading-relaxed">{t.description}</p>
+                <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.7), transparent 60%)' }} />
+                {isSelected && (
+                  <div
+                    className="absolute top-3 right-3 flex h-6 w-6 items-center justify-center rounded-full"
+                    style={{ background: 'var(--accent)' }}
+                  >
+                    <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />
+                  </div>
+                )}
+                <div className="absolute bottom-3 left-3 right-3">
+                  <p className="text-body-lg font-semibold text-white">{t.title}</p>
+                  <p className="text-caption text-white/70 mt-0.5">{t.subtitle}</p>
                 </div>
-              )}
+              </div>
+              {/* Expanded description when selected */}
               {isSelected && (
-                <div
-                  className="absolute top-3 right-3 flex h-6 w-6 items-center justify-center rounded-full"
-                  style={{ background: 'linear-gradient(135deg, #D4A24C, #DFAE5B)' }}
-                >
-                  <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />
+                <div className="p-3 bg-ink-800">
+                  <p className="text-caption text-pen-2 leading-relaxed">{t.description}</p>
                 </div>
               )}
             </button>
