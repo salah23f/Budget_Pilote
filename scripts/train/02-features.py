@@ -139,6 +139,9 @@ def main():
         df = add_temporal_features(df)
         df = add_route_features(df)
         df = add_log_returns(df)
+        df = add_haversine_distance(df)
+        df = add_ttd_features(df)
+        df = add_route_classification(df)
 
         # Fill NaN
         df = df.fillna(0)
@@ -146,7 +149,89 @@ def main():
         out_path = f"{OUTPUT_DIR}/{split}_features.parquet"
         df.to_parquet(out_path, index=False)
         print(f"  Saved {len(df)} rows to {out_path}")
-        print(f"  Features: {list(df.columns)}")
+        print(f"  Features ({len(df.columns)}): {list(df.columns)[:15]}...")
+
+
+def add_haversine_distance(df: pd.DataFrame) -> pd.DataFrame:
+    """Add approximate route distance in km via haversine."""
+    COORDS = {
+        'CDG': (49.01, 2.55), 'LHR': (51.47, -0.46), 'JFK': (40.64, -73.78),
+        'LAX': (33.94, -118.41), 'FRA': (50.03, 8.57), 'AMS': (52.31, 4.76),
+        'NRT': (35.76, 140.39), 'HND': (35.55, 139.78), 'SIN': (1.36, 103.99),
+        'DXB': (25.25, 55.36), 'ICN': (37.46, 126.44), 'BKK': (13.69, 100.75),
+        'SYD': (-33.95, 151.18), 'GRU': (-23.43, -46.47), 'EZE': (-34.82, -58.54),
+        'MEX': (19.44, -99.07), 'IST': (41.26, 28.74), 'BCN': (41.30, 2.08),
+        'FCO': (41.80, 12.25), 'MAD': (40.47, -3.57), 'MUC': (48.35, 11.79),
+        'ATH': (37.94, 23.94), 'LIS': (38.77, -9.13), 'DUB': (53.42, -6.27),
+        'ORD': (41.97, -87.91), 'SFO': (37.62, -122.38), 'MIA': (25.80, -80.29),
+        'BOS': (42.36, -71.01), 'ATL': (33.64, -84.43), 'IAD': (38.95, -77.46),
+        'DFW': (32.90, -97.04), 'YYZ': (43.68, -79.63), 'YUL': (45.47, -73.74),
+        'CUN': (21.04, -86.87), 'HNL': (21.32, -157.92), 'PEK': (40.08, 116.58),
+        'PVG': (31.14, 121.81), 'HKG': (22.31, 113.91), 'DEL': (28.57, 77.10),
+        'BOM': (19.09, 72.87), 'CPT': (-33.96, 18.60), 'NBO': (-1.32, 36.93),
+        'CMN': (33.37, -7.59), 'RAK': (31.61, -8.04), 'DOH': (25.26, 51.57),
+        'TLV': (32.01, 34.89), 'KUL': (2.75, 101.71),
+    }
+
+    def haversine(o, d):
+        if o not in COORDS or d not in COORDS:
+            return 0
+        lat1, lon1 = np.radians(COORDS[o])
+        lat2, lon2 = np.radians(COORDS[d])
+        dlat = lat2 - lat1
+        dlon = lon2 - lon1
+        a = np.sin(dlat/2)**2 + np.cos(lat1) * np.cos(lat2) * np.sin(dlon/2)**2
+        return 6371 * 2 * np.arctan2(np.sqrt(a), np.sqrt(1-a))
+
+    if 'origin' in df.columns and 'destination' in df.columns:
+        df['route_distance_km'] = df.apply(lambda r: haversine(r['origin'], r['destination']), axis=1)
+        df['is_international'] = (df['route_distance_km'] > 500).astype(int)
+        df['is_transcontinental'] = (df['route_distance_km'] > 5000).astype(int)
+    return df
+
+
+def add_ttd_features(df: pd.DataFrame) -> pd.DataFrame:
+    """Add TTD-derived features if depart_date exists."""
+    if 'depart_date' not in df.columns or 'fetched_at' not in df.columns:
+        return df
+
+    try:
+        dep = pd.to_datetime(df['depart_date'], errors='coerce')
+        obs = pd.to_datetime(df['fetched_at'], errors='coerce')
+        ttd = (dep - obs).dt.days
+        ttd = ttd.clip(lower=0, upper=365)
+
+        df['ttd_days'] = ttd.fillna(30)
+        df['ttd_log'] = np.log1p(df['ttd_days'])
+        df['ttd_sqrt'] = np.sqrt(df['ttd_days'])
+
+        # TTD buckets
+        bins = [0, 7, 14, 30, 60, 90, 150, 365]
+        labels = [0, 1, 2, 3, 4, 5, 6]
+        df['ttd_bucket'] = pd.cut(df['ttd_days'], bins=bins, labels=labels, include_lowest=True).astype(float).fillna(3)
+    except Exception:
+        pass
+
+    return df
+
+
+def add_route_classification(df: pd.DataFrame) -> pd.DataFrame:
+    """Add route type classification."""
+    INTRA_EUROPE = {'CDG', 'LHR', 'FRA', 'AMS', 'BCN', 'FCO', 'MAD', 'MUC', 'ATH',
+                    'LIS', 'DUB', 'BER', 'MXP', 'PRG', 'VIE', 'CPH', 'BUD', 'PMI', 'AGP'}
+
+    if 'origin' in df.columns and 'destination' in df.columns:
+        df['is_intra_europe'] = (
+            df['origin'].isin(INTRA_EUROPE) & df['destination'].isin(INTRA_EUROPE)
+        ).astype(int)
+
+        # Route competition estimate (carrier diversity per route)
+        if 'airline' in df.columns:
+            route_carriers = df.groupby(['origin', 'destination'])['airline'].nunique().reset_index(name='route_competition')
+            df = df.merge(route_carriers, on=['origin', 'destination'], how='left')
+            df['route_competition'] = df['route_competition'].fillna(1)
+
+    return df
 
 
 if __name__ == "__main__":

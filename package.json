@@ -23,11 +23,18 @@
     "train:qrf": "python3 scripts/train/05-fit-qrf.py",
     "train:lstm": "python3 scripts/train/06-train-lstm.py",
     "train:vae": "python3 scripts/train/09-train-vae.py",
+    "train:tft": "python3 scripts/train/07-train-tft.py",
+    "train:deepar": "python3 scripts/train/08-train-deepar.py",
+    "train:maml": "python3 scripts/train/10-train-maml.py",
+    "train:cql": "python3 scripts/train/11-train-cql.py",
     "train:ensemble": "python3 scripts/train/12-fit-ensemble.py",
     "train:validate": "python3 scripts/train/13-validate.py",
     "train:audit": "python3 scripts/train/audit-leakage.py",
-    "train:all": "npm run train:split && npm run train:features && npm run train:audit && npm run train:gp && npm run train:hmm && npm run train:qrf && npm run train:lstm && npm run train:vae && npm run train:ensemble && npm run train:validate",
-    "train:smoke": "npm run train:split && npm run train:features && npm run train:qrf && npm run train:validate"
+    "train:all": "npm run train:split && npm run train:features && npm run train:audit && npm run train:gp && npm run train:hmm && npm run train:qrf && npm run train:lstm && npm run train:tft && npm run train:deepar && npm run train:vae && npm run train:maml && npm run train:cql && npm run train:ensemble && npm run train:validate",
+    "train:smoke": "npm run train:split && npm run train:features && npm run train:qrf && npm run train:validate",
+    "ingest:opensky": "npx tsx scripts/ingest/opensky.ts",
+    "ingest:wayback": "npx tsx scripts/ingest/wayback.ts",
+    "ingest:bts-t2": "npx tsx scripts/ingest/bts-t2.ts"
   },
   "dependencies": {
     "@privy-io/react-auth": "^2.25.0",
