@@ -87,14 +87,18 @@ export async function GET(_req: NextRequest) {
         name: first?.presentation?.suggestionTitle,
       };
 
-      // If airport found, try a flight search
+      // If airport found, try a flight search (with return date — often required)
       if (first?.skyId && first?.entityId) {
         const date = new Date();
         date.setDate(date.getDate() + 45);
         const departDate = date.toISOString().split('T')[0];
+        const retDate = new Date(date);
+        retDate.setDate(retDate.getDate() + 7);
+        const returnDate = retDate.toISOString().split('T')[0];
 
+        // Try v2 endpoint (sometimes more reliable)
         const flightRes = await fetch(
-          `https://sky-scrapper.p.rapidapi.com/api/v1/flights/searchFlights?originSkyId=${first.skyId}&destinationSkyId=NYCA&originEntityId=${first.entityId}&destinationEntityId=27537542&date=${departDate}&adults=1&cabinClass=economy&currency=USD`,
+          `https://sky-scrapper.p.rapidapi.com/api/v2/flights/searchFlightsComplete?originSkyId=${first.skyId}&destinationSkyId=NYCA&originEntityId=${first.entityId}&destinationEntityId=27537542&date=${departDate}&returnDate=${returnDate}&adults=1&cabinClass=economy&currency=USD`,
           {
             headers: {
               'x-rapidapi-key': rapidApiKey,

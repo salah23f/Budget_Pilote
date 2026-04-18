@@ -143,32 +143,58 @@ async function scrapeRoute(
         return { route, flights: [], cheapest: null, source: api.id, durationMs: Date.now() - t0, error: 'airport_lookup_failed' };
       }
 
-      // Step 2: Search flights with proper IDs
-      const params: Record<string, string> = {
-        originSkyId: originIds.skyId,
-        destinationSkyId: destIds.skyId,
-        originEntityId: originIds.entityId,
-        destinationEntityId: destIds.entityId,
-        date: departDate,
-        adults: '1',
-        cabinClass: 'economy',
-        currency: 'USD',
-      };
+      // Step 2: Compute a return date (7 days after depart — many APIs need round-trip)
+      const depDate = new Date(departDate);
+      const retDate = new Date(depDate);
+      retDate.setDate(retDate.getDate() + 7);
+      const returnDate = retDate.toISOString().split('T')[0];
 
-      console.log(`[scraper ${routeId}] querying sky-scrapper: ${originIds.skyId}→${destIds.skyId} on ${departDate}`);
+      // Try v1 endpoint first, then v2 as fallback
+      const endpoints = [
+        '/api/v1/flights/searchFlights',
+        '/api/v2/flights/searchFlightsComplete',
+      ];
 
-      const data = await apiRequest(api, api.searchEndpoint, params);
-      flights = parseSkyScrapperResponse(data, route, departDate);
+      for (const endpoint of endpoints) {
+        const params: Record<string, string> = {
+          originSkyId: originIds.skyId,
+          destinationSkyId: destIds.skyId,
+          originEntityId: originIds.entityId,
+          destinationEntityId: destIds.entityId,
+          date: departDate,
+          returnDate,
+          adults: '1',
+          cabinClass: 'economy',
+          currency: 'USD',
+        };
 
-      console.log(`[scraper ${routeId}] got ${flights.length} flights${flights.length > 0 ? `, cheapest $${Math.min(...flights.map((f) => f.priceUsd))}` : ''}`);
+        console.log(`[scraper ${routeId}] trying ${endpoint}: ${originIds.skyId}→${destIds.skyId} on ${departDate}`);
 
-      if (flights.length > 0) {
-        console.log(`[scraper ${routeId}] sample:`, JSON.stringify({
-          airline: flights[0].airline,
-          price: flights[0].priceUsd,
-          stops: flights[0].stops,
-          duration: flights[0].durationMinutes,
-        }));
+        try {
+          const data = await apiRequest(api, endpoint, params);
+          const d = data as any;
+
+          // Check if API returned an error (status: false)
+          if (d?.status === false || d?.message) {
+            console.warn(`[scraper ${routeId}] API error on ${endpoint}: ${(d?.message ?? 'unknown').slice(0, 200)}`);
+            continue; // Try next endpoint
+          }
+
+          flights = parseSkyScrapperResponse(data, route, departDate);
+
+          if (flights.length > 0) {
+            console.log(`[scraper ${routeId}] got ${flights.length} flights via ${endpoint}, cheapest $${Math.min(...flights.map((f) => f.priceUsd))}`);
+            break; // Success — stop trying endpoints
+          } else {
+            console.warn(`[scraper ${routeId}] ${endpoint} returned data but 0 parsed flights. Keys: ${Object.keys(d?.data ?? d ?? {}).join(',')}`);
+          }
+        } catch (endpointErr: unknown) {
+          console.warn(`[scraper ${routeId}] ${endpoint} failed: ${(endpointErr as Error)?.message}`);
+        }
+      }
+
+      if (flights.length === 0) {
+        console.warn(`[scraper ${routeId}] all Sky-Scrapper endpoints returned 0 flights`);
       }
     } else {
       // Generic API call for non-Sky-Scrapper APIs
