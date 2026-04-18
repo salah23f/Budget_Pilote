@@ -12,6 +12,11 @@ Usage: python scripts/train/audit-leakage.py
 
 import os
 import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent))
+from _env import load_env
+load_env()
+
 import pandas as pd
 import numpy as np
 

@@ -9,8 +9,14 @@ Output: models/qrf_model.pkl, models/qrf_oof_predictions.parquet (for ensemble s
 """
 
 import os
+import sys
 import json
 import pickle
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent))
+from _env import load_env
+load_env()
+
 import numpy as np
 import pandas as pd
 from sklearn.ensemble import RandomForestRegressor

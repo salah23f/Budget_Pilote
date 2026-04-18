@@ -1,6 +1,9 @@
 # Flyeas V7 Training Pipeline — Python dependencies
 # Install: pip install -r scripts/train/requirements.txt
 
+# Env loading (CRITICAL — loads .env.local)
+python-dotenv>=1.0.0
+
 # Core ML (CPU-only, M1/M2 compatible)
 torch>=2.1.0
 onnx>=1.15.0

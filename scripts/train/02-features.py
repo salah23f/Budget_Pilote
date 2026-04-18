@@ -4,21 +4,21 @@
 Input: data/splits/train.parquet
 Output: data/features/train_features.parquet
 
-Features computed:
-  - Rolling stats (7d, 14d, 30d): mean, std, min, max, z-score
-  - Day-of-week, month, is_weekend
-  - TTD buckets (7, 14, 30, 60, 90, 120+)
-  - Holiday proximity (US federal holidays)
-  - Carrier type (LCC, full-service, ultra-LCC)
-  - Hub tier (primary, secondary, regional)
-  - Log-returns, volatility
-  - Route popularity (total observations)
+35+ features: rolling stats, temporal, route, TTD, haversine, log-returns.
 """
 
 import os
+import sys
+from pathlib import Path
+from datetime import datetime
+
+# Load env (needed if any feature fetches from external APIs)
+sys.path.insert(0, str(Path(__file__).parent))
+from _env import load_env
+load_env()
+
 import pandas as pd
 import numpy as np
-from datetime import datetime
 
 INPUT_DIR = "data/splits"
 OUTPUT_DIR = "data/features"
@@ -71,14 +71,17 @@ def add_temporal_features(df: pd.DataFrame) -> pd.DataFrame:
 
     # Holiday proximity (days to nearest US holiday)
     def days_to_holiday(date):
+        # Strip timezone to avoid tz-naive vs tz-aware subtraction error
+        if hasattr(date, 'tz') and date.tz is not None:
+            date = date.tz_localize(None)
         year = date.year
         min_dist = 365
         for m, d in US_HOLIDAYS:
             try:
-                hol = datetime(year, m, d)
+                hol = pd.Timestamp(datetime(year, m, d))
                 dist = abs((date - hol).days)
                 min_dist = min(min_dist, dist)
-            except ValueError:
+            except (ValueError, OverflowError):
                 pass
         return min_dist
 
