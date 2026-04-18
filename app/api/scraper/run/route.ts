@@ -18,15 +18,110 @@ export const maxDuration = 120; // 2 minutes max for scraping cycle
  *   5. Return summary
  */
 /**
- * GET /api/scraper/run — health check (no auth required).
+ * GET /api/scraper/run — diagnostic endpoint (no auth).
+ * Tests: env vars, Supabase connectivity, Sky-Scrapper API for one route.
  */
 export async function GET(_req: NextRequest) {
-  return NextResponse.json({
+  const diag: Record<string, unknown> = {
     status: 'ok',
     timestamp: new Date().toISOString(),
-    configured: !!process.env.SCRAPER_SECRET,
-    rapidapi: !!process.env.RAPIDAPI_KEY,
-  });
+    env: {
+      SCRAPER_SECRET: !!process.env.SCRAPER_SECRET,
+      RAPIDAPI_KEY: !!process.env.RAPIDAPI_KEY,
+      SUPABASE_URL: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+      SUPABASE_SERVICE_KEY: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+      SUPABASE_SERVICE_KEY_LENGTH: (process.env.SUPABASE_SERVICE_ROLE_KEY ?? '').length,
+    },
+  };
+
+  // Test 1: Supabase connectivity
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (supabaseUrl && supabaseKey) {
+    try {
+      const { createClient } = await import('@supabase/supabase-js');
+      const sb = createClient(supabaseUrl, supabaseKey, { auth: { persistSession: false } });
+
+      // Try inserting a test row into scraper_runs
+      const { data, error } = await sb.from('scraper_runs').insert({
+        started_at: new Date().toISOString(),
+        completed_at: new Date().toISOString(),
+        routes_attempted: 0,
+        routes_succeeded: 0,
+        routes_failed: 0,
+        total_flights: 0,
+        cheapest_overall: null,
+      }).select('id').single();
+
+      diag.supabase_test = error
+        ? { ok: false, error: error.message, code: error.code, details: error.details, hint: error.hint }
+        : { ok: true, insertedId: data?.id };
+    } catch (err: unknown) {
+      diag.supabase_test = { ok: false, exception: (err as Error)?.message };
+    }
+  } else {
+    diag.supabase_test = { ok: false, reason: 'missing_env_vars' };
+  }
+
+  // Test 2: Sky-Scrapper API — search airport for "Paris"
+  const rapidApiKey = process.env.RAPIDAPI_KEY;
+  if (rapidApiKey) {
+    try {
+      const airportRes = await fetch(
+        'https://sky-scrapper.p.rapidapi.com/api/v1/flights/searchAirport?query=paris&locale=en-US',
+        {
+          headers: {
+            'x-rapidapi-key': rapidApiKey,
+            'x-rapidapi-host': 'sky-scrapper.p.rapidapi.com',
+          },
+        }
+      );
+      const airportData = await airportRes.json() as any;
+      const first = airportData?.data?.[0];
+
+      diag.skyscrapper_airport = {
+        status: airportRes.status,
+        found: !!first,
+        skyId: first?.skyId,
+        entityId: first?.entityId,
+        name: first?.presentation?.suggestionTitle,
+      };
+
+      // If airport found, try a flight search
+      if (first?.skyId && first?.entityId) {
+        const date = new Date();
+        date.setDate(date.getDate() + 45);
+        const departDate = date.toISOString().split('T')[0];
+
+        const flightRes = await fetch(
+          `https://sky-scrapper.p.rapidapi.com/api/v1/flights/searchFlights?originSkyId=${first.skyId}&destinationSkyId=NYCA&originEntityId=${first.entityId}&destinationEntityId=27537542&date=${departDate}&adults=1&cabinClass=economy&currency=USD`,
+          {
+            headers: {
+              'x-rapidapi-key': rapidApiKey,
+              'x-rapidapi-host': 'sky-scrapper.p.rapidapi.com',
+            },
+          }
+        );
+        const flightData = await flightRes.json() as any;
+        const itineraries = flightData?.data?.itineraries ?? [];
+
+        diag.skyscrapper_flights = {
+          status: flightRes.status,
+          itineraryCount: itineraries.length,
+          firstPrice: itineraries[0]?.price?.raw,
+          firstAirline: itineraries[0]?.legs?.[0]?.carriers?.marketing?.[0]?.name,
+          responseKeys: Object.keys(flightData?.data ?? {}),
+          rawSample: itineraries.length > 0
+            ? JSON.stringify(itineraries[0]).slice(0, 500)
+            : JSON.stringify(flightData).slice(0, 500),
+        };
+      }
+    } catch (err: unknown) {
+      diag.skyscrapper_test = { ok: false, exception: (err as Error)?.message };
+    }
+  }
+
+  return NextResponse.json(diag);
 }
 
 export async function POST(req: NextRequest) {
