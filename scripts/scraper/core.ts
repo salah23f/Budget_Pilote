@@ -1,15 +1,19 @@
 /**
  * Scraper Core — orchestrates price scraping across all routes + APIs.
  *
- * Usage:
- *   - Called by POST /api/scraper/run (cron or manual)
- *   - Iterates through ROUTES, queries best available API, normalizes, stores in Supabase
- *   - Targets 20-30 routes per run (budget: ~100 requests per 4h cron cycle)
- *   - Rotates through all 100 routes across ~12 cron cycles per day
+ * BUG FIX: Sky-Scrapper requires skyId/entityId, not raw IATA codes.
+ * We lookup each airport via searchAirport API (cached) before searching flights.
  */
 
 import { ROUTES, type ScraperRoute } from './routes';
-import { selectApi, apiRequest, recordSuccess, recordFailure, getQuotaStatus, type NormalizedFlight, type ApiConfig } from './api-rotator';
+import {
+  selectApi,
+  apiRequest,
+  getQuotaStatus,
+  lookupAirport,
+  type NormalizedFlight,
+  type ApiConfig,
+} from './api-rotator';
 
 export interface ScrapeResult {
   route: ScraperRoute;
@@ -32,16 +36,11 @@ export interface ScrapeRunSummary {
   results: ScrapeResult[];
 }
 
-/**
- * Determine which routes to scrape this cycle.
- * Rotates through all 100 routes using a deterministic offset based on current hour.
- */
 function selectRoutesForCycle(batchSize: number = 25): ScraperRoute[] {
   const hour = new Date().getHours();
   const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000);
   const offset = ((dayOfYear * 6) + Math.floor(hour / 4)) * batchSize;
   const start = offset % ROUTES.length;
-
   const selected: ScraperRoute[] = [];
   for (let i = 0; i < batchSize && i < ROUTES.length; i++) {
     selected.push(ROUTES[(start + i) % ROUTES.length]);
@@ -49,136 +48,163 @@ function selectRoutesForCycle(batchSize: number = 25): ScraperRoute[] {
   return selected;
 }
 
-/**
- * Build search parameters for a route — departs 30 and 60 days from now.
- */
-function buildSearchDates(): string[] {
-  const dates: string[] = [];
-  for (const offset of [30, 60, 90]) {
-    const d = new Date();
-    d.setDate(d.getDate() + offset);
-    dates.push(d.toISOString().split('T')[0]);
-  }
-  return dates;
+function buildSearchDate(offsetDays: number): string {
+  const d = new Date();
+  d.setDate(d.getDate() + offsetDays);
+  return d.toISOString().split('T')[0];
 }
 
 /**
- * Normalize Sky Scrapper response to NormalizedFlight[].
+ * Parse Sky-Scrapper searchFlights response into normalized flights.
  */
-function normalizeSkyScrapperResponse(
+function parseSkyScrapperResponse(
   data: unknown,
   route: ScraperRoute,
   departDate: string
 ): NormalizedFlight[] {
   try {
-    const d = data as Record<string, unknown>;
-    const itineraries = (d as any)?.data?.itineraries ?? [];
-    return itineraries.slice(0, 10).map((it: any) => ({
-      origin: route.origin,
-      destination: route.destination,
-      departDate,
-      priceUsd: parseFloat(it?.price?.raw ?? '0'),
-      airline: it?.legs?.[0]?.carriers?.marketing?.[0]?.name ?? 'Unknown',
-      stops: it?.legs?.[0]?.stopCount ?? 0,
-      durationMinutes: it?.legs?.[0]?.durationInMinutes ?? 0,
-      source: 'sky-scrapper',
-      fetchedAt: new Date().toISOString(),
-    })).filter((f: NormalizedFlight) => f.priceUsd > 0);
-  } catch (_) {
-    return [];
-  }
-}
-
-/**
- * Generic normalizer for other APIs (best-effort).
- */
-function normalizeGenericResponse(
-  data: unknown,
-  route: ScraperRoute,
-  departDate: string,
-  source: string
-): NormalizedFlight[] {
-  try {
     const d = data as any;
-    // Try common response shapes
-    const results = d?.data ?? d?.results ?? d?.flights ?? d?.offers ?? [];
-    if (!Array.isArray(results)) return [];
 
-    return results.slice(0, 10).map((r: any) => ({
-      origin: route.origin,
-      destination: route.destination,
-      departDate,
-      priceUsd: parseFloat(r?.price?.amount ?? r?.price ?? r?.priceUsd ?? r?.fare ?? '0'),
-      airline: r?.airline ?? r?.carrier ?? r?.airlineName ?? 'Unknown',
-      stops: r?.stops ?? r?.stopCount ?? r?.numberOfStops ?? 0,
-      durationMinutes: r?.duration ?? r?.durationMinutes ?? 0,
-      source,
-      fetchedAt: new Date().toISOString(),
-    })).filter((f: NormalizedFlight) => f.priceUsd > 0);
-  } catch (_) {
+    // Sky-Scrapper v1 response structure:
+    // data.itineraries[] — each has .price.raw, .legs[].carriers, .legs[].stopCount, .legs[].durationInMinutes
+    const itineraries = d?.data?.itineraries ?? [];
+
+    if (!Array.isArray(itineraries) || itineraries.length === 0) {
+      // Try alternative response shapes
+      const alt = d?.data?.flightOffers ?? d?.data?.results ?? d?.flights ?? [];
+      if (Array.isArray(alt) && alt.length > 0) {
+        return alt.slice(0, 15).map((it: any) => ({
+          origin: route.origin,
+          destination: route.destination,
+          departDate,
+          priceUsd: parseFloat(it?.price?.raw ?? it?.price?.amount ?? it?.price ?? '0'),
+          airline: it?.legs?.[0]?.carriers?.marketing?.[0]?.name ?? it?.carrier ?? 'Unknown',
+          stops: it?.legs?.[0]?.stopCount ?? it?.stops ?? 0,
+          durationMinutes: it?.legs?.[0]?.durationInMinutes ?? it?.duration ?? 0,
+          source: 'sky-scrapper',
+          fetchedAt: new Date().toISOString(),
+        })).filter((f: NormalizedFlight) => f.priceUsd > 0);
+      }
+      return [];
+    }
+
+    return itineraries.slice(0, 15).map((it: any) => {
+      const leg = it?.legs?.[0];
+      const price = parseFloat(it?.price?.raw ?? '0');
+      const airline = leg?.carriers?.marketing?.[0]?.name ?? leg?.carriers?.operationType ?? 'Unknown';
+      const stops = leg?.stopCount ?? 0;
+      const duration = leg?.durationInMinutes ?? 0;
+
+      return {
+        origin: route.origin,
+        destination: route.destination,
+        departDate,
+        priceUsd: price,
+        airline,
+        stops,
+        durationMinutes: duration,
+        source: 'sky-scrapper',
+        fetchedAt: new Date().toISOString(),
+      };
+    }).filter((f: NormalizedFlight) => f.priceUsd > 0);
+  } catch (err: unknown) {
+    console.warn(`[scraper] parse error:`, (err as Error)?.message);
     return [];
   }
 }
 
 /**
- * Scrape a single route on a single date using the best available API.
+ * Scrape a single route on a single date.
  */
 async function scrapeRoute(
   route: ScraperRoute,
   departDate: string
 ): Promise<ScrapeResult> {
   const t0 = Date.now();
+  const routeId = `${route.origin}-${route.destination}`;
   const api = selectApi();
 
   if (!api) {
-    return {
-      route,
-      flights: [],
-      cheapest: null,
-      source: 'none',
-      durationMs: Date.now() - t0,
-      error: 'all_apis_exhausted',
-    };
+    return { route, flights: [], cheapest: null, source: 'none', durationMs: Date.now() - t0, error: 'all_apis_exhausted' };
   }
 
   try {
-    const params: Record<string, string> = {
-      originSkyId: route.origin,
-      destinationSkyId: route.destination,
-      originEntityId: route.origin,
-      destinationEntityId: route.destination,
-      date: departDate,
-      adults: '1',
-      cabinClass: 'economy',
-      currency: 'USD',
-    };
+    let flights: NormalizedFlight[] = [];
 
-    const data = await apiRequest(api, api.searchEndpoint, params);
+    if (api.id === 'sky-scrapper') {
+      // Step 1: Lookup airport IDs (cached)
+      const [originIds, destIds] = await Promise.all([
+        lookupAirport(route.origin),
+        lookupAirport(route.destination),
+      ]);
 
-    const flights = api.id === 'sky-scrapper'
-      ? normalizeSkyScrapperResponse(data, route, departDate)
-      : normalizeGenericResponse(data, route, departDate, api.id);
+      if (!originIds || !destIds) {
+        console.warn(`[scraper ${routeId}] airport lookup failed — origin=${!!originIds} dest=${!!destIds}`);
+        return { route, flights: [], cheapest: null, source: api.id, durationMs: Date.now() - t0, error: 'airport_lookup_failed' };
+      }
 
-    const cheapest = flights.length > 0
-      ? Math.min(...flights.map((f) => f.priceUsd))
-      : null;
+      // Step 2: Search flights with proper IDs
+      const params: Record<string, string> = {
+        originSkyId: originIds.skyId,
+        destinationSkyId: destIds.skyId,
+        originEntityId: originIds.entityId,
+        destinationEntityId: destIds.entityId,
+        date: departDate,
+        adults: '1',
+        cabinClass: 'economy',
+        currency: 'USD',
+      };
 
-    return {
-      route,
-      flights,
-      cheapest,
-      source: api.id,
-      durationMs: Date.now() - t0,
-    };
+      console.log(`[scraper ${routeId}] querying sky-scrapper: ${originIds.skyId}→${destIds.skyId} on ${departDate}`);
+
+      const data = await apiRequest(api, api.searchEndpoint, params);
+      flights = parseSkyScrapperResponse(data, route, departDate);
+
+      console.log(`[scraper ${routeId}] got ${flights.length} flights${flights.length > 0 ? `, cheapest $${Math.min(...flights.map((f) => f.priceUsd))}` : ''}`);
+
+      if (flights.length > 0) {
+        console.log(`[scraper ${routeId}] sample:`, JSON.stringify({
+          airline: flights[0].airline,
+          price: flights[0].priceUsd,
+          stops: flights[0].stops,
+          duration: flights[0].durationMinutes,
+        }));
+      }
+    } else {
+      // Generic API call for non-Sky-Scrapper APIs
+      const params: Record<string, string> = {
+        origin: route.origin,
+        destination: route.destination,
+        departDate,
+        date: departDate,
+        adults: '1',
+        cabinClass: 'economy',
+        currency: 'USD',
+      };
+
+      const data = await apiRequest(api, api.searchEndpoint, params);
+      const d = data as any;
+      const results = d?.data ?? d?.results ?? d?.flights ?? d?.offers ?? [];
+      if (Array.isArray(results)) {
+        flights = results.slice(0, 10).map((r: any) => ({
+          origin: route.origin,
+          destination: route.destination,
+          departDate,
+          priceUsd: parseFloat(r?.price?.amount ?? r?.price ?? r?.priceUsd ?? r?.fare ?? '0'),
+          airline: r?.airline ?? r?.carrier ?? r?.airlineName ?? 'Unknown',
+          stops: r?.stops ?? r?.stopCount ?? 0,
+          durationMinutes: r?.duration ?? r?.durationMinutes ?? 0,
+          source: api.id,
+          fetchedAt: new Date().toISOString(),
+        })).filter((f: NormalizedFlight) => f.priceUsd > 0);
+      }
+    }
+
+    const cheapest = flights.length > 0 ? Math.min(...flights.map((f) => f.priceUsd)) : null;
+    return { route, flights, cheapest, source: api.id, durationMs: Date.now() - t0 };
   } catch (err: unknown) {
-    return {
-      route,
-      flights: [],
-      cheapest: null,
-      source: api.id,
-      durationMs: Date.now() - t0,
-      error: (err as Error)?.message ?? 'unknown_error',
-    };
+    console.warn(`[scraper ${routeId}] error:`, (err as Error)?.message);
+    return { route, flights: [], cheapest: null, source: api.id, durationMs: Date.now() - t0, error: (err as Error)?.message ?? 'unknown' };
   }
 }
 
@@ -190,28 +216,25 @@ export async function runScrape(
   delayBetweenMs: number = 2000
 ): Promise<ScrapeRunSummary> {
   const startedAt = new Date().toISOString();
+  console.log(`[scraper] starting cycle: ${batchSize} routes, delay=${delayBetweenMs}ms`);
+
   const routes = selectRoutesForCycle(batchSize);
-  const dates = buildSearchDates();
+  // Pick a departure date 45 days out (sweet spot for data)
+  const departDate = buildSearchDate(45);
   const results: ScrapeResult[] = [];
 
   for (const route of routes) {
-    // Pick one date per route to conserve quota
-    const date = dates[Math.floor(Math.random() * dates.length)];
-    const result = await scrapeRoute(route, date);
+    const result = await scrapeRoute(route, departDate);
     results.push(result);
-
-    // Rate limiting
     if (delayBetweenMs > 0) {
       await new Promise((r) => setTimeout(r, delayBetweenMs));
     }
   }
 
   const succeeded = results.filter((r) => !r.error);
-  const allCheapest = results
-    .map((r) => r.cheapest)
-    .filter((p): p is number => p !== null);
+  const allCheapest = results.map((r) => r.cheapest).filter((p): p is number => p !== null);
 
-  return {
+  const summary: ScrapeRunSummary = {
     startedAt,
     completedAt: new Date().toISOString(),
     routesAttempted: routes.length,
@@ -222,4 +245,8 @@ export async function runScrape(
     quotaStatus: getQuotaStatus(),
     results,
   };
+
+  console.log(`[scraper] cycle complete: ${summary.routesSucceeded}/${summary.routesAttempted} routes, ${summary.totalFlights} flights found`);
+
+  return summary;
 }

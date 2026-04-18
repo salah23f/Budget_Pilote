@@ -84,35 +84,20 @@ export async function POST(req: NextRequest) {
 async function storeResults(summary: Awaited<ReturnType<typeof import('@/scripts/scraper/core').runScrape>>): Promise<void> {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!supabaseUrl || !supabaseKey) return;
+
+  if (!supabaseUrl || !supabaseKey) {
+    console.warn('[scraper/store] missing SUPABASE_URL or SERVICE_ROLE_KEY — skipping DB write');
+    return;
+  }
+
+  console.log(`[scraper/store] attempting DB write: ${summary.totalFlights} flights, ${summary.routesAttempted} routes`);
 
   try {
     const { createClient } = await import('@supabase/supabase-js');
     const supabase = createClient(supabaseUrl, supabaseKey, { auth: { persistSession: false } });
 
-    // Insert normalized flights as price samples
-    const rows = summary.results
-      .flatMap((r) =>
-        r.flights.map((f) => ({
-          origin: f.origin,
-          destination: f.destination,
-          depart_date: f.departDate,
-          price_usd: f.priceUsd,
-          airline: f.airline,
-          stops: f.stops,
-          duration_minutes: f.durationMinutes,
-          source: f.source,
-          fetched_at: f.fetchedAt,
-        }))
-      )
-      .slice(0, 500); // Cap per run
-
-    if (rows.length > 0) {
-      await supabase.from('real_price_samples').insert(rows).throwOnError();
-    }
-
-    // Log the run
-    await supabase.from('scraper_runs').insert({
+    // Always log the run — even if 0 flights
+    const runPayload = {
       started_at: summary.startedAt,
       completed_at: summary.completedAt,
       routes_attempted: summary.routesAttempted,
@@ -120,9 +105,53 @@ async function storeResults(summary: Awaited<ReturnType<typeof import('@/scripts
       routes_failed: summary.routesFailed,
       total_flights: summary.totalFlights,
       cheapest_overall: summary.cheapestOverall,
-    }).throwOnError();
+    };
+
+    const { data: runData, error: runError } = await supabase
+      .from('scraper_runs')
+      .insert(runPayload)
+      .select('id')
+      .single();
+
+    if (runError) {
+      console.error('[scraper/store] scraper_runs INSERT failed:', runError.message, runError.code, runError.details);
+    } else {
+      console.log(`[scraper/store] scraper_runs INSERT ok, id=${runData?.id}`);
+    }
+
+    // Insert flights if any
+    if (summary.totalFlights > 0) {
+      const rows = summary.results
+        .flatMap((r) =>
+          r.flights.map((f) => ({
+            origin: f.origin,
+            destination: f.destination,
+            depart_date: f.departDate,
+            price_usd: f.priceUsd,
+            airline: f.airline,
+            stops: f.stops,
+            duration_minutes: f.durationMinutes,
+            source: f.source,
+            fetched_at: f.fetchedAt,
+          }))
+        )
+        .slice(0, 500);
+
+      console.log(`[scraper/store] inserting ${rows.length} price samples...`);
+
+      const { error: flightsError } = await supabase
+        .from('real_price_samples')
+        .insert(rows);
+
+      if (flightsError) {
+        console.error('[scraper/store] real_price_samples INSERT failed:', flightsError.message, flightsError.code, flightsError.details);
+      } else {
+        console.log(`[scraper/store] real_price_samples INSERT ok: ${rows.length} rows`);
+      }
+    } else {
+      console.log('[scraper/store] no flights to insert (totalFlights=0)');
+    }
   } catch (err: unknown) {
-    // Best effort — don't crash the scraper if Supabase is down or tables don't exist
-    console.warn('[scraper/store] error:', (err as Error)?.message);
+    console.error('[scraper/store] unexpected error:', (err as Error)?.message, (err as Error)?.stack?.slice(0, 200));
   }
 }
