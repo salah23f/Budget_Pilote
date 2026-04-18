@@ -5,3 +5,12 @@ node_modules
 .env*.local
 .DS_Store
 app/api/debug
+
+# V7 training pipeline
+data/
+models/
+.venv-train/
+__pycache__/
+*.onnx
+*.parquet
+*.pyc

@@ -244,8 +244,8 @@ function TypingIndicator() {
         <div
           className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full self-end"
           style={{
-            background: 'linear-gradient(135deg, rgba(232,163,23,0.2), rgba(232,163,23,0.05))',
-            border: '1px solid rgba(232,163,23,0.2)',
+            background: 'linear-gradient(135deg, rgba(212,162,76,0.2), rgba(212,162,76,0.05))',
+            border: '1px solid rgba(212,162,76,0.2)',
           }}
         >
           <PlaneIcon size={13} />
@@ -433,11 +433,11 @@ export default function ChatPanel() {
           onClick={() => setOpen(true)}
           className="fixed bottom-20 right-4 lg:bottom-6 lg:right-6 z-50 flex h-[52px] w-[52px] md:h-12 md:w-12 items-center justify-center rounded-full transition-all duration-300 hover:scale-105 active:scale-95"
           style={{
-            background: 'rgba(232,163,23,0.15)',
-            border: '1px solid rgba(232,163,23,0.3)',
+            background: 'rgba(212,162,76,0.15)',
+            border: '1px solid rgba(212,162,76,0.3)',
             backdropFilter: 'blur(12px)',
             WebkitBackdropFilter: 'blur(12px)',
-            boxShadow: '0 0 20px rgba(232,163,23,0.2)',
+            boxShadow: '0 0 20px rgba(212,162,76,0.2)',
           }}
           aria-label="Open AI assistant"
         >
@@ -468,7 +468,7 @@ export default function ChatPanel() {
             backdropFilter: 'blur(24px)',
             WebkitBackdropFilter: 'blur(24px)',
             border: '1px solid rgba(255,255,255,0.06)',
-            boxShadow: '0 25px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(232,163,23,0.05)',
+            boxShadow: '0 25px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(212,162,76,0.05)',
             animation: 'flyeas-slide-up 0.35s cubic-bezier(0.16,1,0.3,1)',
           }}
         >
@@ -481,8 +481,8 @@ export default function ChatPanel() {
               <div
                 className="flex h-10 w-10 items-center justify-center rounded-xl"
                 style={{
-                  background: 'linear-gradient(135deg, rgba(232,163,23,0.2), rgba(232,163,23,0.05))',
-                  border: '1px solid rgba(232,163,23,0.25)',
+                  background: 'linear-gradient(135deg, rgba(212,162,76,0.2), rgba(212,162,76,0.05))',
+                  border: '1px solid rgba(212,162,76,0.25)',
                 }}
               >
                 <PlaneIcon size={20} />
@@ -532,8 +532,8 @@ export default function ChatPanel() {
                       <div
                         className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full"
                         style={{
-                          background: 'linear-gradient(135deg, rgba(232,163,23,0.2), rgba(232,163,23,0.05))',
-                          border: '1px solid rgba(232,163,23,0.2)',
+                          background: 'linear-gradient(135deg, rgba(212,162,76,0.2), rgba(212,162,76,0.05))',
+                          border: '1px solid rgba(212,162,76,0.2)',
                         }}
                       >
                         <PlaneIcon size={13} />
@@ -557,8 +557,8 @@ export default function ChatPanel() {
                       style={
                         msg.role === 'user'
                           ? {
-                              background: 'rgba(232,163,23,0.1)',
-                              border: '1px solid rgba(232,163,23,0.2)',
+                              background: 'rgba(212,162,76,0.1)',
+                              border: '1px solid rgba(212,162,76,0.2)',
                               color: 'white',
                             }
                           : {
@@ -601,8 +601,8 @@ export default function ChatPanel() {
                         disabled={loading}
                         className="rounded-full px-3 py-1.5 text-[11px] font-medium transition disabled:opacity-40"
                         style={{
-                          background: 'rgba(232,163,23,0.08)',
-                          border: '1px solid rgba(232,163,23,0.15)',
+                          background: 'rgba(212,162,76,0.08)',
+                          border: '1px solid rgba(212,162,76,0.15)',
                           backdropFilter: 'blur(8px)',
                           WebkitBackdropFilter: 'blur(8px)',
                           color: '#D4A24C',
@@ -645,9 +645,9 @@ export default function ChatPanel() {
           )}
 
           {/* Input */}
-          <div className="px-4 py-3 flex-shrink-0" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+          <div className="px-4 py-3 flex-shrink-0" style={{ borderTop: '1px solid var(--line-1)', paddingBottom: 'max(12px, env(safe-area-inset-bottom, 12px))' }}>
             <div
-              className="flex items-end gap-2 rounded-2xl px-3 py-2 transition-all focus-within:border-[rgba(232,163,23,0.3)]"
+              className="flex items-end gap-2 rounded-2xl px-3 py-2 transition-all focus-within:border-[rgba(212,162,76,0.3)]"
               style={{
                 background: 'rgba(255,255,255,0.04)',
                 border: '1px solid rgba(255,255,255,0.08)',

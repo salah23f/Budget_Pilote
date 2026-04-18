@@ -30,6 +30,7 @@ import {
   type PriceSample,
 } from './price-history';
 import { predict, type Prediction } from './predictor';
+import { predictV7, type EnsembleDecision } from './v7';
 import type { Mission, Offer } from '../types';
 
 export interface WatchResult {
@@ -171,12 +172,60 @@ export async function watchMission(mission: Mission): Promise<WatchResult> {
       adults: mission.passengers,
     });
 
-    const prediction = predict({
-      currentPrice: cheapest.priceUsd,
-      daysUntilDeparture,
-      windowSamples,
-      allSamples,
-    });
+    const algoVersion = process.env.FLYEAS_ALGO_VERSION || 'v1';
+
+    let prediction: Prediction;
+    let v7Decision: EnsembleDecision | undefined;
+
+    if (algoVersion === 'v7') {
+      v7Decision = predictV7({
+        currentPrice: cheapest.priceUsd,
+        daysUntilDeparture,
+        windowSamples,
+        allSamples,
+        routeKey: rKey,
+      });
+      // Map V7 → V1 Prediction shape for back-compat
+      prediction = {
+        action: v7Decision.action,
+        confidence: v7Decision.confidence,
+        zScore: 0,
+        percentile: 50,
+        trend: 'unknown',
+        trendSlopePerDay: 0,
+        daysUntilDeparture,
+        expectedSavingsIfWait: v7Decision.expectedSavingsWait,
+        probabilityBeaten7d: v7Decision.probBetter7d,
+        baseline: null,
+        sampleCount: windowSamples.length,
+        reason: v7Decision.reason,
+        subScores: { zScoreScore: 0, percentileScore: 0, trendScore: 0, ttdScore: 0 },
+      };
+    } else {
+      prediction = predict({
+        currentPrice: cheapest.priceUsd,
+        daysUntilDeparture,
+        windowSamples,
+        allSamples,
+      });
+      // Shadow mode: also run V7 and log
+      if (algoVersion === 'shadow') {
+        try {
+          v7Decision = predictV7({
+            currentPrice: cheapest.priceUsd,
+            daysUntilDeparture,
+            windowSamples,
+            allSamples,
+            routeKey: rKey,
+          });
+          console.log('[v7-shadow-watcher]', {
+            route: rKey, v1: prediction.action, v7: v7Decision.action,
+            agree: prediction.action === v7Decision.action,
+            v7Conf: v7Decision.confidence, models: v7Decision.meta.modelsUsed.length,
+          });
+        } catch (_) {}
+      }
+    }
 
     // --- Car rental search (package missions) -------------------
     let bestCarPrice: number | undefined;

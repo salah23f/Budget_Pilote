@@ -96,7 +96,7 @@ export default function LandingPage() {
                 <span className="h-1 w-1 rounded-full bg-pen-3/60" />
                 <span>A travel concierge</span>
               </p>
-              <h1 className="editorial text-[44px] md:text-[60px] leading-[1.02]">
+              <h1 className="editorial text-[32px] sm:text-[44px] lg:text-[60px] leading-[1.02]">
                 Know the real price.<br />
                 <em className="italic text-accent">Then</em> decide.
               </h1>

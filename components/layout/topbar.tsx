@@ -90,7 +90,7 @@ export default function Topbar({ onMenuToggle }: TopbarProps) {
   ];
 
   return (
-    <header className="sticky top-0 z-30 flex items-center gap-2 px-3 py-2.5 lg:px-5 lg:py-3 bg-surface-primary/85 backdrop-blur-md border-b border-border-subtle">
+    <header className="topbar-glass sticky top-0 z-30 flex items-center gap-2 px-3 py-2 lg:px-5 lg:py-3">
       {/* Hamburger */}
       <button onClick={onMenuToggle} className="lg:hidden p-2.5 rounded-xl hover:bg-white/5 transition" aria-label="Menu">
         <Menu className="w-5 h-5 text-text-secondary" strokeWidth={1.8} />
@@ -107,10 +107,10 @@ export default function Topbar({ onMenuToggle }: TopbarProps) {
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => setSearchFocused(true)}
               placeholder={t('topbar.searchPlaceholder')}
-              className={`w-full rounded-xl py-2.5 pl-10 pr-4 text-sm text-text-primary outline-none transition-all border ${
+              className={`w-full rounded-lg py-2 pl-10 pr-4 text-[16px] sm:text-body text-pen-1 outline-none transition-all border ${
                 searchFocused
-                  ? 'bg-white/[0.06] border-accent/30'
-                  : 'bg-surface-card border-border-subtle'
+                  ? 'bg-ink-700 border-line-3'
+                  : 'bg-ink-800 border-line-1'
               }`}
             />
             <kbd className="hidden lg:flex absolute right-3 top-1/2 -translate-y-1/2 items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium text-text-muted bg-white/[0.04] border border-border-subtle">
@@ -181,7 +181,7 @@ export default function Topbar({ onMenuToggle }: TopbarProps) {
           </button>
 
           {userMenuOpen && (
-            <div className="absolute right-0 top-full mt-2 py-1.5 rounded-xl min-w-[180px] shadow-xl bg-surface-elevated border border-border-default">
+            <div className="absolute right-0 top-full mt-2 py-1.5 rounded-lg w-[260px] max-w-[calc(100vw-32px)] max-h-[calc(100vh-80px)] overflow-y-auto shadow-elev-3 bg-ink-700 border border-line-2">
               <div className="px-4 py-2 mb-1 border-b border-line-1">
                 <p className="text-body font-medium text-pen-1">{displayName || 'Account'}</p>
                 <p className="text-caption text-pen-3">{t('misc.freePlan')}</p>

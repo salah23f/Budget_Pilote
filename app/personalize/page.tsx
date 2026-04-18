@@ -299,7 +299,7 @@ function StepTravelStyle({
         </p>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3">
         {TRAVEL_STYLES.map((t) => {
           const Icon = t.icon;
           const isSelected = selected === t.id;

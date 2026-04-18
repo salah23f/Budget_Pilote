@@ -1,0 +1,65 @@
+name: Flight Price Scraper
+
+on:
+  schedule:
+    - cron: '0 */4 * * *'
+  workflow_dispatch:
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Verify secret is configured
+        env:
+          SECRET_LEN: ${{ secrets.SCRAPER_SECRET }}
+        run: |
+          LEN=$(echo -n "$SECRET_LEN" | wc -c | tr -d ' ')
+          echo "Secret length: $LEN chars"
+          if [ "$LEN" -lt 10 ]; then
+            echo "::error::SCRAPER_SECRET is too short or missing. Configure it in repo Settings → Secrets."
+            exit 1
+          fi
+
+      - name: Trigger scraper
+        env:
+          RAW_SECRET: ${{ secrets.SCRAPER_SECRET }}
+        run: |
+          # Hardcoded URL — not sensitive, eliminates newline risk from secrets
+          URL="https://faregenie.vercel.app/api/scraper/run"
+
+          # Trim any whitespace/newlines from the secret
+          SECRET="$(echo -n "$RAW_SECRET" | tr -d '\n\r ')"
+
+          echo "Triggering: $URL"
+
+          # Retry logic: 3 attempts with 10s wait
+          for ATTEMPT in 1 2 3; do
+            echo "Attempt $ATTEMPT/3..."
+
+            HTTP_CODE=$(curl -s -o /tmp/scraper_response.json -w "%{http_code}" \
+              -f -X POST "$URL" \
+              -H "x-scraper-secret: $SECRET" \
+              -H "Content-Type: application/json" \
+              --max-time 180) || HTTP_CODE="000"
+
+            echo "HTTP status: $HTTP_CODE"
+
+            if [ "$HTTP_CODE" = "200" ]; then
+              echo "Success!"
+              cat /tmp/scraper_response.json
+              exit 0
+            fi
+
+            echo "Response body:"
+            cat /tmp/scraper_response.json 2>/dev/null || echo "(empty)"
+
+            if [ "$ATTEMPT" -lt 3 ]; then
+              echo "Retrying in 10s..."
+              sleep 10
+            fi
+          done
+
+          echo "::error::Scraper failed after 3 attempts (last HTTP $HTTP_CODE)"
+          exit 1

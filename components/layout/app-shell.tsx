@@ -53,13 +53,13 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <div className="min-h-screen flex bg-ink-950">
+    <div className="min-h-screen flex bg-ink-950 overflow-x-hidden">
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      <div className="flex-1 flex flex-col lg:ml-[260px] min-h-screen">
+      <div className="flex-1 flex flex-col lg:ml-[260px] min-h-screen min-w-0">
         <Topbar onMenuToggle={() => setSidebarOpen((prev) => !prev)} />
 
-        <main className="flex-1 px-4 py-6 lg:px-8 lg:py-8 pb-bottom-nav">
+        <main className="flex-1 px-4 py-4 lg:px-8 lg:py-8 pb-bottom-nav overflow-x-hidden">
           <PageTransition>{children}</PageTransition>
         </main>
       </div>

@@ -79,7 +79,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       <aside
         className={`
           fixed top-0 left-0 z-50 h-full w-[260px] flex flex-col
-          bg-[#0a0a0c] border-r border-white/[0.06]
+          bg-ink-900 border-r border-line-1
           transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]
           lg:translate-x-0
           ${isOpen ? 'translate-x-0' : '-translate-x-full'}
@@ -87,7 +87,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       >
         {/* Logo */}
         <div className="flex items-center gap-3 px-5 h-16 shrink-0">
-          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-accent-light to-accent-dark">
+          <div className="flex items-center justify-center w-8 h-8 rounded-md" style={{ background: 'var(--ink-700)', border: '1px solid var(--line-2)' }}>
             <Plane className="w-3.5 h-3.5 text-white" strokeWidth={2.2} />
           </div>
           <span className="text-[15px] font-bold font-display tracking-tight gradient-text">

@@ -8,6 +8,7 @@ import {
 } from '@/lib/agent/price-history';
 import { computeBaseline } from '@/lib/agent/baselines';
 import { predict } from '@/lib/agent/predictor';
+import { predictV7 } from '@/lib/agent/v7';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -77,13 +78,54 @@ export async function GET(
     // If we have a current observation (mission.bestSeenPrice) we can
     // immediately run a prediction for it without a new search.
     let prediction = null;
+    let predictionV7 = null;
+    const algoVersion = process.env.FLYEAS_ALGO_VERSION || 'v1';
+
     if (mission.bestSeenPrice && mission.bestSeenPrice > 0) {
-      prediction = predict({
+      const v1Input = {
         currentPrice: mission.bestSeenPrice,
         daysUntilDeparture,
         windowSamples,
         allSamples,
-      });
+      };
+      const v7Input = {
+        currentPrice: mission.bestSeenPrice,
+        daysUntilDeparture,
+        windowSamples,
+        allSamples,
+        routeKey: routeKey(routeParts),
+      };
+
+      if (algoVersion === 'v7') {
+        predictionV7 = predictV7(v7Input);
+        // Map V7 decision back to V1-compatible format for existing UI
+        prediction = {
+          action: predictionV7.action,
+          confidence: predictionV7.confidence,
+          reason: predictionV7.reason,
+          probabilityBeaten7d: predictionV7.probBetter7d,
+          expectedSavingsIfWait: predictionV7.expectedSavingsWait,
+        };
+      } else if (algoVersion === 'shadow') {
+        // Shadow mode: run both, return V1, log V7
+        prediction = predict(v1Input);
+        try {
+          predictionV7 = predictV7(v7Input);
+          console.log('[v7-shadow]', {
+            route: routeKey(routeParts),
+            v1Action: prediction.action,
+            v7Action: predictionV7.action,
+            agreement: prediction.action === predictionV7.action,
+            v7Confidence: predictionV7.confidence,
+            v7Models: predictionV7.meta.modelsUsed,
+          });
+        } catch (v7Err: unknown) {
+          console.warn('[v7-shadow] error:', (v7Err as Error)?.message);
+        }
+      } else {
+        // Default: V1
+        prediction = predict(v1Input);
+      }
     }
 
     const coverageLabel =
@@ -105,6 +147,7 @@ export async function GET(
       success: true,
       route: routeKey(routeParts),
       daysUntilDeparture,
+      algoVersion,
       coverage: {
         samples: coverage.samples,
         confidence: coverage.confidence,
@@ -113,6 +156,7 @@ export async function GET(
       baseline: overallBaseline,
       windowBaseline,
       prediction,
+      predictionV7: algoVersion !== 'v1' ? predictionV7 : undefined,
       sparkline,
       lastCheckedAt: mission.lastCheckedAt,
     });

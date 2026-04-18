@@ -95,21 +95,24 @@ export default function DashboardPage() {
     <div className="py-2">
       <div className="mx-auto" style={{ maxWidth: '1280px' }}>
 
-        {/* ═══ ROW 1 — Header (56-72px) ═══ */}
-        <div className="flex items-start justify-between gap-4 mb-10">
-          <div>
-            <h1 className="editorial text-[24px] leading-tight text-pen-1">
-              {greeting}{displayName ? <>, <em className="italic text-accent">{displayName}</em></> : null}.
-            </h1>
-            <p className="text-caption text-pen-3 mt-1">{dateStr}</p>
+        {/* ═══ ROW 1 — Header ═══ */}
+        <div className="mb-8">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <h1 className="editorial text-[22px] sm:text-[24px] leading-tight text-pen-1 truncate">
+                {greeting}{displayName ? <>, <em className="italic text-accent">{displayName}</em></> : null}.
+              </h1>
+              <p className="text-caption text-pen-3 mt-1">{dateStr}</p>
+            </div>
+            <Link
+              href="/flights"
+              className="premium-button inline-flex items-center gap-2 rounded-md px-3 sm:px-4 py-2 sm:py-2.5 text-caption sm:text-body font-semibold shrink-0 whitespace-nowrap"
+            >
+              <Plane className="w-4 h-4" strokeWidth={2} />
+              <span className="hidden sm:inline">Search flights</span>
+              <span className="sm:hidden">Flights</span>
+            </Link>
           </div>
-          <Link
-            href="/flights"
-            className="premium-button inline-flex items-center gap-2 rounded-md px-4 py-2.5 text-body font-semibold shrink-0"
-          >
-            <Plane className="w-4 h-4" strokeWidth={2} />
-            Search flights
-          </Link>
         </div>
 
         {/* ═══ ROW 2 — Stats strip (88px) ═══ */}
@@ -283,11 +286,11 @@ function FeaturedCard({ feat }: { feat: typeof FEATURED_CITIES[number] }) {
   return (
     <article
       className="rounded-lg border border-line-1 overflow-hidden grid md:grid-cols-5"
-      style={{ minHeight: '340px' }}
+      style={{ minHeight: 'auto' }}
     >
       {/* LEFT 3/5 — Photo hero */}
       <div
-        className="relative md:col-span-3 aspect-[16/9] md:aspect-auto"
+        className="relative md:col-span-3 aspect-[16/9] md:aspect-auto md:min-h-[340px]"
         style={{
           backgroundImage: `url(https://source.unsplash.com/1600x900/?${encodeURIComponent(feat.unsplash)})`,
           backgroundSize: 'cover',
@@ -310,7 +313,7 @@ function FeaturedCard({ feat }: { feat: typeof FEATURED_CITIES[number] }) {
       </div>
 
       {/* RIGHT 2/5 — Info module */}
-      <div className="md:col-span-2 bg-ink-800 p-6 md:p-8 flex flex-col justify-center border-l border-line-1">
+      <div className="md:col-span-2 bg-ink-800 p-5 md:p-8 flex flex-col justify-center md:border-l border-t md:border-t-0 border-line-1">
         <p className="text-micro uppercase text-pen-3 tracking-widest">Featured this week</p>
         <h2 className="editorial text-[28px] leading-tight text-pen-1 mt-2">{feat.city}</h2>
         <p className="text-caption text-pen-3 mt-1">{feat.country}</p>

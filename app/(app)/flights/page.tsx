@@ -564,11 +564,11 @@ export default function FlightsPage() {
               onChange={(sel: AirportSelection) => { setOrigin(sel.code); setOriginSkyId(sel.skyId); setOriginEntityId(sel.entityId); }}
             />
           </div>
-          <div className="md:col-span-1 flex items-end justify-center">
+          <div className="md:col-span-1 flex items-end justify-center -my-1 md:my-0">
             <button
               type="button"
               onClick={swapCities}
-              className="w-10 h-10 rounded-xl glass flex items-center justify-center text-white/60 hover:text-white hover:bg-white/10 transition-colors"
+              className="w-10 h-10 rounded-lg border border-line-1 bg-ink-800 flex items-center justify-center text-pen-3 hover:text-pen-1 hover:border-line-2 transition-colors"
               title="Swap"
             >
               <svg

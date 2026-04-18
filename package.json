@@ -6,7 +6,19 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "scraper:run": "curl -X POST http://localhost:3000/api/scraper/run -H 'x-scraper-secret: $(grep SCRAPER_SECRET .env.local | cut -d= -f2)'",
+    "ingest:bts-db1b": "npx tsx scripts/ingest/bts-db1b.ts",
+    "ingest:bts-t100": "npx tsx scripts/ingest/bts-t100.ts",
+    "ingest:kaggle": "npx tsx scripts/ingest/kaggle.ts",
+    "ingest:expedia": "npx tsx scripts/ingest/expedia-icdm.ts",
+    "ingest:huggingface": "npx tsx scripts/ingest/huggingface.ts",
+    "ingest:quality": "npx tsx scripts/ingest/quality-gate.ts",
+    "ingest:all": "npm run ingest:huggingface && npm run ingest:quality",
+    "train:split": "python scripts/train/01-split.py",
+    "train:features": "python scripts/train/02-features.py",
+    "train:lstm": "python scripts/train/06-train-lstm.py",
+    "train:all": "npm run train:split && npm run train:features && npm run train:lstm"
   },
   "dependencies": {
     "@privy-io/react-auth": "^2.25.0",
