@@ -14,6 +14,7 @@ persistent volume. That way:
 from __future__ import annotations
 
 import os
+from pathlib import Path
 import modal
 
 APP_NAME = "flyeas-v76-ultra"
@@ -26,6 +27,9 @@ REPORT_DIR = "/vol/report_v76"
 app = modal.App(APP_NAME)
 volume = modal.Volume.from_name(VOLUME_NAME, create_if_missing=True)
 
+# Bake this file into every container so `from _common import ...` works on Modal.
+_COMMON_PATH = str(Path(__file__).resolve())
+
 # Base image: CPU libs everyone needs. GPU-heavy libs are layered per-script.
 base_image = (
     modal.Image.debian_slim(python_version="3.11")
@@ -37,6 +41,7 @@ base_image = (
         "scikit-learn==1.5.0",
         "lightgbm==4.3.0",
     )
+    .add_local_file(_COMMON_PATH, "/root/_common.py", copy=True)
 )
 
 # GPU image: adds PyTorch on top of the base.
