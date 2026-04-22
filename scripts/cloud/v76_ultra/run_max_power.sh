@@ -128,17 +128,16 @@ echo "Phase 3 done."
 # ---------------------------------------------------------------------------
 echo ""
 echo "=== PHASE 4: Custom wave A ==="
-if ! has_model "patchtst"; then
-    python3 -m modal run --detach scripts/cloud/v76_ultra/models/patchtst_train.py::train_patchtst
-fi
+# patchtst SKIPPED — OOM bug (tries to load 75 GiB on GPU), will fix separately
+echo "SKIPPING patchtst (known OOM bug, will be fixed and relaunched separately)"
 if ! has_model "mamba"; then
-    python3 -m modal run --detach scripts/cloud/v76_ultra/models/mamba_timemachine.py::train_mamba
+    python3 -m modal run --detach scripts/cloud/v76_ultra/models/mamba_timemachine.py::train_mamba || echo "  mamba launch failed, continuing"
 fi
 if ! has_model "kan"; then
-    python3 -m modal run --detach scripts/cloud/v76_ultra/models/kan_train.py::train_kan
+    python3 -m modal run --detach scripts/cloud/v76_ultra/models/kan_train.py::train_kan || echo "  kan launch failed, continuing"
 fi
 if ! has_model "garch_nn"; then
-    python3 -m modal run --detach scripts/cloud/v76_ultra/models/garch_nn_train.py::train_garch_nn
+    python3 -m modal run --detach scripts/cloud/v76_ultra/models/garch_nn_train.py::train_garch_nn || echo "  garch_nn launch failed, continuing"
 fi
 
 echo "Wave A launched. Polling every 10 min..."
@@ -168,13 +167,13 @@ echo "Phase 4 done."
 echo ""
 echo "=== PHASE 5: Custom wave B ==="
 if ! has_model "mlcaformer"; then
-    python3 -m modal run --detach scripts/cloud/v76_ultra/models/mlcaformer_train.py::train_mlcaformer
+    python3 -m modal run --detach scripts/cloud/v76_ultra/models/mlcaformer_train.py::train_mlcaformer || echo "  mlcaformer launch failed, continuing"
 fi
 if ! has_model "timegrad"; then
-    python3 -m modal run --detach scripts/cloud/v76_ultra/models/timegrad_diffusion.py::train_timegrad
+    python3 -m modal run --detach scripts/cloud/v76_ultra/models/timegrad_diffusion.py::train_timegrad || echo "  timegrad launch failed, continuing"
 fi
 if ! has_model "ts2vec"; then
-    python3 -m modal run --detach scripts/cloud/v76_ultra/models/ts2vec_pretrain.py::train_ts2vec
+    python3 -m modal run --detach scripts/cloud/v76_ultra/models/ts2vec_pretrain.py::train_ts2vec || echo "  ts2vec launch failed, continuing"
 fi
 
 echo "Wave B launched. Polling every 10 min..."
@@ -208,7 +207,7 @@ echo ""
 echo "=== PHASE 6: Stacking ==="
 
 echo "Launching xgb_meta..."
-python3 -m modal run --detach scripts/cloud/v76_ultra/stacking/xgb_meta.py::fit_xgb_meta
+python3 -m modal run --detach scripts/cloud/v76_ultra/stacking/xgb_meta.py::fit_xgb_meta || echo "  xgb_meta launch failed, continuing"
 for i in 1 2 3 4 5 6; do
     sleep 300
     RUNNING=$(python3 -m modal app list 2>&1 | grep -iE "xgb\|meta" | grep -icE "running|starting" || echo "0")
@@ -217,7 +216,7 @@ for i in 1 2 3 4 5 6; do
 done
 
 echo "Launching bma..."
-python3 -m modal run --detach scripts/cloud/v76_ultra/stacking/bma_aggregator.py::fit_bma
+python3 -m modal run --detach scripts/cloud/v76_ultra/stacking/bma_aggregator.py::fit_bma || echo "  bma launch failed, continuing"
 for i in 1 2 3 4; do
     sleep 300
     RUNNING=$(python3 -m modal app list 2>&1 | grep -iE "bma" | grep -icE "running|starting" || echo "0")
@@ -226,7 +225,7 @@ for i in 1 2 3 4; do
 done
 
 echo "Launching copula..."
-python3 -m modal run --detach scripts/cloud/v76_ultra/stacking/copula_ensemble.py::fit_copula
+python3 -m modal run --detach scripts/cloud/v76_ultra/stacking/copula_ensemble.py::fit_copula || echo "  copula launch failed, continuing"
 for i in 1 2 3 4; do
     sleep 300
     RUNNING=$(python3 -m modal app list 2>&1 | grep -iE "copula" | grep -icE "running|starting" || echo "0")
@@ -251,10 +250,10 @@ echo "Phase 6 done."
 # ---------------------------------------------------------------------------
 echo ""
 echo "=== PHASE 7: Policy ==="
-python3 -m modal run --detach scripts/cloud/v76_ultra/policy/bocpd_evt.py::compute_bocpd_and_evt
-python3 -m modal run --detach scripts/cloud/v76_ultra/policy/iqn_policy.py::train_iqn
-python3 -m modal run --detach scripts/cloud/v76_ultra/policy/thompson_sampling.py::fit_thompson
-python3 -m modal run --detach scripts/cloud/v76_ultra/policy/conformal_os.py::calibrate_conformal
+python3 -m modal run --detach scripts/cloud/v76_ultra/policy/bocpd_evt.py::compute_bocpd_and_evt || echo "  bocpd_evt launch failed, continuing"
+python3 -m modal run --detach scripts/cloud/v76_ultra/policy/iqn_policy.py::train_iqn || echo "  iqn launch failed, continuing"
+python3 -m modal run --detach scripts/cloud/v76_ultra/policy/thompson_sampling.py::fit_thompson || echo "  thompson launch failed, continuing"
+python3 -m modal run --detach scripts/cloud/v76_ultra/policy/conformal_os.py::calibrate_conformal || echo "  conformal launch failed, continuing"
 
 echo "Policy jobs launched. Polling..."
 for attempt in 1 2 3 4 5 6 7 8; do
@@ -278,7 +277,7 @@ echo "Phase 7 done."
 echo ""
 echo "=== PHASE 8: Backtest ==="
 if [ "$ENS_COUNT" -ge 1 ]; then
-    python3 -m modal run --detach scripts/cloud/v76_ultra/policy/v76_backtest.py::run_backtest
+    python3 -m modal run --detach scripts/cloud/v76_ultra/policy/v76_backtest.py::run_backtest || echo "  backtest launch failed, continuing"
     for attempt in 1 2 3 4; do
         sleep 300
         echo "--- Backtest poll $attempt ($(date)) ---"
@@ -294,7 +293,7 @@ if [ "$ENS_COUNT" -ge 1 ]; then
     # Retry once if needed
     if ! python3 -m modal volume ls flyeas-v75 /report_v76/ 2>&1 | grep -q "v76_summary"; then
         echo "Retrying backtest..."
-        python3 -m modal run --detach scripts/cloud/v76_ultra/policy/v76_backtest.py::run_backtest
+        python3 -m modal run --detach scripts/cloud/v76_ultra/policy/v76_backtest.py::run_backtest || echo "  backtest retry failed"
         sleep 600
     fi
 else
