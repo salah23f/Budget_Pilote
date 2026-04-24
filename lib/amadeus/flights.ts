@@ -368,7 +368,26 @@ export async function searchFlights(
       if (pairs.length >= 9) break;
     }
 
+    // Time budget — on Hobby Vercel, total function maxDuration is 60s.
+    // Reserve ~20s for V7a + Supabase + shadow-log downstream, give flight
+    // lookup up to 40s. When Sky-Scrapper gets slow (7-10s per pair), 9
+    // pairs × 10s = 90s → timeout. Bail out at 40s to keep the watcher
+    // within budget.
+    const pairLoopStart = Date.now();
+    const PAIR_LOOP_BUDGET_MS = 40000;
     for (const pair of pairs) {
+      const elapsed = Date.now() - pairLoopStart;
+      if (elapsed > PAIR_LOOP_BUDGET_MS) {
+        console.warn(
+          '[flights] time budget exhausted after',
+          elapsed,
+          'ms on pair',
+          pair.label,
+          '— stopping iteration'
+        );
+        lastError = lastError || `time budget exhausted after ${elapsed}ms`;
+        break;
+      }
       console.log('[flights] trying', pair.label);
       try {
         const res = await tryFetchItineraries(
