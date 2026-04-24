@@ -43,7 +43,8 @@ async function logV7aShadow(
   enriched: EnrichedPrediction,
   mission: Mission,
   cheapestPrice: number,
-  ttd: number
+  ttd: number,
+  provider: string | null
 ): Promise<void> {
   const base = process.env.NEXT_PUBLIC_APP_URL;
   const secret = process.env.CRON_SECRET;
@@ -64,6 +65,7 @@ async function logV7aShadow(
         action: enriched.v7a.action,
         confidence: enriched.v7a.confidence,
         v7a: enriched.v7a,
+        provider,
       }),
       // Très court : si le shadow-log endpoint est lent, on ne bloque pas
       // le watcher. Le log est un best-effort, pas un bloc critique.
@@ -243,13 +245,20 @@ export async function watchMission(mission: Mission): Promise<WatchResult> {
           nowIso: checkedAt,
         });
         prediction = enriched;
+        // Provider tag — quel upstream a effectivement servi le prix.
+        // Sky-Scrapper marque rawData.provider='sky_scrapper', Kiwi='kiwi'.
+        // Stocké dans agent_decisions.provider pour analyse comparative.
+        const provider =
+          (cheapest.rawData as { provider?: string } | undefined)?.provider ??
+          null;
         // Log non bloquant — V7a est observé, jamais bloquant pour le watcher
         if (enriched.v7a) {
           void logV7aShadow(
             enriched,
             mission,
             cheapest.priceUsd,
-            daysUntilDeparture
+            daysUntilDeparture,
+            provider
           );
           console.log('[v7a-shadow-watcher]', {
             route: `${mission.origin}-${mission.destination}`,
@@ -258,6 +267,7 @@ export async function watchMission(mission: Mission): Promise<WatchResult> {
             v7a_action: enriched.v7a.action,
             v7a_source: enriched.v7a.action_source,
             ml_available: enriched.v7a.ml_layer?.ml_available ?? false,
+            provider,
           });
         }
       } catch (e) {

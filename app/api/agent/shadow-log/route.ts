@@ -77,6 +77,8 @@ export async function POST(req: NextRequest) {
   // Translate camelCase payload → snake_case columns (PostgREST convention).
   // Le watcher envoie `missionId` / `ttdDays` ; la table a `mission_id` /
   // `ttd_days`. Sans translate, Supabase 400 ("column does not exist").
+  // `provider` indique l'upstream effectivement utilisé (sky_scrapper | kiwi
+  // | null si V7a-ping ou cas non lié à un offer).
   const entry: Record<string, unknown> = {
     logged_at: new Date().toISOString(),
     mission_id: body.missionId ?? null,
@@ -87,6 +89,7 @@ export async function POST(req: NextRequest) {
     action: body.action ?? null,
     confidence: body.confidence ?? null,
     v7a: body.v7a ?? null,
+    provider: body.provider ?? null,
     note: body.note ?? null,
   };
 

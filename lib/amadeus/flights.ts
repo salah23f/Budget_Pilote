@@ -554,6 +554,7 @@ export async function searchFlights(
       originalPrice: price > 0 ? Math.round(price) : 0,
       carbonKg: estimateCarbon(totalDuration, cabin, stops),
       rawData: {
+        provider: 'sky_scrapper',
         logoUrl: carrier.logoUrl,
         originName: firstLeg?.origin?.name,
         originIata: firstLeg?.origin?.displayCode,
