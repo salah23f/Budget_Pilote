@@ -5,8 +5,11 @@
  * En cas d'échec ou d'indisponibilité, renvoie `null` pour permettre au
  * caller de tomber sur le predictor TS V1 de fallback.
  *
- * Timeout court (2 s) : le watcher tourne toutes les 15 min et ne doit pas
- * être bloqué par un Modal froid.
+ * Timeout (8 s) : compromis entre cold start Modal (3-4 s observé en prod)
+ * et budget watcher (60 s total sur Vercel Hobby). 2 s originaux étaient
+ * trop courts — Modal cold timeout → fallback V1 silencieux → aucune
+ * décision V7a loggée. 8 s laisse marge confortable pour cold + réseau
+ * fra1↔Modal.
  *
  * Après pivot A :
  *   - `action` et `action_source` viennent de la baseline composée
@@ -60,7 +63,7 @@ export interface V7aPrediction {
   ml_layer: V7aMlLayer;
 }
 
-const DEFAULT_TIMEOUT_MS = 2000;
+const DEFAULT_TIMEOUT_MS = 8000;
 
 export async function callV7a(
   input: V7aPredictInput,
