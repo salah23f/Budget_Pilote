@@ -74,9 +74,20 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: false, error: 'invalid json' }, { status: 400 });
   }
 
-  const entry = {
+  // Translate camelCase payload → snake_case columns (PostgREST convention).
+  // Le watcher envoie `missionId` / `ttdDays` ; la table a `mission_id` /
+  // `ttd_days`. Sans translate, Supabase 400 ("column does not exist").
+  const entry: Record<string, unknown> = {
     logged_at: new Date().toISOString(),
-    ...body,
+    mission_id: body.missionId ?? null,
+    route: body.route ?? null,
+    price: body.price ?? null,
+    ttd_days: body.ttdDays ?? null,
+    engine: body.engine ?? null,
+    action: body.action ?? null,
+    confidence: body.confidence ?? null,
+    v7a: body.v7a ?? null,
+    note: body.note ?? null,
   };
 
   const sb = await writeSupabase(entry);
