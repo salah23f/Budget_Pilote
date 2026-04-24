@@ -31,7 +31,48 @@ import {
 } from './price-history';
 import { predict, type Prediction } from './predictor';
 import { predictV7, type EnsembleDecision } from './v7';
+import { predictV7aFirst, type EnrichedPrediction } from './v7a';
 import type { Mission, Offer } from '../types';
+
+/**
+ * V7a shadow logging — envoi non bloquant vers /api/agent/shadow-log.
+ * Utilisé en mode `shadow` ou `v7a` pour tracer chaque décision V7a en
+ * conditions réelles (évaluation causale prospective). Jamais bloquant.
+ */
+async function logV7aShadow(
+  enriched: EnrichedPrediction,
+  mission: Mission,
+  cheapestPrice: number,
+  ttd: number
+): Promise<void> {
+  const base = process.env.NEXT_PUBLIC_APP_URL;
+  const secret = process.env.CRON_SECRET;
+  if (!base || !secret || !enriched.v7a) return;
+  try {
+    await fetch(`${base}/api/agent/shadow-log`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        authorization: `Bearer ${secret}`,
+      },
+      body: JSON.stringify({
+        missionId: mission.id,
+        route: `${mission.origin}-${mission.destination}`,
+        price: cheapestPrice,
+        ttdDays: ttd,
+        engine: enriched.engine,
+        action: enriched.v7a.action,
+        confidence: enriched.v7a.confidence,
+        v7a: enriched.v7a,
+      }),
+      // Très court : si le shadow-log endpoint est lent, on ne bloque pas
+      // le watcher. Le log est un best-effort, pas un bloc critique.
+      signal: AbortSignal.timeout(1500),
+    });
+  } catch {
+    // Swallow — shadow log failure must never impact watcher
+  }
+}
 
 export interface WatchResult {
   /** ISO timestamp when the scan ran */
@@ -172,20 +213,75 @@ export async function watchMission(mission: Mission): Promise<WatchResult> {
       adults: mission.passengers,
     });
 
-    const algoVersion = process.env.FLYEAS_ALGO_VERSION || 'v1';
+    const algoVersion = (process.env.FLYEAS_ALGO_VERSION || 'v1').toLowerCase();
 
     let prediction: Prediction;
-    let v7Decision: EnsembleDecision | undefined;
 
-    if (algoVersion === 'v7') {
-      v7Decision = predictV7({
+    // ------------------------------------------------------------------
+    // V7a (pivot A) — shadow ou actif
+    // ------------------------------------------------------------------
+    // Cadre théorique :
+    //   - `shadow` : V1 décide, V7a (ensemble_ttd_switch + ml_layer) est
+    //                logué pour évaluation causale prospective.
+    //   - `v7a`    : V7a décide, V1 est le fallback si Modal injoignable.
+    // predictV7aFirst renvoie une Prediction V1-compatible (action mappée),
+    // avec un champ v7a optionnel pour logs/UI.
+    // ------------------------------------------------------------------
+    if (algoVersion === 'shadow' || algoVersion === 'v7a') {
+      try {
+        const enriched = await predictV7aFirst({
+          currentPrice: cheapest.priceUsd,
+          daysUntilDeparture,
+          windowSamples,
+          allSamples,
+          origin: mission.origin,
+          destination: mission.destination,
+          budgetMaxUsd: mission.maxBudgetUsd,
+          budgetAutoBuyUsd: mission.autoBuyThresholdUsd,
+          autobuyEnabled: process.env.FLYEAS_AUTOBUY_ENABLED === 'true',
+          preferenceMatch: 1.0,
+          nowIso: checkedAt,
+        });
+        prediction = enriched;
+        // Log non bloquant — V7a est observé, jamais bloquant pour le watcher
+        if (enriched.v7a) {
+          void logV7aShadow(
+            enriched,
+            mission,
+            cheapest.priceUsd,
+            daysUntilDeparture
+          );
+          console.log('[v7a-shadow-watcher]', {
+            route: `${mission.origin}-${mission.destination}`,
+            engine: enriched.engine,
+            v1_action: algoVersion === 'shadow' ? enriched.action : undefined,
+            v7a_action: enriched.v7a.action,
+            v7a_source: enriched.v7a.action_source,
+            ml_available: enriched.v7a.ml_layer?.ml_available ?? false,
+          });
+        }
+      } catch (e) {
+        // V7a ne doit JAMAIS casser le watcher → fallback V1 strict
+        console.warn('[v7a-shadow-watcher] error → fallback V1', {
+          missionId: mission.id,
+          err: (e as Error)?.message,
+        });
+        prediction = predict({
+          currentPrice: cheapest.priceUsd,
+          daysUntilDeparture,
+          windowSamples,
+          allSamples,
+        });
+      }
+    } else if (algoVersion === 'v7') {
+      // Legacy V7 TS (non entraîné, gardé pour compat historique)
+      const v7Decision: EnsembleDecision = predictV7({
         currentPrice: cheapest.priceUsd,
         daysUntilDeparture,
         windowSamples,
         allSamples,
-        routeKey: rKey,
+        routeKey: key,
       });
-      // Map V7 → V1 Prediction shape for back-compat
       prediction = {
         action: v7Decision.action,
         confidence: v7Decision.confidence,
@@ -202,29 +298,13 @@ export async function watchMission(mission: Mission): Promise<WatchResult> {
         subScores: { zScoreScore: 0, percentileScore: 0, trendScore: 0, ttdScore: 0 },
       };
     } else {
+      // V1 pur (défaut)
       prediction = predict({
         currentPrice: cheapest.priceUsd,
         daysUntilDeparture,
         windowSamples,
         allSamples,
       });
-      // Shadow mode: also run V7 and log
-      if (algoVersion === 'shadow') {
-        try {
-          v7Decision = predictV7({
-            currentPrice: cheapest.priceUsd,
-            daysUntilDeparture,
-            windowSamples,
-            allSamples,
-            routeKey: rKey,
-          });
-          console.log('[v7-shadow-watcher]', {
-            route: rKey, v1: prediction.action, v7: v7Decision.action,
-            agree: prediction.action === v7Decision.action,
-            v7Conf: v7Decision.confidence, models: v7Decision.meta.modelsUsed.length,
-          });
-        } catch (_) {}
-      }
     }
 
     // --- Car rental search (package missions) -------------------
