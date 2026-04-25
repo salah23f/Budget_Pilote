@@ -68,10 +68,18 @@ async function logV7aShadow(
         // action == v7a.action systématiquement et masquait toutes les
         // divergences V1/V7a en shadow mode.
         action: enriched.action,
-        // Confidence : on garde la confiance V7a car c'est elle qu'on
-        // veut analyser pour le critère go/no-go (la confiance V1 est
-        // dérivée de subScores, peu interprétable seule).
-        confidence: enriched.v7a.confidence,
+        // Confidence : V7aPrediction n'a pas de champ `confidence` top-
+        // level — on dérive depuis ml_layer.conformal_width (même formule
+        // que predictV7aFirst en mode v7a actif). Si ml_layer indispo,
+        // on log explicitement `null` plutôt qu'une valeur factice : en
+        // shadow mode on logue pour analyse, pas pour décider, donc
+        // analytics doivent savoir "on ne sait pas" sans filtrage faux.
+        confidence: (() => {
+          const ml = enriched.v7a.ml_layer;
+          if (!ml.ml_available || ml.conformal_width === null) return null;
+          const wop = ml.conformal_width / Math.max(1, enriched.v7a.current_price);
+          return Math.max(0, Math.min(1, 1 - Math.min(1, wop / 2)));
+        })(),
         v7a: enriched.v7a,
         provider,
       }),
