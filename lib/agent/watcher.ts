@@ -62,7 +62,15 @@ async function logV7aShadow(
         price: cheapestPrice,
         ttdDays: ttd,
         engine: enriched.engine,
-        action: enriched.v7a.action,
+        // `action` = décision RÉELLE (V1 en shadow mode, V7a en mode 'v7a').
+        // `v7a` (jsonb) contient l'opinion V7a complète, dont `v7a.action`.
+        // Avant : on logait enriched.v7a.action ici, ce qui rendait
+        // action == v7a.action systématiquement et masquait toutes les
+        // divergences V1/V7a en shadow mode.
+        action: enriched.action,
+        // Confidence : on garde la confiance V7a car c'est elle qu'on
+        // veut analyser pour le critère go/no-go (la confiance V1 est
+        // dérivée de subScores, peu interprétable seule).
         confidence: enriched.v7a.confidence,
         v7a: enriched.v7a,
         provider,
