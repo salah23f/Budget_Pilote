@@ -49,7 +49,7 @@
       "maxDuration": 15
     },
     "app/api/cron/demo-shadow-sweep/route.ts": {
-      "maxDuration": 300
+      "maxDuration": 60
     }
   },
   "crons": [

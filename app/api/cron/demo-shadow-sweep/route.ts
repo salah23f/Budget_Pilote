@@ -30,10 +30,15 @@ import type { Mission } from '@/lib/types';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
-export const maxDuration = 300;
+// Hobby plan cap = 60 s. On reste sous ce plafond avec 4 routes
+// scannées en parallèle par batch de 2 (≈ 25 s observed).
+export const maxDuration = 60;
 
 const ROUTES_PER_RUN = Number(
-  process.env.DEMO_SHADOW_ROUTES_PER_RUN ?? '10'
+  process.env.DEMO_SHADOW_ROUTES_PER_RUN ?? '4'
+);
+const CONCURRENCY = Number(
+  process.env.DEMO_SHADOW_CONCURRENCY ?? '2'
 );
 
 interface RouteResult {
@@ -132,23 +137,40 @@ export async function GET(req: NextRequest) {
     sample: routes.slice(0, 3).map((r) => `${r.origin}-${r.destination}`),
   });
 
-  // Séquentiel intentionnel : éviter rate limits Sky-Scrapper
-  // (en parallèle on a vu des 429 sur le PRO tier).
+  // Parallèle par batches de CONCURRENCY (2 par défaut). Sur Hobby, le
+  // budget total est 60 s donc on ne peut pas faire séquentiel sur 10
+  // routes. Concurrence 2 est un compromis : 4 routes / 2 = 2 batches,
+  // chaque batch ~10-15 s côté flights.ts, total ≤ 30 s.
   const results: RouteResult[] = [];
-  for (const r of routes) {
+  const SOFT_BUDGET_MS = 50000;
+  for (let i = 0; i < routes.length; i += CONCURRENCY) {
     const elapsed = Date.now() - started;
-    // Garde-fou : si on approche les 300 s, on s'arrête proprement
-    // pour ne pas être tué par Vercel.
-    if (elapsed > 270000) {
+    if (elapsed > SOFT_BUDGET_MS) {
       console.warn(
-        '[demo-shadow-sweep] elapsed budget reached, skipping remaining routes',
-        { elapsed_ms: elapsed, remaining: routes.length - results.length }
+        '[demo-shadow-sweep] soft budget reached, skipping remaining routes',
+        { elapsed_ms: elapsed, remaining: routes.length - i }
       );
       break;
     }
-    const res = await scanOne(r, now);
-    results.push(res);
-    console.log('[demo-shadow-sweep] route done', res);
+    const batch = routes.slice(i, i + CONCURRENCY);
+    const settled = await Promise.allSettled(
+      batch.map((r) => scanOne(r, now))
+    );
+    for (const s of settled) {
+      if (s.status === 'fulfilled') {
+        results.push(s.value);
+        console.log('[demo-shadow-sweep] route done', s.value);
+      } else {
+        const err = (s.reason as Error)?.message ?? 'rejected';
+        console.warn('[demo-shadow-sweep] route rejected', { error: err });
+        results.push({
+          route: 'unknown',
+          ok: false,
+          ms: 0,
+          error: err,
+        });
+      }
+    }
   }
 
   const ms = Date.now() - started;
