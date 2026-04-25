@@ -31,10 +31,10 @@ function headers() {
 }
 
 const CABIN_MAP: Record<string, string> = {
-  economy: '1',
-  premium_economy: '2',
-  business: '3',
-  first: '4',
+  economy: 'ECONOMY',
+  premium_economy: 'PREMIUM_ECONOMY',
+  business: 'BUSINESS',
+  first: 'FIRST',
 };
 
 /**
@@ -55,7 +55,7 @@ export async function searchFlightsGoogle(
     throw new Error('Google Flights: missing origin/destination IATA');
   }
 
-  const cabin = CABIN_MAP[params.cabinClass || 'economy'] ?? '1';
+  const cabin = CABIN_MAP[params.cabinClass || 'economy'] ?? 'ECONOMY';
   const adults = String(Math.max(1, Math.min(9, Number(params.adults) || 1)));
 
   const url = new URL(`${GF_BASE}/api/v1/searchFlights`);
