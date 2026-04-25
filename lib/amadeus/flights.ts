@@ -1,6 +1,10 @@
 import type { Offer, FlightSearchParams, CabinClass } from '../types';
 import { searchFlightsAmadeus, isAmadeusConfigured } from './amadeus-real';
 import { searchFlightsKiwi, isKiwiConfigured } from './kiwi';
+import {
+  searchFlightsGoogle,
+  isGoogleFlightsConfigured,
+} from './google-flights';
 import { findAirport } from './airports-db';
 
 /**
@@ -485,7 +489,36 @@ export async function searchFlights(
       } catch (_) {}
     }
 
-    // BACKUP 2: Amadeus (if configured — optional second fallback)
+    // BACKUP 2: Google Flights (RapidAPI, basic free tier — ~100 req/mois)
+    // Activé quand Sky-Scrapper down ET Kiwi over-quota/HS. Vraies données.
+    if (isGoogleFlightsConfigured()) {
+      try {
+        const gfOrigin = originCandidates[0]?.skyId || params.origin;
+        const gfDest = destCandidates[0]?.skyId || params.destination;
+        console.log('[flights] falling back to Google Flights', gfOrigin, '->', gfDest);
+        const gfOffers = await searchFlightsGoogle({
+          origin: gfOrigin,
+          destination: gfDest,
+          originIata: gfOrigin,
+          destinationIata: gfDest,
+          departDate: params.departDate,
+          returnDate: params.returnDate,
+          adults: adults,
+          cabinClass: cabin as any,
+          nonStop: params.nonStop,
+          maxPrice: params.maxPrice,
+        });
+        if (gfOffers.length > 0) {
+          console.log(`[flights] Google Flights returned ${gfOffers.length} offers`);
+          cacheSet(primaryKey, gfOffers);
+          return gfOffers;
+        }
+      } catch (gfErr: any) {
+        console.warn('[flights] Google Flights also failed:', gfErr?.message);
+      }
+    }
+
+    // BACKUP 3: Amadeus (if configured — optional last fallback)
     if (isAmadeusConfigured()) {
       try {
         const amOrigin = originCandidates[0]?.skyId || params.origin;
