@@ -109,7 +109,17 @@ export async function searchFlightsGoogle(
     [];
 
   if (itinList.length === 0) {
-    console.warn('[google-flights] no itineraries. response keys:', Object.keys(data || {}));
+    console.warn('[google-flights] no itineraries', {
+      http_status: res.status,
+      http_ok: res.ok,
+      response_keys: Object.keys(data || {}),
+      api_status: (data as { status?: unknown })?.status,
+      api_message: (data as { message?: unknown })?.message,
+      sent_departure_id: originCode,
+      sent_arrival_id: destCode,
+      sent_outbound_date: params.departDate,
+      sent_travel_class: cabin,
+    });
     return [];
   }
 
