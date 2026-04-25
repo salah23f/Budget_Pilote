@@ -34,8 +34,12 @@ export const dynamic = 'force-dynamic';
 // scannées en parallèle par batch de 2 (≈ 25 s observed).
 export const maxDuration = 60;
 
+// Hobby plan : maxDuration = 60 s. Chaque scan cold peut prendre 25-40 s
+// (Sky-Scrapper down + fallback Kiwi/Google Flights). On part sur 2 routes
+// en parallèle (1 batch unique) ≈ 30-45 s. Si tu passes Pro et tu mets
+// maxDuration=300, tu peux scaler via les env vars.
 const ROUTES_PER_RUN = Number(
-  process.env.DEMO_SHADOW_ROUTES_PER_RUN ?? '4'
+  process.env.DEMO_SHADOW_ROUTES_PER_RUN ?? '2'
 );
 const CONCURRENCY = Number(
   process.env.DEMO_SHADOW_CONCURRENCY ?? '2'
