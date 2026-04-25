@@ -39,7 +39,7 @@ import type { Mission, Offer } from '../types';
  * Utilisé en mode `shadow` ou `v7a` pour tracer chaque décision V7a en
  * conditions réelles (évaluation causale prospective). Jamais bloquant.
  */
-export async function logV7aShadow(
+async function logV7aShadow(
   enriched: EnrichedPrediction,
   mission: Mission,
   cheapestPrice: number,
