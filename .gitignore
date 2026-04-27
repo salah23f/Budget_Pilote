@@ -3,6 +3,9 @@
 node_modules
 .env.local
 .env*.local
+# Local env variants and backups (e.g. .env.local.prod, .env.local.bak.<timestamp>)
+.env.local.*
+.env.*.local.*
 .DS_Store
 app/api/debug
 
