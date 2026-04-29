@@ -545,7 +545,7 @@ test('A16: compact mode preserves the route summary (origin → destination)', (
 
 test('A16: compact mode preserves the price', () => {
   const html = renderCard(safeFromFixture(fixtureExtendedBuyNowHigh), true);
-  assert.ok(html.includes('USD') || html.includes('Price unavailable'));
+  assert.ok(/\$\d+/.test(html) || html.includes('Price unavailable'));
 });
 
 test('A16: compact mode preserves the provider', () => {
@@ -555,9 +555,9 @@ test('A16: compact mode preserves the provider', () => {
   );
 });
 
-test('A16: compact mode keeps the auto-buy notice (Phase 1 contractual constant)', () => {
+test('A16: compact mode keeps the booking notice (Phase 1 contractual constant)', () => {
   const html = renderCard(safeFromFixture(fixtureExtendedBuyNowHigh), true);
-  assert.ok(html.includes('Auto-buy disabled in Phase 1'));
+  assert.ok(html.includes('Automatic booking is not yet available'));
 });
 
 test('A16: compact mode drops the reasons list', () => {
@@ -578,15 +578,15 @@ test('A16: compact mode drops the footer (advice_id, validity, etc.)', () => {
 // Group O — Auto-buy notice is contractual constant in BOTH modes
 // -----------------------------------------------------------------------------
 
-test('O1: every fixture renders the literal "Auto-buy disabled in Phase 1" notice', () => {
+test('O1: every fixture renders the literal "Automatic booking is not yet available" notice', () => {
   for (const fixture of extendedLargoAdviceFixtures) {
     const safe = safeFromFixture(fixture);
     assert.ok(
-      renderCard(safe).includes('Auto-buy disabled in Phase 1'),
+      renderCard(safe).includes('Automatic booking is not yet available'),
       `full-mode fixture ${fixture.advice_id} missing autobuy notice`,
     );
     assert.ok(
-      renderCard(safe, true).includes('Auto-buy disabled in Phase 1'),
+      renderCard(safe, true).includes('Automatic booking is not yet available'),
       `compact-mode fixture ${fixture.advice_id} missing autobuy notice`,
     );
   }
@@ -622,6 +622,85 @@ test('P2: className prop is preserved on the rendered article tag', () => {
     <LargoAdviceCard advice={safe} className="custom-largo-class" />,
   );
   assert.ok(html.includes('custom-largo-class'));
+});
+
+// -----------------------------------------------------------------------------
+// Group Q — Audit-fix verifications (customer-facing quality)
+// -----------------------------------------------------------------------------
+
+test('Q1: rendered HTML never contains "User:" or "Mission:" labels', () => {
+  for (const fixture of extendedLargoAdviceFixtures) {
+    const html = renderCard(safeFromFixture(fixture));
+    assert.ok(!html.includes('User:'), `"User:" found in HTML for ${fixture.advice_id}`);
+    assert.ok(!html.includes('Mission:'), `"Mission:" found in HTML for ${fixture.advice_id}`);
+  }
+});
+
+test('Q2: rendered HTML never contains raw schema_version label', () => {
+  for (const fixture of extendedLargoAdviceFixtures) {
+    const html = renderCard(safeFromFixture(fixture));
+    assert.ok(!html.includes('Schema version'));
+  }
+});
+
+test('Q3: rendered HTML never contains bundle_context labels', () => {
+  for (const fixture of extendedLargoAdviceFixtures) {
+    const html = renderCard(safeFromFixture(fixture));
+    assert.ok(!html.includes('Part of bundle'));
+    assert.ok(!html.includes('Bundle'));
+  }
+});
+
+test('Q4: price renders with $ prefix for non-null prices', () => {
+  const html = renderCard(safeFromFixture(fixtureExtendedBuyNowHigh));
+  assert.ok(/\$\d+/.test(html), `expected $NNN format, got: ${html.slice(0, 200)}`);
+  // Old format must not appear.
+  assert.ok(!/\d+ USD/.test(html), 'old "NNN USD" format must not appear');
+});
+
+test('Q5: severity labels use customer-friendly words, not bracket tags', () => {
+  const html = renderCard(safeFromFixture(fixtureExtendedBuyNowHigh));
+  // Bracket tags must not appear.
+  assert.ok(!html.includes('[positive]'));
+  assert.ok(!html.includes('[cautionary]'));
+  assert.ok(!html.includes('[blocking]'));
+  assert.ok(!html.includes('[info]'));
+  // Customer-friendly labels must appear (at least one reason renders).
+  assert.ok(
+    html.includes('Good') || html.includes('Note') ||
+    html.includes('Important') || html.includes('Info'),
+    'expected at least one customer-friendly severity label',
+  );
+});
+
+test('Q6: no role="article" redundancy on the article element', () => {
+  const html = renderCard(safeFromFixture(fixtureExtendedBuyNowHigh));
+  assert.ok(!html.includes('role="article"'));
+});
+
+test('Q7: aria-label uses action and route, not raw advice_id', () => {
+  const safe = safeFromFixture(fixtureExtendedBuyNowHigh);
+  const html = renderCard(safe);
+  assert.ok(html.includes('aria-label="Travel advice: Good time to buy'));
+  // Raw ULID must not appear in aria-label.
+  assert.ok(!html.includes(`aria-label="Travel advice ${safe.advice_id}"`));
+});
+
+test('Q8: footer shows truncated ref (6 chars), not full ULID', () => {
+  const safe = safeFromFixture(fixtureExtendedBuyNowHigh);
+  const html = renderCard(safe);
+  const last6 = safe.advice_id.slice(-6);
+  assert.ok(html.includes(`Ref: ${last6}`));
+  // Full ULID (26 chars) must not appear as visible text.
+  assert.ok(!html.includes(`>${safe.advice_id}<`));
+});
+
+test('Q9: price_freshness_seconds is not rendered in the customer view', () => {
+  for (const fixture of extendedLargoAdviceFixtures) {
+    const html = renderCard(safeFromFixture(fixture));
+    assert.ok(!html.includes('Freshness:'));
+    assert.ok(!/\d+s</.test(html), 'raw seconds value must not appear');
+  }
 });
 
 // -----------------------------------------------------------------------------
