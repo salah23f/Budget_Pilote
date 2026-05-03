@@ -1,0 +1,2932 @@
+{
+  "generated_at": "2026-05-03T21:11:04Z",
+  "source_file": "reports/v7a_policy_tuning_local.json",
+  "source_mode": "true_row_level_sweep",
+  "source_candidates_evaluated": 14256,
+  "source_feasible_count": 0,
+  "source_pareto_count": 126,
+  "selection_pool_size": 170,
+  "baseline_v7a_p90_used_for_constraint": 125.39198608398438,
+  "baseline_v7a_alert_p_05_used_for_constraint": 0.030968398580046172,
+  "baseline_current_metrics": {
+    "report_backtest": {
+      "v7a_ml_only": {
+        "variant": "v7a_ml_only",
+        "buy": {
+          "n_trips": 11750,
+          "regret_abs_mean": 49.1953117821876,
+          "regret_abs_p50": 19.49500274658203,
+          "regret_abs_p90": 133.010009765625,
+          "regret_abs_p99": 373.5103871154785,
+          "regret_rel_mean": 0.3761190415728516,
+          "regret_rel_p50": 0.12612099025019877,
+          "regret_rel_p90": 1.0321101278641072,
+          "capture_mean": 0.8134994752293438,
+          "capture_median": 0.888004050099284,
+          "capture_median_ci95": [
+            0.8816216355764338,
+            0.8956226931951532
+          ]
+        },
+        "alert": {
+          "n_alerts": 80566,
+          "n_strong": 68801,
+          "n_soft": 11765,
+          "total_rows": 149937,
+          "alert_rate": 0.5373323462520926,
+          "alert_precision_floor_1_05": 0.030968398580046172,
+          "alert_precision_floor_1_10": 0.04091055780353996,
+          "alert_precision_floor_1_05_strong": 0.020145056031162338,
+          "n_near_floor": 20455,
+          "alert_recall_floor_1_05": 0.976778293815693,
+          "regret_realized_after_alert_mean": 226.02805593344436,
+          "regret_realized_after_alert_p50": 188.50997924804688,
+          "regret_realized_after_alert_p90": 423.6200065612793,
+          "alert_precision_legacy_future_lower": 0.9928381699476205,
+          "alert_too_early_rate": 0.04880470670009682,
+          "alert_too_late_rate": 0.0,
+          "alert_delay_days_mean": 0.0,
+          "alert_delay_days_p50": 0.0
+        },
+        "action_distribution": {
+          "ALERT_STRONG": {
+            "n": 68801,
+            "share": 0.4588660570773058
+          },
+          "BUY_NOW": {
+            "n": 66002,
+            "share": 0.44019821658429875
+          },
+          "ALERT_SOFT": {
+            "n": 11765,
+            "share": 0.07846628917478675
+          },
+          "WAIT": {
+            "n": 3049,
+            "share": 0.02033520745379726
+          },
+          "ABSTAIN": {
+            "n": 320,
+            "share": 0.002134229709811454
+          }
+        },
+        "buy_triggers_diagnostic": {
+          "n_buy": 66002,
+          "share_total": 0.44019821658429875,
+          "q50_gain_plus_c_alpha_mean": 88.93892744936502
+        }
+      },
+      "v7a_hybrid": {
+        "variant": "v7a_hybrid",
+        "buy": {
+          "n_trips": 11750,
+          "regret_abs_mean": 47.36819122184591,
+          "regret_abs_p50": 21.999998092651367,
+          "regret_abs_p90": 125.39198608398438,
+          "regret_abs_p99": 324.7057893371583,
+          "regret_rel_mean": 0.3835503112166828,
+          "regret_rel_p50": 0.14608710432321448,
+          "regret_rel_p90": 1.0481187217177108,
+          "capture_mean": 0.8072540676212889,
+          "capture_median": 0.8725340301167758,
+          "capture_median_ci95": [
+            0.8668626905640566,
+            0.882403388135578
+          ]
+        },
+        "alert": {
+          "n_alerts": 72613,
+          "n_strong": 64047,
+          "n_soft": 8566,
+          "total_rows": 149937,
+          "alert_rate": 0.48429006849543477,
+          "alert_precision_floor_1_05": 0.024403343753873274,
+          "alert_precision_floor_1_10": 0.03276272843705672,
+          "alert_precision_floor_1_05_strong": 0.01848642403235124,
+          "n_near_floor": 20455,
+          "alert_recall_floor_1_05": 0.9802004399902224,
+          "regret_realized_after_alert_mean": 242.56610635518388,
+          "regret_realized_after_alert_p50": 206.21001052856445,
+          "regret_realized_after_alert_p90": 433.59000396728516,
+          "alert_precision_legacy_future_lower": 0.9997796537810034,
+          "alert_too_early_rate": 0.0497293872997948,
+          "alert_too_late_rate": 0.0,
+          "alert_delay_days_mean": 0.0,
+          "alert_delay_days_p50": 0.0
+        },
+        "action_distribution": {
+          "BUY_NOW": {
+            "n": 74134,
+            "share": 0.49443432908488233
+          },
+          "ALERT_STRONG": {
+            "n": 64047,
+            "share": 0.42715940695091936
+          },
+          "ALERT_SOFT": {
+            "n": 8566,
+            "share": 0.05713066154451536
+          },
+          "WAIT": {
+            "n": 2870,
+            "share": 0.019141372709871478
+          },
+          "ABSTAIN": {
+            "n": 320,
+            "share": 0.002134229709811454
+          }
+        },
+        "buy_triggers_diagnostic": {
+          "n_buy": 74134,
+          "share_total": 0.49443432908488233,
+          "q50_gain_plus_c_alpha_mean": 83.6676298899832
+        }
+      },
+      "baselines": {
+        "buy_now": {
+          "global": {
+            "regret_abs_mean": 137.58413774790662,
+            "regret_abs_p50": 89.15999794006348,
+            "regret_abs_p90": 343.2500087738038,
+            "regret_abs_p99": 708.2949792480476,
+            "regret_rel_mean": 1.1415838508801417,
+            "regret_rel_p50": 0.5980862265789676,
+            "regret_rel_p90": 2.9596238930792604,
+            "capture_mean": 0.6287327782896716,
+            "capture_median": 0.625748462985446,
+            "n": 11750,
+            "economic_gain_vs_buy_now_mean": 0.0
+          },
+          "by_ttd": {
+            "0-7": {
+              "regret_abs_mean": 115.47196747383727,
+              "regret_abs_p50": 58.70001220703125,
+              "regret_abs_p90": 309.0090057373047,
+              "regret_abs_p99": 651.5130871582037,
+              "regret_rel_mean": 0.6015647833705356,
+              "regret_rel_p50": 0.22693396120820858,
+              "regret_rel_p90": 1.6580877766975748,
+              "capture_mean": 0.753328914551835,
+              "capture_median": 0.8150398536922008,
+              "n": 2682
+            },
+            "8-21": {
+              "regret_abs_mean": 132.28965766190595,
+              "regret_abs_p50": 89.0,
+              "regret_abs_p90": 335.696989440918,
+              "regret_abs_p99": 617.0273095703133,
+              "regret_rel_mean": 0.9684343913159787,
+              "regret_rel_p50": 0.4864585415496461,
+              "regret_rel_p90": 2.482012118827515,
+              "capture_mean": 0.6640143822333159,
+              "capture_median": 0.672739921204809,
+              "n": 4304
+            },
+            "22-60": {
+              "regret_abs_mean": 136.40632216000785,
+              "regret_abs_p50": 84.62999725341797,
+              "regret_abs_p90": 342.8340011596681,
+              "regret_abs_p99": 818.986575927734,
+              "regret_rel_mean": 1.2611881586359661,
+              "regret_rel_p50": 0.6804430710740105,
+              "regret_rel_p90": 3.248311216365589,
+              "capture_mean": 0.6071481957433174,
+              "capture_median": 0.5950811528300549,
+              "n": 6835
+            },
+            "61+": {
+              "n_trips": 0,
+              "note": "empty segment"
+            }
+          }
+        },
+        "fixed_horizon_14": {
+          "global": {
+            "regret_abs_mean": 126.80136328741844,
+            "regret_abs_p50": 79.0250015258789,
+            "regret_abs_p90": 319.010009765625,
+            "regret_abs_p99": 658.0458987426758,
+            "regret_rel_mean": 1.0216121411578893,
+            "regret_rel_p50": 0.5336736921566583,
+            "regret_rel_p90": 2.659524700905155,
+            "capture_mean": 0.646925481640467,
+            "capture_median": 0.6520291805926519,
+            "n": 11750,
+            "economic_gain_vs_buy_now_mean": 10.7828
+          },
+          "by_ttd": {
+            "0-7": {
+              "regret_abs_mean": 115.47196747383727,
+              "regret_abs_p50": 58.70001220703125,
+              "regret_abs_p90": 309.0090057373047,
+              "regret_abs_p99": 651.5130871582037,
+              "regret_rel_mean": 0.6015647833705356,
+              "regret_rel_p50": 0.22693396120820858,
+              "regret_rel_p90": 1.6580877766975748,
+              "capture_mean": 0.753328914551835,
+              "capture_median": 0.8150398536922008,
+              "n": 2682
+            },
+            "8-21": {
+              "regret_abs_mean": 128.35867519892724,
+              "regret_abs_p50": 86.00500106811523,
+              "regret_abs_p90": 324.40400047302256,
+              "regret_abs_p99": 618.56527130127,
+              "regret_rel_mean": 0.921204262877804,
+              "regret_rel_p50": 0.46655321346344086,
+              "regret_rel_p90": 2.387228654213153,
+              "capture_mean": 0.6673090116838111,
+              "capture_median": 0.6818709276034949,
+              "n": 4304
+            },
+            "22-60": {
+              "regret_abs_mean": 120.46353053976867,
+              "regret_abs_p50": 69.37998962402344,
+              "regret_abs_p90": 312.59600219726565,
+              "regret_abs_p99": 679.1353747558577,
+              "regret_rel_mean": 1.0891099426259223,
+              "regret_rel_p50": 0.5617654167464509,
+              "regret_rel_p90": 2.8648237069700366,
+              "capture_mean": 0.6372438101638822,
+              "capture_median": 0.6403010268233823,
+              "n": 6835
+            },
+            "61+": {
+              "n_trips": 0,
+              "note": "empty segment"
+            }
+          }
+        },
+        "rolling_min_30": {
+          "global": {
+            "regret_abs_mean": 65.77510071823444,
+            "regret_abs_p50": 24.01000213623047,
+            "regret_abs_p90": 187.4909881591797,
+            "regret_abs_p99": 444.5099948120117,
+            "regret_rel_mean": 0.5168130701415554,
+            "regret_rel_p50": 0.15255113348977983,
+            "regret_rel_p90": 1.4806864847721568,
+            "capture_mean": 0.7818064772099358,
+            "capture_median": 0.8676404638375461,
+            "n": 11750,
+            "economic_gain_vs_buy_now_mean": 71.809
+          },
+          "by_ttd": {
+            "0-7": {
+              "regret_abs_mean": 71.48434302879748,
+              "regret_abs_p50": 11.0,
+              "regret_abs_p90": 218.96997985839846,
+              "regret_abs_p99": 464.00187133789063,
+              "regret_rel_mean": 0.37216865384601056,
+              "regret_rel_p50": 0.05302846084928431,
+              "regret_rel_p90": 1.1045594890522488,
+              "capture_mean": 0.8276728169785124,
+              "capture_median": 0.9496419491151019,
+              "n": 2682
+            },
+            "8-21": {
+              "regret_abs_mean": 70.2353042709783,
+              "regret_abs_p50": 24.005001068115234,
+              "regret_abs_p90": 201.01700592041016,
+              "regret_abs_p99": 451.9743738555912,
+              "regret_rel_mean": 0.4810359594515508,
+              "regret_rel_p50": 0.13268385175788044,
+              "regret_rel_p90": 1.3856786835220452,
+              "capture_mean": 0.7939363359375966,
+              "capture_median": 0.8828590872938397,
+              "n": 4304
+            },
+            "22-60": {
+              "regret_abs_mean": 60.284553543459175,
+              "regret_abs_p50": 20.0,
+              "regret_abs_p90": 171.00799560546875,
+              "regret_abs_p99": 435.9820021057128,
+              "regret_rel_mean": 0.543495562653915,
+              "regret_rel_p50": 0.15191048423829706,
+              "regret_rel_p90": 1.5554256594841336,
+              "capture_mean": 0.7768119175121148,
+              "capture_median": 0.8681230127541133,
+              "n": 6835
+            },
+            "61+": {
+              "n_trips": 0,
+              "note": "empty segment"
+            }
+          }
+        },
+        "simple_quantile_10": {
+          "global": {
+            "regret_abs_mean": 66.96223277234017,
+            "regret_abs_p50": 20.009998321533203,
+            "regret_abs_p90": 199.98099517822266,
+            "regret_abs_p99": 526.6250772094727,
+            "regret_rel_mean": 0.4050947005661013,
+            "regret_rel_p50": 0.14538337225544148,
+            "regret_rel_p90": 1.134224520328656,
+            "capture_mean": 0.8001939257184821,
+            "capture_median": 0.8730701223122306,
+            "n": 11750,
+            "economic_gain_vs_buy_now_mean": 70.6219
+          },
+          "by_ttd": {
+            "0-7": {
+              "regret_abs_mean": 109.43543421768769,
+              "regret_abs_p50": 55.98999786376953,
+              "regret_abs_p90": 285.581005859375,
+              "regret_abs_p99": 603.7049694824229,
+              "regret_rel_mean": 0.46654789450666945,
+              "regret_rel_p50": 0.23595110336522035,
+              "regret_rel_p90": 1.1873800364442912,
+              "capture_mean": 0.7732687551034364,
+              "capture_median": 0.8090934970266548,
+              "n": 2682
+            },
+            "8-21": {
+              "regret_abs_mean": 77.36448109504458,
+              "regret_abs_p50": 20.0,
+              "regret_abs_p90": 231.00000534057617,
+              "regret_abs_p99": 546.6292913818367,
+              "regret_rel_mean": 0.4004225485193848,
+              "regret_rel_p50": 0.11245894797645578,
+              "regret_rel_p90": 1.1335776318115405,
+              "capture_mean": 0.8073872220285344,
+              "capture_median": 0.8989096092853617,
+              "n": 4304
+            },
+            "22-60": {
+              "regret_abs_mean": 44.72977056831187,
+              "regret_abs_p50": 10.989997863769531,
+              "regret_abs_p90": 118.56601104736332,
+              "regret_abs_p99": 374.22918930053675,
+              "regret_rel_mean": 0.3426199130028701,
+              "regret_rel_p50": 0.0956993509342442,
+              "regret_rel_p90": 1.0054492132959831,
+              "capture_mean": 0.8221495459795392,
+              "capture_median": 0.9126591150641401,
+              "n": 6835
+            },
+            "61+": {
+              "n_trips": 0,
+              "note": "empty segment"
+            }
+          }
+        },
+        "v1_heuristic": {
+          "global": {
+            "regret_abs_mean": 81.55769615124642,
+            "regret_abs_p50": 33.0,
+            "regret_abs_p90": 229.99999656677247,
+            "regret_abs_p99": 558.7641825866705,
+            "regret_rel_mean": 0.5998188294227319,
+            "regret_rel_p50": 0.2279770442382409,
+            "regret_rel_p90": 1.6031272437590094,
+            "capture_mean": 0.756370849321801,
+            "capture_median": 0.8143474708686835,
+            "n": 11750,
+            "economic_gain_vs_buy_now_mean": 56.0264
+          },
+          "by_ttd": {
+            "0-7": {
+              "regret_abs_mean": 115.47196747383727,
+              "regret_abs_p50": 58.70001220703125,
+              "regret_abs_p90": 309.0090057373047,
+              "regret_abs_p99": 651.5130871582037,
+              "regret_rel_mean": 0.6015647833705356,
+              "regret_rel_p50": 0.22693396120820858,
+              "regret_rel_p90": 1.6580877766975748,
+              "capture_mean": 0.753328914551835,
+              "capture_median": 0.8150398536922008,
+              "n": 2682
+            },
+            "8-21": {
+              "regret_abs_mean": 111.73706020785973,
+              "regret_abs_p50": 59.400001525878906,
+              "regret_abs_p90": 303.09700164794924,
+              "regret_abs_p99": 693.5970799255449,
+              "regret_rel_mean": 0.7750217458818294,
+              "regret_rel_p50": 0.33024516765408846,
+              "regret_rel_p90": 2.0063682547495514,
+              "capture_mean": 0.7111928463432521,
+              "capture_median": 0.7517411302752535,
+              "n": 4304
+            },
+            "22-60": {
+              "regret_abs_mean": 61.40068800758077,
+              "regret_abs_p50": 21.0,
+              "regret_abs_p90": 170.62600402832038,
+              "regret_abs_p99": 462.50977935791013,
+              "regret_rel_mean": 0.520965624175352,
+              "regret_rel_p50": 0.16935941923859116,
+              "regret_rel_p90": 1.4018372864985331,
+              "capture_mean": 0.7800838754209859,
+              "capture_median": 0.8551690639744736,
+              "n": 6835
+            },
+            "61+": {
+              "n_trips": 0,
+              "note": "empty segment"
+            }
+          }
+        },
+        "ensemble_ttd_switch": {
+          "global": {
+            "regret_abs_mean": 58.33320154117016,
+            "regret_abs_p50": 12.984996795654297,
+            "regret_abs_p90": 176.0859939575197,
+            "regret_abs_p99": 482.57120788574224,
+            "regret_rel_mean": 0.3737313497450761,
+            "regret_rel_p50": 0.09714250872494136,
+            "regret_rel_p90": 1.095850252324703,
+            "capture_mean": 0.8152099120360409,
+            "capture_median": 0.9114587019675985,
+            "n": 11750,
+            "economic_gain_vs_buy_now_mean": 79.2509
+          },
+          "by_ttd": {
+            "0-7": {
+              "regret_abs_mean": 71.48434302879748,
+              "regret_abs_p50": 11.0,
+              "regret_abs_p90": 218.96997985839846,
+              "regret_abs_p99": 464.00187133789063,
+              "regret_rel_mean": 0.37216865384601056,
+              "regret_rel_p50": 0.05302846084928431,
+              "regret_rel_p90": 1.1045594890522488,
+              "capture_mean": 0.8276728169785124,
+              "capture_median": 0.9496419491151019,
+              "n": 2682
+            },
+            "8-21": {
+              "regret_abs_mean": 77.36448109504458,
+              "regret_abs_p50": 20.0,
+              "regret_abs_p90": 231.00000534057617,
+              "regret_abs_p99": 546.6292913818367,
+              "regret_rel_mean": 0.4004225485193848,
+              "regret_rel_p50": 0.11245894797645578,
+              "regret_rel_p90": 1.1335776318115405,
+              "capture_mean": 0.8073872220285344,
+              "capture_median": 0.8989096092853617,
+              "n": 4304
+            },
+            "22-60": {
+              "regret_abs_mean": 44.72977056831187,
+              "regret_abs_p50": 10.989997863769531,
+              "regret_abs_p90": 118.56601104736332,
+              "regret_abs_p99": 374.22918930053675,
+              "regret_rel_mean": 0.3426199130028701,
+              "regret_rel_p50": 0.0956993509342442,
+              "regret_rel_p90": 1.0054492132959831,
+              "capture_mean": 0.8221495459795392,
+              "capture_median": 0.9126591150641401,
+              "n": 6835
+            },
+            "61+": {
+              "n_trips": 0,
+              "note": "empty segment"
+            }
+          }
+        }
+      },
+      "conformal_alpha": 0.1,
+      "notes": {
+        "v7a_ml_only": "Policy bas\u00e9e uniquement sur target A (gain futur) + target B (drop proba).",
+        "v7a_hybrid": "Policy + trigger Q10_train_route (fallback baseline) pour comparaison honn\u00eate.",
+        "alert_precision_legacy_future_lower": "Ancienne m\u00e9trique \u2014 probabilit\u00e9 qu'un prix futur passe sous le prix d'alerte. Surtout mesure la volatilit\u00e9. Conserv\u00e9e pour comparaison.",
+        "alert_precision_floor_1_05": "Vraie m\u00e9trique \u2014 % alertes dans [floor, floor \u00d7 1.05].",
+        "alert_recall_floor_1_05": "% obs dans [floor, floor \u00d7 1.05] qui ont re\u00e7u une alerte.",
+        "regret_realized_after_alert_mean": "Regret moyen si le client achetait au moment de l'alerte."
+      }
+    },
+    "report_segmented": {
+      "v7a_ml_only": {
+        "seg_ttd": {
+          "0-7": {
+            "n": 23440,
+            "buy": {
+              "n_trips": 2682,
+              "regret_abs_mean": 52.97074968791737,
+              "regret_abs_p50": 15.015007019042969,
+              "regret_abs_p90": 157.0,
+              "regret_abs_p99": 295.351008911133,
+              "regret_rel_mean": 0.30457210169239063,
+              "regret_rel_p50": 0.06430346842502685,
+              "regret_rel_p90": 0.8312278655805998,
+              "capture_mean": 0.84401481512916,
+              "capture_median": 0.9395816415780509,
+              "capture_median_ci95": [
+                0.9262433440825704,
+                0.9543673283018025
+              ]
+            },
+            "alert": {
+              "n_alerts": 3873,
+              "n_strong": 923,
+              "n_soft": 2950,
+              "total_rows": 23440,
+              "alert_rate": 0.16523037542662117,
+              "alert_precision_floor_1_05": 0.017299251226439452,
+              "alert_precision_floor_1_10": 0.023237800154918668,
+              "alert_precision_floor_1_05_strong": 0.04333694474539545,
+              "n_near_floor": 5148,
+              "alert_recall_floor_1_05": 0.9695027195027195,
+              "regret_realized_after_alert_mean": 307.39059960512793,
+              "regret_realized_after_alert_p50": 274.11000061035156,
+              "regret_realized_after_alert_p90": 492.6879699707034,
+              "alert_precision_legacy_future_lower": 1.0,
+              "alert_too_early_rate": 0.0,
+              "alert_too_late_rate": 0.0,
+              "alert_delay_days_mean": 0.0,
+              "alert_delay_days_p50": 0.0
+            }
+          },
+          "8-21": {
+            "n": 44281,
+            "buy": {
+              "n_trips": 4304,
+              "regret_abs_mean": 50.75904119147687,
+              "regret_abs_p50": 25.384994506835938,
+              "regret_abs_p90": 135.61700210571288,
+              "regret_abs_p99": 294.17859420776557,
+              "regret_rel_mean": 0.4256657648404432,
+              "regret_rel_p50": 0.13692453920587988,
+              "regret_rel_p90": 1.1966904813417492,
+              "capture_mean": 0.8032422322301408,
+              "capture_median": 0.8795658595622503,
+              "capture_median_ci95": [
+                0.8659673707346751,
+                0.8954783361952218
+              ]
+            },
+            "alert": {
+              "n_alerts": 19536,
+              "n_strong": 19279,
+              "n_soft": 257,
+              "total_rows": 44281,
+              "alert_rate": 0.4411824484541903,
+              "alert_precision_floor_1_05": 0.03424447174447175,
+              "alert_precision_floor_1_10": 0.04560810810810811,
+              "alert_precision_floor_1_05_strong": 0.03132942580009337,
+              "n_near_floor": 6980,
+              "alert_recall_floor_1_05": 0.9825214899713467,
+              "regret_realized_after_alert_mean": 264.09151265154503,
+              "regret_realized_after_alert_p50": 237.010009765625,
+              "regret_realized_after_alert_p90": 442.79000091552734,
+              "alert_precision_legacy_future_lower": 1.0,
+              "alert_too_early_rate": 0.0,
+              "alert_too_late_rate": 0.0,
+              "alert_delay_days_mean": 0.0,
+              "alert_delay_days_p50": 0.0
+            }
+          },
+          "22-60": {
+            "n": 82216,
+            "buy": {
+              "n_trips": 6835,
+              "regret_abs_mean": 46.82813886853143,
+              "regret_abs_p50": 11.000007629394531,
+              "regret_abs_p90": 115.6060073852539,
+              "regret_abs_p99": 427.79338317871,
+              "regret_rel_mean": 0.34690012505446877,
+              "regret_rel_p50": 0.10141987986566385,
+              "regret_rel_p90": 0.9773881236444419,
+              "capture_mean": 0.8235865206554929,
+              "capture_median": 0.9079189673986694,
+              "capture_median_ci95": [
+                0.8972922487701251,
+                0.917188997883263
+              ]
+            },
+            "alert": {
+              "n_alerts": 57157,
+              "n_strong": 48599,
+              "n_soft": 8558,
+              "total_rows": 82216,
+              "alert_rate": 0.6952053128344847,
+              "alert_precision_floor_1_05": 0.04841051839669682,
+              "alert_precision_floor_1_10": 0.059922669139388,
+              "alert_precision_floor_1_05_strong": 0.031667318257577314,
+              "n_near_floor": 11942,
+              "alert_recall_floor_1_05": 0.9801540780438788,
+              "regret_realized_after_alert_mean": 198.3859659708816,
+              "regret_realized_after_alert_p50": 152.02000427246094,
+              "regret_realized_after_alert_p90": 399.98801269531253,
+              "alert_precision_legacy_future_lower": 1.0,
+              "alert_too_early_rate": 0.06879297373899959,
+              "alert_too_late_rate": 0.0,
+              "alert_delay_days_mean": 0.0,
+              "alert_delay_days_p50": 0.0
+            }
+          }
+        },
+        "seg_freq": {
+          "dense": {
+            "n": 149937,
+            "buy": {
+              "n_trips": 11750,
+              "regret_abs_mean": 49.1953117821876,
+              "regret_abs_p50": 19.49500274658203,
+              "regret_abs_p90": 133.010009765625,
+              "regret_abs_p99": 373.5103871154785,
+              "regret_rel_mean": 0.3761190415728516,
+              "regret_rel_p50": 0.12612099025019877,
+              "regret_rel_p90": 1.0321101278641072,
+              "capture_mean": 0.8134994752293438,
+              "capture_median": 0.888004050099284,
+              "capture_median_ci95": [
+                0.8816216355764338,
+                0.8956226931951532
+              ]
+            },
+            "alert": {
+              "n_alerts": 80566,
+              "n_strong": 68801,
+              "n_soft": 11765,
+              "total_rows": 149937,
+              "alert_rate": 0.5373323462520926,
+              "alert_precision_floor_1_05": 0.030968398580046172,
+              "alert_precision_floor_1_10": 0.04091055780353996,
+              "alert_precision_floor_1_05_strong": 0.020145056031162338,
+              "n_near_floor": 20455,
+              "alert_recall_floor_1_05": 0.976778293815693,
+              "regret_realized_after_alert_mean": 226.02805593344436,
+              "regret_realized_after_alert_p50": 188.50997924804688,
+              "regret_realized_after_alert_p90": 423.6200065612793,
+              "alert_precision_legacy_future_lower": 0.9928381699476205,
+              "alert_too_early_rate": 0.04880470670009682,
+              "alert_too_late_rate": 0.0,
+              "alert_delay_days_mean": 0.0,
+              "alert_delay_days_p50": 0.0
+            }
+          }
+        }
+      },
+      "v7a_hybrid": {
+        "seg_ttd": {
+          "0-7": {
+            "n": 23440,
+            "buy": {
+              "n_trips": 2682,
+              "regret_abs_mean": 52.97074968791737,
+              "regret_abs_p50": 15.015007019042969,
+              "regret_abs_p90": 157.0,
+              "regret_abs_p99": 295.351008911133,
+              "regret_rel_mean": 0.30457210169239063,
+              "regret_rel_p50": 0.06430346842502685,
+              "regret_rel_p90": 0.8312278655805998,
+              "capture_mean": 0.84401481512916,
+              "capture_median": 0.9395816415780509,
+              "capture_median_ci95": [
+                0.9262433440825704,
+                0.9543673283018025
+              ]
+            },
+            "alert": {
+              "n_alerts": 3873,
+              "n_strong": 923,
+              "n_soft": 2950,
+              "total_rows": 23440,
+              "alert_rate": 0.16523037542662117,
+              "alert_precision_floor_1_05": 0.017299251226439452,
+              "alert_precision_floor_1_10": 0.023237800154918668,
+              "alert_precision_floor_1_05_strong": 0.04333694474539545,
+              "n_near_floor": 5148,
+              "alert_recall_floor_1_05": 0.9695027195027195,
+              "regret_realized_after_alert_mean": 307.39059960512793,
+              "regret_realized_after_alert_p50": 274.11000061035156,
+              "regret_realized_after_alert_p90": 492.6879699707034,
+              "alert_precision_legacy_future_lower": 1.0,
+              "alert_too_early_rate": 0.0,
+              "alert_too_late_rate": 0.0,
+              "alert_delay_days_mean": 0.0,
+              "alert_delay_days_p50": 0.0
+            }
+          },
+          "8-21": {
+            "n": 44281,
+            "buy": {
+              "n_trips": 4304,
+              "regret_abs_mean": 50.67972197142675,
+              "regret_abs_p50": 25.009994506835938,
+              "regret_abs_p90": 135.5830017089844,
+              "regret_abs_p99": 294.17859420776557,
+              "regret_rel_mean": 0.4255028410103237,
+              "regret_rel_p50": 0.13599890747355597,
+              "regret_rel_p90": 1.1966904813417492,
+              "capture_mean": 0.8033741066013531,
+              "capture_median": 0.8802826674503426,
+              "capture_median_ci95": [
+                0.8665556641684644,
+                0.8962393776387128
+              ]
+            },
+            "alert": {
+              "n_alerts": 19507,
+              "n_strong": 19265,
+              "n_soft": 242,
+              "total_rows": 44281,
+              "alert_rate": 0.4405275400284546,
+              "alert_precision_floor_1_05": 0.03383400830471113,
+              "alert_precision_floor_1_10": 0.04506074742400164,
+              "alert_precision_floor_1_05_strong": 0.031196470282896443,
+              "n_near_floor": 6980,
+              "alert_recall_floor_1_05": 0.9825214899713467,
+              "regret_realized_after_alert_mean": 264.34714620931163,
+              "regret_realized_after_alert_p50": 237.02000427246094,
+              "regret_realized_after_alert_p90": 442.9999694824219,
+              "alert_precision_legacy_future_lower": 1.0,
+              "alert_too_early_rate": 0.0,
+              "alert_too_late_rate": 0.0,
+              "alert_delay_days_mean": 0.0,
+              "alert_delay_days_p50": 0.0
+            }
+          },
+          "22-60": {
+            "n": 82216,
+            "buy": {
+              "n_trips": 6835,
+              "regret_abs_mean": 42.16886362160918,
+              "regret_abs_p50": 16.0,
+              "regret_abs_p90": 102.44400329589858,
+              "regret_abs_p99": 354.0131723022461,
+              "regret_rel_mean": 0.35233540608516467,
+              "regret_rel_p50": 0.12452019136705346,
+              "regret_rel_p90": 0.9865958834844452,
+              "capture_mean": 0.8154641583759059,
+              "capture_median": 0.8892681587018219,
+              "capture_median_ci95": [
+                0.87906736745498,
+                0.8973648896832049
+              ]
+            },
+            "alert": {
+              "n_alerts": 49233,
+              "n_strong": 43859,
+              "n_soft": 5374,
+              "total_rows": 82216,
+              "alert_rate": 0.5988250462197139,
+              "alert_precision_floor_1_05": 0.04021692767046493,
+              "alert_precision_floor_1_10": 0.04984461641581866,
+              "alert_precision_floor_1_05_strong": 0.030028044415057343,
+              "n_near_floor": 11942,
+              "alert_recall_floor_1_05": 0.9864344330932842,
+              "regret_realized_after_alert_mean": 218.41263124043158,
+              "regret_realized_after_alert_p50": 174.50000762939453,
+              "regret_realized_after_alert_p90": 416.20001220703153,
+              "alert_precision_legacy_future_lower": 1.0,
+              "alert_too_early_rate": 0.07334511404951963,
+              "alert_too_late_rate": 0.0,
+              "alert_delay_days_mean": 0.0,
+              "alert_delay_days_p50": 0.0
+            }
+          }
+        },
+        "seg_freq": {
+          "dense": {
+            "n": 149937,
+            "buy": {
+              "n_trips": 11750,
+              "regret_abs_mean": 47.36819122184591,
+              "regret_abs_p50": 21.999998092651367,
+              "regret_abs_p90": 125.39198608398438,
+              "regret_abs_p99": 324.7057893371583,
+              "regret_rel_mean": 0.3835503112166828,
+              "regret_rel_p50": 0.14608710432321448,
+              "regret_rel_p90": 1.0481187217177108,
+              "capture_mean": 0.8072540676212889,
+              "capture_median": 0.8725340301167758,
+              "capture_median_ci95": [
+                0.8668626905640566,
+                0.882403388135578
+              ]
+            },
+            "alert": {
+              "n_alerts": 72613,
+              "n_strong": 64047,
+              "n_soft": 8566,
+              "total_rows": 149937,
+              "alert_rate": 0.48429006849543477,
+              "alert_precision_floor_1_05": 0.024403343753873274,
+              "alert_precision_floor_1_10": 0.03276272843705672,
+              "alert_precision_floor_1_05_strong": 0.01848642403235124,
+              "n_near_floor": 20455,
+              "alert_recall_floor_1_05": 0.9802004399902224,
+              "regret_realized_after_alert_mean": 242.56610635518388,
+              "regret_realized_after_alert_p50": 206.21001052856445,
+              "regret_realized_after_alert_p90": 433.59000396728516,
+              "alert_precision_legacy_future_lower": 0.9997796537810034,
+              "alert_too_early_rate": 0.0497293872997948,
+              "alert_too_late_rate": 0.0,
+              "alert_delay_days_mean": 0.0,
+              "alert_delay_days_p50": 0.0
+            }
+          }
+        }
+      }
+    },
+    "report_conformal": {
+      "target_A_future_gain": {
+        "alpha": {
+          "alpha_05": {
+            "coverage_marginal": 0.9499924898271295,
+            "width_mean": 313.7822790082085,
+            "width_over_price_mean": 1.4307481857720314,
+            "buy_trigger_rate": 0.6786465303001338,
+            "per_bucket": {
+              "0-2-1": {
+                "n": 109,
+                "coverage": 0.944954128440367,
+                "width_mean": 665.9689782184406,
+                "buy_trigger_rate": 0.9174311926605505
+              },
+              "0-2-2": {
+                "n": 39212,
+                "coverage": 0.9499897990411099,
+                "width_mean": 397.16681994003045,
+                "buy_trigger_rate": 0.8067173314291544
+              },
+              "1-2-1": {
+                "n": 298,
+                "coverage": 0.9496644295302014,
+                "width_mean": 506.54322821601517,
+                "buy_trigger_rate": 0.8120805369127517
+              },
+              "1-2-2": {
+                "n": 87968,
+                "coverage": 0.949993179337941,
+                "width_mean": 323.7891138787135,
+                "buy_trigger_rate": 0.6868634048744998
+              },
+              "2-2-1": {
+                "n": 580,
+                "coverage": 0.95,
+                "width_mean": 528.885142084919,
+                "buy_trigger_rate": 0.8086206896551724
+              },
+              "2-2-2": {
+                "n": 164769,
+                "coverage": 0.9499966619934576,
+                "width_mean": 287.2569821224501,
+                "buy_trigger_rate": 0.6429243364953359
+              }
+            }
+          },
+          "alpha_10": {
+            "coverage_marginal": 0.8999952207990823,
+            "width_mean": 230.63636643625227,
+            "width_over_price_mean": 1.047645646455519,
+            "buy_trigger_rate": 0.5798228964688532,
+            "per_bucket": {
+              "0-2-1": {
+                "n": 109,
+                "coverage": 0.8990825688073395,
+                "width_mean": 575.7471153285875,
+                "buy_trigger_rate": 0.8899082568807339
+              },
+              "0-2-2": {
+                "n": 39212,
+                "coverage": 0.8999795980822197,
+                "width_mean": 301.59265847229074,
+                "buy_trigger_rate": 0.7234775068856473
+              },
+              "1-2-1": {
+                "n": 298,
+                "coverage": 0.8993288590604027,
+                "width_mean": 446.9632838215021,
+                "buy_trigger_rate": 0.7348993288590604
+              },
+              "1-2-2": {
+                "n": 87968,
+                "coverage": 0.8999977264459803,
+                "width_mean": 243.67785942711814,
+                "buy_trigger_rate": 0.598035649327028
+              },
+              "2-2-1": {
+                "n": 580,
+                "coverage": 0.9,
+                "width_mean": 448.59959953249717,
+                "buy_trigger_rate": 0.7120689655172414
+              },
+              "2-2-2": {
+                "n": 164769,
+                "coverage": 0.8999993930897195,
+                "width_mean": 205.40059182486576,
+                "buy_trigger_rate": 0.5349610667055089
+              }
+            }
+          },
+          "alpha_20": {
+            "coverage_marginal": 0.799993855313106,
+            "width_mean": 161.34808943345303,
+            "width_over_price_mean": 0.7315253938449814,
+            "buy_trigger_rate": 0.4774592402436027,
+            "per_bucket": {
+              "0-2-1": {
+                "n": 109,
+                "coverage": 0.7981651376146789,
+                "width_mean": 470.9253281917909,
+                "buy_trigger_rate": 0.8440366972477065
+              },
+              "0-2-2": {
+                "n": 39212,
+                "coverage": 0.7999846985616648,
+                "width_mean": 211.9144102044254,
+                "buy_trigger_rate": 0.6246812200346833
+              },
+              "1-2-1": {
+                "n": 298,
+                "coverage": 0.7986577181208053,
+                "width_mean": 388.834034153797,
+                "buy_trigger_rate": 0.5771812080536913
+              },
+              "1-2-2": {
+                "n": 87968,
+                "coverage": 0.7999954528919607,
+                "width_mean": 173.5845533688264,
+                "buy_trigger_rate": 0.49438432157148055
+              },
+              "2-2-1": {
+                "n": 580,
+                "coverage": 0.8,
+                "width_mean": 345.1063064239495,
+                "buy_trigger_rate": 0.42758620689655175
+              },
+              "2-2-2": {
+                "n": 164769,
+                "coverage": 0.7999987861794391,
+                "width_mean": 141.5182772361095,
+                "buy_trigger_rate": 0.43313972895386876
+              }
+            }
+          }
+        }
+      },
+      "target_B_drop_proba": {
+        "base_rate_cal": 0.7564928858180626,
+        "ece_raw": 0.0654274782444344,
+        "ece_calibrated": 1.9074994138441207e-17,
+        "reliability_raw": {
+          "0.2-0.3": {
+            "n": 9363,
+            "mean_proba": 0.27375541884470594,
+            "mean_actual": 0.11897895973512763
+          },
+          "0.3-0.4": {
+            "n": 24675,
+            "mean_proba": 0.34924114081669994,
+            "mean_actual": 0.28202634245187436
+          },
+          "0.4-0.5": {
+            "n": 25698,
+            "mean_proba": 0.4565047253704354,
+            "mean_actual": 0.4736555373959063
+          },
+          "0.5-0.6": {
+            "n": 33570,
+            "mean_proba": 0.5483937822951023,
+            "mean_actual": 0.6524575513851654
+          },
+          "0.6-0.7": {
+            "n": 26979,
+            "mean_proba": 0.6489383444848635,
+            "mean_actual": 0.7326439082249157
+          },
+          "0.7-0.8": {
+            "n": 33915,
+            "mean_proba": 0.752256890053615,
+            "mean_actual": 0.8306059265811587
+          },
+          "0.8-0.9": {
+            "n": 54483,
+            "mean_proba": 0.8494441596124152,
+            "mean_actual": 0.9063194023823945
+          },
+          "0.9-1.0": {
+            "n": 84253,
+            "mean_proba": 0.9261513476657055,
+            "mean_actual": 0.9749326433480113
+          }
+        },
+        "reliability_calibrated": {
+          "0.0-0.1": {
+            "n": 3870,
+            "mean_proba": 0.07751937984496124,
+            "mean_actual": 0.07751937984496124
+          },
+          "0.1-0.2": {
+            "n": 7997,
+            "mean_proba": 0.15655870951606854,
+            "mean_actual": 0.15655870951606854
+          },
+          "0.2-0.3": {
+            "n": 12838,
+            "mean_proba": 0.2543231032871164,
+            "mean_actual": 0.2543231032871164
+          },
+          "0.3-0.4": {
+            "n": 13990,
+            "mean_proba": 0.35353824160114367,
+            "mean_actual": 0.35353824160114367
+          },
+          "0.4-0.5": {
+            "n": 11000,
+            "mean_proba": 0.45127272727272727,
+            "mean_actual": 0.45127272727272727
+          },
+          "0.5-0.6": {
+            "n": 14095,
+            "mean_proba": 0.554239091876552,
+            "mean_actual": 0.554239091876552
+          },
+          "0.6-0.7": {
+            "n": 25165,
+            "mean_proba": 0.6554341347109078,
+            "mean_actual": 0.6554341347109081
+          },
+          "0.7-0.8": {
+            "n": 39001,
+            "mean_proba": 0.7413143252737109,
+            "mean_actual": 0.7413143252737109
+          },
+          "0.8-0.9": {
+            "n": 48081,
+            "mean_proba": 0.8628356315384456,
+            "mean_actual": 0.8628356315384456
+          },
+          "0.9-1.0": {
+            "n": 116899,
+            "mean_proba": 0.9595719381688466,
+            "mean_actual": 0.9595719381688466
+          }
+        }
+      }
+    },
+    "report_baselines": {
+      "buy_now": {
+        "global": {
+          "regret_abs_mean": 137.58413774790662,
+          "regret_abs_p50": 89.15999794006348,
+          "regret_abs_p90": 343.2500087738038,
+          "regret_abs_p99": 708.2949792480476,
+          "regret_rel_mean": 1.1415838508801417,
+          "regret_rel_p50": 0.5980862265789676,
+          "regret_rel_p90": 2.9596238930792604,
+          "capture_mean": 0.6287327782896716,
+          "capture_median": 0.625748462985446,
+          "n": 11750,
+          "economic_gain_vs_buy_now_mean": 0.0
+        },
+        "by_ttd": {
+          "0-7": {
+            "regret_abs_mean": 115.47196747383727,
+            "regret_abs_p50": 58.70001220703125,
+            "regret_abs_p90": 309.0090057373047,
+            "regret_abs_p99": 651.5130871582037,
+            "regret_rel_mean": 0.6015647833705356,
+            "regret_rel_p50": 0.22693396120820858,
+            "regret_rel_p90": 1.6580877766975748,
+            "capture_mean": 0.753328914551835,
+            "capture_median": 0.8150398536922008,
+            "n": 2682
+          },
+          "8-21": {
+            "regret_abs_mean": 132.28965766190595,
+            "regret_abs_p50": 89.0,
+            "regret_abs_p90": 335.696989440918,
+            "regret_abs_p99": 617.0273095703133,
+            "regret_rel_mean": 0.9684343913159787,
+            "regret_rel_p50": 0.4864585415496461,
+            "regret_rel_p90": 2.482012118827515,
+            "capture_mean": 0.6640143822333159,
+            "capture_median": 0.672739921204809,
+            "n": 4304
+          },
+          "22-60": {
+            "regret_abs_mean": 136.40632216000785,
+            "regret_abs_p50": 84.62999725341797,
+            "regret_abs_p90": 342.8340011596681,
+            "regret_abs_p99": 818.986575927734,
+            "regret_rel_mean": 1.2611881586359661,
+            "regret_rel_p50": 0.6804430710740105,
+            "regret_rel_p90": 3.248311216365589,
+            "capture_mean": 0.6071481957433174,
+            "capture_median": 0.5950811528300549,
+            "n": 6835
+          },
+          "61+": {
+            "n_trips": 0,
+            "note": "empty segment"
+          }
+        }
+      },
+      "fixed_horizon_14": {
+        "global": {
+          "regret_abs_mean": 126.80136328741844,
+          "regret_abs_p50": 79.0250015258789,
+          "regret_abs_p90": 319.010009765625,
+          "regret_abs_p99": 658.0458987426758,
+          "regret_rel_mean": 1.0216121411578893,
+          "regret_rel_p50": 0.5336736921566583,
+          "regret_rel_p90": 2.659524700905155,
+          "capture_mean": 0.646925481640467,
+          "capture_median": 0.6520291805926519,
+          "n": 11750,
+          "economic_gain_vs_buy_now_mean": 10.7828
+        },
+        "by_ttd": {
+          "0-7": {
+            "regret_abs_mean": 115.47196747383727,
+            "regret_abs_p50": 58.70001220703125,
+            "regret_abs_p90": 309.0090057373047,
+            "regret_abs_p99": 651.5130871582037,
+            "regret_rel_mean": 0.6015647833705356,
+            "regret_rel_p50": 0.22693396120820858,
+            "regret_rel_p90": 1.6580877766975748,
+            "capture_mean": 0.753328914551835,
+            "capture_median": 0.8150398536922008,
+            "n": 2682
+          },
+          "8-21": {
+            "regret_abs_mean": 128.35867519892724,
+            "regret_abs_p50": 86.00500106811523,
+            "regret_abs_p90": 324.40400047302256,
+            "regret_abs_p99": 618.56527130127,
+            "regret_rel_mean": 0.921204262877804,
+            "regret_rel_p50": 0.46655321346344086,
+            "regret_rel_p90": 2.387228654213153,
+            "capture_mean": 0.6673090116838111,
+            "capture_median": 0.6818709276034949,
+            "n": 4304
+          },
+          "22-60": {
+            "regret_abs_mean": 120.46353053976867,
+            "regret_abs_p50": 69.37998962402344,
+            "regret_abs_p90": 312.59600219726565,
+            "regret_abs_p99": 679.1353747558577,
+            "regret_rel_mean": 1.0891099426259223,
+            "regret_rel_p50": 0.5617654167464509,
+            "regret_rel_p90": 2.8648237069700366,
+            "capture_mean": 0.6372438101638822,
+            "capture_median": 0.6403010268233823,
+            "n": 6835
+          },
+          "61+": {
+            "n_trips": 0,
+            "note": "empty segment"
+          }
+        }
+      },
+      "rolling_min_30": {
+        "global": {
+          "regret_abs_mean": 65.77510071823444,
+          "regret_abs_p50": 24.01000213623047,
+          "regret_abs_p90": 187.4909881591797,
+          "regret_abs_p99": 444.5099948120117,
+          "regret_rel_mean": 0.5168130701415554,
+          "regret_rel_p50": 0.15255113348977983,
+          "regret_rel_p90": 1.4806864847721568,
+          "capture_mean": 0.7818064772099358,
+          "capture_median": 0.8676404638375461,
+          "n": 11750,
+          "economic_gain_vs_buy_now_mean": 71.809
+        },
+        "by_ttd": {
+          "0-7": {
+            "regret_abs_mean": 71.48434302879748,
+            "regret_abs_p50": 11.0,
+            "regret_abs_p90": 218.96997985839846,
+            "regret_abs_p99": 464.00187133789063,
+            "regret_rel_mean": 0.37216865384601056,
+            "regret_rel_p50": 0.05302846084928431,
+            "regret_rel_p90": 1.1045594890522488,
+            "capture_mean": 0.8276728169785124,
+            "capture_median": 0.9496419491151019,
+            "n": 2682
+          },
+          "8-21": {
+            "regret_abs_mean": 70.2353042709783,
+            "regret_abs_p50": 24.005001068115234,
+            "regret_abs_p90": 201.01700592041016,
+            "regret_abs_p99": 451.9743738555912,
+            "regret_rel_mean": 0.4810359594515508,
+            "regret_rel_p50": 0.13268385175788044,
+            "regret_rel_p90": 1.3856786835220452,
+            "capture_mean": 0.7939363359375966,
+            "capture_median": 0.8828590872938397,
+            "n": 4304
+          },
+          "22-60": {
+            "regret_abs_mean": 60.284553543459175,
+            "regret_abs_p50": 20.0,
+            "regret_abs_p90": 171.00799560546875,
+            "regret_abs_p99": 435.9820021057128,
+            "regret_rel_mean": 0.543495562653915,
+            "regret_rel_p50": 0.15191048423829706,
+            "regret_rel_p90": 1.5554256594841336,
+            "capture_mean": 0.7768119175121148,
+            "capture_median": 0.8681230127541133,
+            "n": 6835
+          },
+          "61+": {
+            "n_trips": 0,
+            "note": "empty segment"
+          }
+        }
+      },
+      "simple_quantile_10": {
+        "global": {
+          "regret_abs_mean": 66.96223277234017,
+          "regret_abs_p50": 20.009998321533203,
+          "regret_abs_p90": 199.98099517822266,
+          "regret_abs_p99": 526.6250772094727,
+          "regret_rel_mean": 0.4050947005661013,
+          "regret_rel_p50": 0.14538337225544148,
+          "regret_rel_p90": 1.134224520328656,
+          "capture_mean": 0.8001939257184821,
+          "capture_median": 0.8730701223122306,
+          "n": 11750,
+          "economic_gain_vs_buy_now_mean": 70.6219
+        },
+        "by_ttd": {
+          "0-7": {
+            "regret_abs_mean": 109.43543421768769,
+            "regret_abs_p50": 55.98999786376953,
+            "regret_abs_p90": 285.581005859375,
+            "regret_abs_p99": 603.7049694824229,
+            "regret_rel_mean": 0.46654789450666945,
+            "regret_rel_p50": 0.23595110336522035,
+            "regret_rel_p90": 1.1873800364442912,
+            "capture_mean": 0.7732687551034364,
+            "capture_median": 0.8090934970266548,
+            "n": 2682
+          },
+          "8-21": {
+            "regret_abs_mean": 77.36448109504458,
+            "regret_abs_p50": 20.0,
+            "regret_abs_p90": 231.00000534057617,
+            "regret_abs_p99": 546.6292913818367,
+            "regret_rel_mean": 0.4004225485193848,
+            "regret_rel_p50": 0.11245894797645578,
+            "regret_rel_p90": 1.1335776318115405,
+            "capture_mean": 0.8073872220285344,
+            "capture_median": 0.8989096092853617,
+            "n": 4304
+          },
+          "22-60": {
+            "regret_abs_mean": 44.72977056831187,
+            "regret_abs_p50": 10.989997863769531,
+            "regret_abs_p90": 118.56601104736332,
+            "regret_abs_p99": 374.22918930053675,
+            "regret_rel_mean": 0.3426199130028701,
+            "regret_rel_p50": 0.0956993509342442,
+            "regret_rel_p90": 1.0054492132959831,
+            "capture_mean": 0.8221495459795392,
+            "capture_median": 0.9126591150641401,
+            "n": 6835
+          },
+          "61+": {
+            "n_trips": 0,
+            "note": "empty segment"
+          }
+        }
+      },
+      "v1_heuristic": {
+        "global": {
+          "regret_abs_mean": 81.55769615124642,
+          "regret_abs_p50": 33.0,
+          "regret_abs_p90": 229.99999656677247,
+          "regret_abs_p99": 558.7641825866705,
+          "regret_rel_mean": 0.5998188294227319,
+          "regret_rel_p50": 0.2279770442382409,
+          "regret_rel_p90": 1.6031272437590094,
+          "capture_mean": 0.756370849321801,
+          "capture_median": 0.8143474708686835,
+          "n": 11750,
+          "economic_gain_vs_buy_now_mean": 56.0264
+        },
+        "by_ttd": {
+          "0-7": {
+            "regret_abs_mean": 115.47196747383727,
+            "regret_abs_p50": 58.70001220703125,
+            "regret_abs_p90": 309.0090057373047,
+            "regret_abs_p99": 651.5130871582037,
+            "regret_rel_mean": 0.6015647833705356,
+            "regret_rel_p50": 0.22693396120820858,
+            "regret_rel_p90": 1.6580877766975748,
+            "capture_mean": 0.753328914551835,
+            "capture_median": 0.8150398536922008,
+            "n": 2682
+          },
+          "8-21": {
+            "regret_abs_mean": 111.73706020785973,
+            "regret_abs_p50": 59.400001525878906,
+            "regret_abs_p90": 303.09700164794924,
+            "regret_abs_p99": 693.5970799255449,
+            "regret_rel_mean": 0.7750217458818294,
+            "regret_rel_p50": 0.33024516765408846,
+            "regret_rel_p90": 2.0063682547495514,
+            "capture_mean": 0.7111928463432521,
+            "capture_median": 0.7517411302752535,
+            "n": 4304
+          },
+          "22-60": {
+            "regret_abs_mean": 61.40068800758077,
+            "regret_abs_p50": 21.0,
+            "regret_abs_p90": 170.62600402832038,
+            "regret_abs_p99": 462.50977935791013,
+            "regret_rel_mean": 0.520965624175352,
+            "regret_rel_p50": 0.16935941923859116,
+            "regret_rel_p90": 1.4018372864985331,
+            "capture_mean": 0.7800838754209859,
+            "capture_median": 0.8551690639744736,
+            "n": 6835
+          },
+          "61+": {
+            "n_trips": 0,
+            "note": "empty segment"
+          }
+        }
+      },
+      "ensemble_ttd_switch": {
+        "global": {
+          "regret_abs_mean": 58.33320154117016,
+          "regret_abs_p50": 12.984996795654297,
+          "regret_abs_p90": 176.0859939575197,
+          "regret_abs_p99": 482.57120788574224,
+          "regret_rel_mean": 0.3737313497450761,
+          "regret_rel_p50": 0.09714250872494136,
+          "regret_rel_p90": 1.095850252324703,
+          "capture_mean": 0.8152099120360409,
+          "capture_median": 0.9114587019675985,
+          "n": 11750,
+          "economic_gain_vs_buy_now_mean": 79.2509
+        },
+        "by_ttd": {
+          "0-7": {
+            "regret_abs_mean": 71.48434302879748,
+            "regret_abs_p50": 11.0,
+            "regret_abs_p90": 218.96997985839846,
+            "regret_abs_p99": 464.00187133789063,
+            "regret_rel_mean": 0.37216865384601056,
+            "regret_rel_p50": 0.05302846084928431,
+            "regret_rel_p90": 1.1045594890522488,
+            "capture_mean": 0.8276728169785124,
+            "capture_median": 0.9496419491151019,
+            "n": 2682
+          },
+          "8-21": {
+            "regret_abs_mean": 77.36448109504458,
+            "regret_abs_p50": 20.0,
+            "regret_abs_p90": 231.00000534057617,
+            "regret_abs_p99": 546.6292913818367,
+            "regret_rel_mean": 0.4004225485193848,
+            "regret_rel_p50": 0.11245894797645578,
+            "regret_rel_p90": 1.1335776318115405,
+            "capture_mean": 0.8073872220285344,
+            "capture_median": 0.8989096092853617,
+            "n": 4304
+          },
+          "22-60": {
+            "regret_abs_mean": 44.72977056831187,
+            "regret_abs_p50": 10.989997863769531,
+            "regret_abs_p90": 118.56601104736332,
+            "regret_abs_p99": 374.22918930053675,
+            "regret_rel_mean": 0.3426199130028701,
+            "regret_rel_p50": 0.0956993509342442,
+            "regret_rel_p90": 1.0054492132959831,
+            "capture_mean": 0.8221495459795392,
+            "capture_median": 0.9126591150641401,
+            "n": 6835
+          },
+          "61+": {
+            "n_trips": 0,
+            "note": "empty segment"
+          }
+        }
+      }
+    },
+    "report_lgbm": {
+      "target_A_future_gain": {
+        "train_oof": {
+          "pinball_10": 28.34197998046875,
+          "pinball_50": 30.790769577026367,
+          "pinball_90": 11.989642143249512,
+          "mae_q50": 61.581539154052734
+        },
+        "val": {
+          "pinball_10": 9.269382216098998,
+          "pinball_50": 25.535397115445946,
+          "pinball_90": 14.733563730707491,
+          "mae_q50": 51.07079423089189,
+          "coverage_10_90": 0.8228602441866225,
+          "mean_gain_q50": -123.03527594176504,
+          "trigger_rate_q50_ge_0": 0.05730136953848341
+        },
+        "cal": {
+          "mae_q50": 53.431993776634606,
+          "coverage_10_90": 0.8266856924379387,
+          "trigger_rate_q50_ge_0": 0.05638091596799301
+        }
+      },
+      "target_B_drop_proba": {
+        "val": {
+          "brier": 0.12383814100476719,
+          "logloss": 0.39569982168254825,
+          "base_rate": 0.7706179183618088,
+          "proba_mean": 0.7090360568994469
+        },
+        "cal": {
+          "brier": 0.12955391741226002,
+          "logloss": 0.4100756334050574,
+          "base_rate": 0.7564928858180626,
+          "proba_mean": 0.7122829918670921
+        }
+      },
+      "n_features": 34,
+      "n_train": 2212991,
+      "n_val": 464317,
+      "n_cal": 292936
+    },
+    "report_target_build": {
+      "train": {
+        "rows": 2283194,
+        "rows_with_target": 2212991,
+        "rows_incomplete": 70203,
+        "singleton_trajectories": 291,
+        "coverage_pct": 96.93,
+        "n_trajectories": 40771,
+        "target_future_gain_mean": -154.39410400390625,
+        "target_future_gain_median": -121.96998596191406,
+        "target_future_gain_p10": -358.010009765625,
+        "target_future_gain_p90": 0.0,
+        "target_future_drop_rate": 0.8238447308540344
+      },
+      "val": {
+        "rows": 495930,
+        "rows_with_target": 464317,
+        "rows_incomplete": 31613,
+        "singleton_trajectories": 239,
+        "coverage_pct": 93.63,
+        "n_trajectories": 17071,
+        "target_future_gain_mean": -132.16470336914062,
+        "target_future_gain_median": -93.0,
+        "target_future_gain_p10": -342.6539916992184,
+        "target_future_gain_p90": 0.0099945068359375,
+        "target_future_drop_rate": 0.7706179022789001
+      },
+      "cal": {
+        "rows": 320957,
+        "rows_with_target": 292936,
+        "rows_incomplete": 28021,
+        "singleton_trajectories": 442,
+        "coverage_pct": 91.27,
+        "n_trajectories": 15092,
+        "target_future_gain_mean": -127.3415756225586,
+        "target_future_gain_median": -89.02000427246094,
+        "target_future_gain_p10": -336.0199890136719,
+        "target_future_gain_p90": 7.9799957275390625,
+        "target_future_drop_rate": 0.7564929127693176
+      },
+      "test": {
+        "rows": 149937,
+        "rows_with_target": 127514,
+        "rows_incomplete": 22423,
+        "singleton_trajectories": 146,
+        "coverage_pct": 85.05,
+        "n_trajectories": 12130,
+        "target_future_gain_mean": -114.19461822509766,
+        "target_future_gain_median": -75.0,
+        "target_future_gain_p10": -319.9999694824219,
+        "target_future_gain_p90": 18.019996643066406,
+        "target_future_drop_rate": 0.7052716016769409
+      }
+    }
+  },
+  "profile_definitions": {
+    "A_safety_first": {
+      "title": "Safety-first",
+      "intent": "Maximize alert_precision_floor_1_05; minimize false / noisy actions; ABSTAIN may be high if needed.",
+      "constraints": {
+        "alert_precision_floor_1_05": {
+          "op": ">=",
+          "threshold": 0.2
+        },
+        "buy_now_share": {
+          "op": "<=",
+          "threshold": 0.03
+        },
+        "alert_rate": {
+          "op": "<=",
+          "threshold": 0.05
+        },
+        "abstain_share": {
+          "op": "<=",
+          "threshold": 0.5
+        },
+        "capture_median": {
+          "op": ">=",
+          "threshold": 0.85
+        },
+        "regret_abs_p99": {
+          "op": "<=",
+          "threshold": 300.0
+        }
+      }
+    },
+    "B_balanced_product": {
+      "title": "Balanced product",
+      "intent": "Reasonable precision with less ABSTAIN; suitable for user-facing non-transactional advice.",
+      "constraints": {
+        "alert_precision_floor_1_05": {
+          "op": ">=",
+          "threshold": 0.1
+        },
+        "buy_now_share": {
+          "op": "<=",
+          "threshold": 0.1
+        },
+        "alert_rate": {
+          "op": "<=",
+          "threshold": 0.15
+        },
+        "abstain_share": {
+          "op": "<=",
+          "threshold": 0.3
+        },
+        "capture_median": {
+          "op": ">=",
+          "threshold": 0.85
+        },
+        "_regret_p90_factor_vs_baseline_max": {
+          "op": "<=",
+          "threshold": 1.1
+        }
+      }
+    },
+    "C_low_friction_ux": {
+      "title": "Low-friction UX",
+      "intent": "Avoid too many ABSTAIN; user-facing advice should remain actionable on most rows.",
+      "constraints": {
+        "abstain_share": {
+          "op": "<=",
+          "threshold": 0.2
+        },
+        "buy_now_share": {
+          "op": "<=",
+          "threshold": 0.15
+        },
+        "alert_rate": {
+          "op": "<=",
+          "threshold": 0.2
+        },
+        "capture_median": {
+          "op": ">=",
+          "threshold": 0.82
+        },
+        "_alert_precision_05_must_improve_vs_baseline": {
+          "op": ">",
+          "threshold": 1.0
+        }
+      }
+    },
+    "D_shadow_mode_learning": {
+      "title": "Shadow-mode learning",
+      "intent": "Maximize observation quality while remaining non-transactional. Real auto-buy stays disabled.",
+      "constraints": {
+        "buy_now_share": {
+          "op": "<=",
+          "threshold": 0.2
+        },
+        "alert_rate": {
+          "op": "<=",
+          "threshold": 0.25
+        },
+        "abstain_share": {
+          "op": "<=",
+          "threshold": 0.35
+        },
+        "capture_median": {
+          "op": ">=",
+          "threshold": 0.82
+        }
+      }
+    }
+  },
+  "selected_candidates_by_profile": {
+    "A_safety_first": {
+      "profile_key": "A_safety_first",
+      "title": "Safety-first",
+      "intent": "Maximize alert_precision_floor_1_05; minimize false / noisy actions; ABSTAIN may be high if needed.",
+      "constraints": {
+        "alert_precision_floor_1_05": {
+          "op": ">=",
+          "threshold": 0.2
+        },
+        "buy_now_share": {
+          "op": "<=",
+          "threshold": 0.03
+        },
+        "alert_rate": {
+          "op": "<=",
+          "threshold": 0.05
+        },
+        "abstain_share": {
+          "op": "<=",
+          "threshold": 0.5
+        },
+        "capture_median": {
+          "op": ">=",
+          "threshold": 0.85
+        },
+        "regret_abs_p99": {
+          "op": "<=",
+          "threshold": 300.0
+        }
+      },
+      "n_candidates_in_pool": 170,
+      "n_feasible": 36,
+      "selected_top_3": [
+        {
+          "config": {
+            "max_width_over_price": 1.0,
+            "abstain_width_over_price": 1.0,
+            "buy_trigger_margin_usd": 0,
+            "drop_proba_buy_max": 0.4,
+            "alert_drop_threshold": 0.85,
+            "alert_near_floor_pct": 1.03,
+            "route_popularity_min": 30,
+            "ttd_lower": 1,
+            "ttd_upper": 60
+          },
+          "config_summary": "width\u22641.0 | abstain>1.0 | buy\u2265+$0 | drop\u22640.4 | alert\u22650.85 | floor\u00d71.03 | pop\u226530 | ttd[1,60]",
+          "metrics": {
+            "alert_precision_floor_1_05": 0.20719674985490424,
+            "alert_precision_floor_1_10": 0.23331398723157284,
+            "alert_recall_floor_1_05": 0.03490589098020044,
+            "alert_rate": 0.011531509900825012,
+            "buy_now_share": 0.011451476286707084,
+            "abstain_share": 0.40433648799162314,
+            "monitor_share": 0.03750241768209315,
+            "wait_share": 0.5351781081387517,
+            "regret_abs_mean": 64.76842010813084,
+            "regret_abs_p50": 37.4949951171875,
+            "regret_abs_p90": 172.0299835205078,
+            "regret_abs_p99": 278.5844090270992,
+            "capture_mean": 0.8034723306028833,
+            "capture_median": 0.8715574518558661,
+            "false_buy_now_rate": 0.6062900407687828,
+            "trajectory_buy_coverage": 0.09183841714756802
+          },
+          "passes_profile": true,
+          "constraint_fails": [],
+          "soft_warnings": [],
+          "constraint_details": {
+            "alert_precision_floor_1_05": {
+              "value": 0.20719674985490424,
+              "op": ">=",
+              "threshold": 0.2,
+              "pass": true
+            },
+            "buy_now_share": {
+              "value": 0.011451476286707084,
+              "op": "<=",
+              "threshold": 0.03,
+              "pass": true
+            },
+            "alert_rate": {
+              "value": 0.011531509900825012,
+              "op": "<=",
+              "threshold": 0.05,
+              "pass": true
+            },
+            "abstain_share": {
+              "value": 0.40433648799162314,
+              "op": "<=",
+              "threshold": 0.5,
+              "pass": true
+            },
+            "capture_median": {
+              "value": 0.8715574518558661,
+              "op": ">=",
+              "threshold": 0.85,
+              "pass": true
+            },
+            "regret_abs_p99": {
+              "value": 278.5844090270992,
+              "op": "<=",
+              "threshold": 300.0,
+              "pass": true
+            }
+          }
+        },
+        {
+          "config": {
+            "max_width_over_price": 1.0,
+            "abstain_width_over_price": 1.0,
+            "buy_trigger_margin_usd": 0,
+            "drop_proba_buy_max": 0.4,
+            "alert_drop_threshold": 0.85,
+            "alert_near_floor_pct": 1.03,
+            "route_popularity_min": 100,
+            "ttd_lower": 1,
+            "ttd_upper": 60
+          },
+          "config_summary": "width\u22641.0 | abstain>1.0 | buy\u2265+$0 | drop\u22640.4 | alert\u22650.85 | floor\u00d71.03 | pop\u2265100 | ttd[1,60]",
+          "metrics": {
+            "alert_precision_floor_1_05": 0.20719674985490424,
+            "alert_precision_floor_1_10": 0.23331398723157284,
+            "alert_recall_floor_1_05": 0.03490589098020044,
+            "alert_rate": 0.011531509900825012,
+            "buy_now_share": 0.011451476286707084,
+            "abstain_share": 0.40433648799162314,
+            "monitor_share": 0.03750241768209315,
+            "wait_share": 0.5351781081387517,
+            "regret_abs_mean": 64.76842010813084,
+            "regret_abs_p50": 37.4949951171875,
+            "regret_abs_p90": 172.0299835205078,
+            "regret_abs_p99": 278.5844090270992,
+            "capture_mean": 0.8034723306028833,
+            "capture_median": 0.8715574518558661,
+            "false_buy_now_rate": 0.6062900407687828,
+            "trajectory_buy_coverage": 0.09183841714756802
+          },
+          "passes_profile": true,
+          "constraint_fails": [],
+          "soft_warnings": [],
+          "constraint_details": {
+            "alert_precision_floor_1_05": {
+              "value": 0.20719674985490424,
+              "op": ">=",
+              "threshold": 0.2,
+              "pass": true
+            },
+            "buy_now_share": {
+              "value": 0.011451476286707084,
+              "op": "<=",
+              "threshold": 0.03,
+              "pass": true
+            },
+            "alert_rate": {
+              "value": 0.011531509900825012,
+              "op": "<=",
+              "threshold": 0.05,
+              "pass": true
+            },
+            "abstain_share": {
+              "value": 0.40433648799162314,
+              "op": "<=",
+              "threshold": 0.5,
+              "pass": true
+            },
+            "capture_median": {
+              "value": 0.8715574518558661,
+              "op": ">=",
+              "threshold": 0.85,
+              "pass": true
+            },
+            "regret_abs_p99": {
+              "value": 278.5844090270992,
+              "op": "<=",
+              "threshold": 300.0,
+              "pass": true
+            }
+          }
+        },
+        {
+          "config": {
+            "max_width_over_price": 1.0,
+            "abstain_width_over_price": 1.0,
+            "buy_trigger_margin_usd": 0,
+            "drop_proba_buy_max": 0.4,
+            "alert_drop_threshold": 0.85,
+            "alert_near_floor_pct": 1.03,
+            "route_popularity_min": 250,
+            "ttd_lower": 1,
+            "ttd_upper": 60
+          },
+          "config_summary": "width\u22641.0 | abstain>1.0 | buy\u2265+$0 | drop\u22640.4 | alert\u22650.85 | floor\u00d71.03 | pop\u2265250 | ttd[1,60]",
+          "metrics": {
+            "alert_precision_floor_1_05": 0.20719674985490424,
+            "alert_precision_floor_1_10": 0.23331398723157284,
+            "alert_recall_floor_1_05": 0.03490589098020044,
+            "alert_rate": 0.011531509900825012,
+            "buy_now_share": 0.011451476286707084,
+            "abstain_share": 0.40433648799162314,
+            "monitor_share": 0.03750241768209315,
+            "wait_share": 0.5351781081387517,
+            "regret_abs_mean": 64.76842010813084,
+            "regret_abs_p50": 37.4949951171875,
+            "regret_abs_p90": 172.0299835205078,
+            "regret_abs_p99": 278.5844090270992,
+            "capture_mean": 0.8034723306028833,
+            "capture_median": 0.8715574518558661,
+            "false_buy_now_rate": 0.6062900407687828,
+            "trajectory_buy_coverage": 0.09183841714756802
+          },
+          "passes_profile": true,
+          "constraint_fails": [],
+          "soft_warnings": [],
+          "constraint_details": {
+            "alert_precision_floor_1_05": {
+              "value": 0.20719674985490424,
+              "op": ">=",
+              "threshold": 0.2,
+              "pass": true
+            },
+            "buy_now_share": {
+              "value": 0.011451476286707084,
+              "op": "<=",
+              "threshold": 0.03,
+              "pass": true
+            },
+            "alert_rate": {
+              "value": 0.011531509900825012,
+              "op": "<=",
+              "threshold": 0.05,
+              "pass": true
+            },
+            "abstain_share": {
+              "value": 0.40433648799162314,
+              "op": "<=",
+              "threshold": 0.5,
+              "pass": true
+            },
+            "capture_median": {
+              "value": 0.8715574518558661,
+              "op": ">=",
+              "threshold": 0.85,
+              "pass": true
+            },
+            "regret_abs_p99": {
+              "value": 278.5844090270992,
+              "op": "<=",
+              "threshold": 300.0,
+              "pass": true
+            }
+          }
+        }
+      ],
+      "nearest_miss_top_5": [],
+      "verdict": "feasible_candidate_found"
+    },
+    "B_balanced_product": {
+      "profile_key": "B_balanced_product",
+      "title": "Balanced product",
+      "intent": "Reasonable precision with less ABSTAIN; suitable for user-facing non-transactional advice.",
+      "constraints": {
+        "alert_precision_floor_1_05": {
+          "op": ">=",
+          "threshold": 0.1
+        },
+        "buy_now_share": {
+          "op": "<=",
+          "threshold": 0.1
+        },
+        "alert_rate": {
+          "op": "<=",
+          "threshold": 0.15
+        },
+        "abstain_share": {
+          "op": "<=",
+          "threshold": 0.3
+        },
+        "capture_median": {
+          "op": ">=",
+          "threshold": 0.85
+        },
+        "_regret_p90_factor_vs_baseline_max": {
+          "op": "<=",
+          "threshold": 1.1
+        }
+      },
+      "n_candidates_in_pool": 170,
+      "n_feasible": 0,
+      "selected_top_3": [],
+      "nearest_miss_top_5": [
+        {
+          "config": {
+            "max_width_over_price": 1.0,
+            "abstain_width_over_price": 1.25,
+            "buy_trigger_margin_usd": 0,
+            "drop_proba_buy_max": 0.4,
+            "alert_drop_threshold": 0.85,
+            "alert_near_floor_pct": 1.03,
+            "route_popularity_min": 30,
+            "ttd_lower": 1,
+            "ttd_upper": 60
+          },
+          "config_summary": "width\u22641.0 | abstain>1.25 | buy\u2265+$0 | drop\u22640.4 | alert\u22650.85 | floor\u00d71.03 | pop\u226530 | ttd[1,60]",
+          "metrics": {
+            "alert_precision_floor_1_05": 0.20719674985490424,
+            "alert_precision_floor_1_10": 0.23331398723157284,
+            "alert_recall_floor_1_05": 0.03490589098020044,
+            "alert_rate": 0.011531509900825012,
+            "buy_now_share": 0.011451476286707084,
+            "abstain_share": 0.27889046732961176,
+            "monitor_share": 0.03750241768209315,
+            "wait_share": 0.6606241288007629,
+            "regret_abs_mean": 64.76842010813084,
+            "regret_abs_p50": 37.4949951171875,
+            "regret_abs_p90": 172.0299835205078,
+            "regret_abs_p99": 278.5844090270992,
+            "capture_mean": 0.8034723306028833,
+            "capture_median": 0.8715574518558661,
+            "false_buy_now_rate": 0.6062900407687828,
+            "trajectory_buy_coverage": 0.09183841714756802
+          },
+          "passes_profile": false,
+          "constraint_fails": [
+            "regret_p90 ratio vs baseline = 1.372 > 1.1 (cand p90 = $172, baseline = $125)"
+          ],
+          "soft_warnings": [],
+          "constraint_details": {
+            "alert_precision_floor_1_05": {
+              "value": 0.20719674985490424,
+              "op": ">=",
+              "threshold": 0.1,
+              "pass": true
+            },
+            "buy_now_share": {
+              "value": 0.011451476286707084,
+              "op": "<=",
+              "threshold": 0.1,
+              "pass": true
+            },
+            "alert_rate": {
+              "value": 0.011531509900825012,
+              "op": "<=",
+              "threshold": 0.15,
+              "pass": true
+            },
+            "abstain_share": {
+              "value": 0.27889046732961176,
+              "op": "<=",
+              "threshold": 0.3,
+              "pass": true
+            },
+            "capture_median": {
+              "value": 0.8715574518558661,
+              "op": ">=",
+              "threshold": 0.85,
+              "pass": true
+            },
+            "_regret_p90_factor_vs_baseline_max": {
+              "value": 1.3719376245088462,
+              "op": "<=",
+              "threshold": 1.1,
+              "pass": false,
+              "raw_metric": "regret_abs_p90",
+              "raw_value": 172.0299835205078,
+              "baseline_v7a_p90": 125.39198608398438
+            }
+          }
+        },
+        {
+          "config": {
+            "max_width_over_price": 1.0,
+            "abstain_width_over_price": 1.25,
+            "buy_trigger_margin_usd": 0,
+            "drop_proba_buy_max": 0.4,
+            "alert_drop_threshold": 0.85,
+            "alert_near_floor_pct": 1.03,
+            "route_popularity_min": 100,
+            "ttd_lower": 1,
+            "ttd_upper": 60
+          },
+          "config_summary": "width\u22641.0 | abstain>1.25 | buy\u2265+$0 | drop\u22640.4 | alert\u22650.85 | floor\u00d71.03 | pop\u2265100 | ttd[1,60]",
+          "metrics": {
+            "alert_precision_floor_1_05": 0.20719674985490424,
+            "alert_precision_floor_1_10": 0.23331398723157284,
+            "alert_recall_floor_1_05": 0.03490589098020044,
+            "alert_rate": 0.011531509900825012,
+            "buy_now_share": 0.011451476286707084,
+            "abstain_share": 0.27889046732961176,
+            "monitor_share": 0.03750241768209315,
+            "wait_share": 0.6606241288007629,
+            "regret_abs_mean": 64.76842010813084,
+            "regret_abs_p50": 37.4949951171875,
+            "regret_abs_p90": 172.0299835205078,
+            "regret_abs_p99": 278.5844090270992,
+            "capture_mean": 0.8034723306028833,
+            "capture_median": 0.8715574518558661,
+            "false_buy_now_rate": 0.6062900407687828,
+            "trajectory_buy_coverage": 0.09183841714756802
+          },
+          "passes_profile": false,
+          "constraint_fails": [
+            "regret_p90 ratio vs baseline = 1.372 > 1.1 (cand p90 = $172, baseline = $125)"
+          ],
+          "soft_warnings": [],
+          "constraint_details": {
+            "alert_precision_floor_1_05": {
+              "value": 0.20719674985490424,
+              "op": ">=",
+              "threshold": 0.1,
+              "pass": true
+            },
+            "buy_now_share": {
+              "value": 0.011451476286707084,
+              "op": "<=",
+              "threshold": 0.1,
+              "pass": true
+            },
+            "alert_rate": {
+              "value": 0.011531509900825012,
+              "op": "<=",
+              "threshold": 0.15,
+              "pass": true
+            },
+            "abstain_share": {
+              "value": 0.27889046732961176,
+              "op": "<=",
+              "threshold": 0.3,
+              "pass": true
+            },
+            "capture_median": {
+              "value": 0.8715574518558661,
+              "op": ">=",
+              "threshold": 0.85,
+              "pass": true
+            },
+            "_regret_p90_factor_vs_baseline_max": {
+              "value": 1.3719376245088462,
+              "op": "<=",
+              "threshold": 1.1,
+              "pass": false,
+              "raw_metric": "regret_abs_p90",
+              "raw_value": 172.0299835205078,
+              "baseline_v7a_p90": 125.39198608398438
+            }
+          }
+        },
+        {
+          "config": {
+            "max_width_over_price": 1.0,
+            "abstain_width_over_price": 1.25,
+            "buy_trigger_margin_usd": 0,
+            "drop_proba_buy_max": 0.4,
+            "alert_drop_threshold": 0.85,
+            "alert_near_floor_pct": 1.03,
+            "route_popularity_min": 250,
+            "ttd_lower": 1,
+            "ttd_upper": 60
+          },
+          "config_summary": "width\u22641.0 | abstain>1.25 | buy\u2265+$0 | drop\u22640.4 | alert\u22650.85 | floor\u00d71.03 | pop\u2265250 | ttd[1,60]",
+          "metrics": {
+            "alert_precision_floor_1_05": 0.20719674985490424,
+            "alert_precision_floor_1_10": 0.23331398723157284,
+            "alert_recall_floor_1_05": 0.03490589098020044,
+            "alert_rate": 0.011531509900825012,
+            "buy_now_share": 0.011451476286707084,
+            "abstain_share": 0.27889046732961176,
+            "monitor_share": 0.03750241768209315,
+            "wait_share": 0.6606241288007629,
+            "regret_abs_mean": 64.76842010813084,
+            "regret_abs_p50": 37.4949951171875,
+            "regret_abs_p90": 172.0299835205078,
+            "regret_abs_p99": 278.5844090270992,
+            "capture_mean": 0.8034723306028833,
+            "capture_median": 0.8715574518558661,
+            "false_buy_now_rate": 0.6062900407687828,
+            "trajectory_buy_coverage": 0.09183841714756802
+          },
+          "passes_profile": false,
+          "constraint_fails": [
+            "regret_p90 ratio vs baseline = 1.372 > 1.1 (cand p90 = $172, baseline = $125)"
+          ],
+          "soft_warnings": [],
+          "constraint_details": {
+            "alert_precision_floor_1_05": {
+              "value": 0.20719674985490424,
+              "op": ">=",
+              "threshold": 0.1,
+              "pass": true
+            },
+            "buy_now_share": {
+              "value": 0.011451476286707084,
+              "op": "<=",
+              "threshold": 0.1,
+              "pass": true
+            },
+            "alert_rate": {
+              "value": 0.011531509900825012,
+              "op": "<=",
+              "threshold": 0.15,
+              "pass": true
+            },
+            "abstain_share": {
+              "value": 0.27889046732961176,
+              "op": "<=",
+              "threshold": 0.3,
+              "pass": true
+            },
+            "capture_median": {
+              "value": 0.8715574518558661,
+              "op": ">=",
+              "threshold": 0.85,
+              "pass": true
+            },
+            "_regret_p90_factor_vs_baseline_max": {
+              "value": 1.3719376245088462,
+              "op": "<=",
+              "threshold": 1.1,
+              "pass": false,
+              "raw_metric": "regret_abs_p90",
+              "raw_value": 172.0299835205078,
+              "baseline_v7a_p90": 125.39198608398438
+            }
+          }
+        },
+        {
+          "config": {
+            "max_width_over_price": 1.0,
+            "abstain_width_over_price": 1.25,
+            "buy_trigger_margin_usd": 10,
+            "drop_proba_buy_max": 0.4,
+            "alert_drop_threshold": 0.85,
+            "alert_near_floor_pct": 1.03,
+            "route_popularity_min": 30,
+            "ttd_lower": 1,
+            "ttd_upper": 60
+          },
+          "config_summary": "width\u22641.0 | abstain>1.25 | buy\u2265+$10 | drop\u22640.4 | alert\u22650.85 | floor\u00d71.03 | pop\u226530 | ttd[1,60]",
+          "metrics": {
+            "alert_precision_floor_1_05": 0.20672514619883042,
+            "alert_precision_floor_1_10": 0.23304093567251463,
+            "alert_recall_floor_1_05": 0.03456367636274749,
+            "alert_rate": 0.011531509900825012,
+            "buy_now_share": 0.011278070122784903,
+            "abstain_share": 0.27889046732961176,
+            "monitor_share": 0.03750241768209315,
+            "wait_share": 0.6607975349646852,
+            "regret_abs_mean": 64.43577447011862,
+            "regret_abs_p50": 37.0,
+            "regret_abs_p90": 172.0299835205078,
+            "regret_abs_p99": 279.91901092529224,
+            "capture_mean": 0.8062028971002013,
+            "capture_median": 0.8783006772853513,
+            "false_buy_now_rate": 0.6043761088113542,
+            "trajectory_buy_coverage": 0.08994229183841715
+          },
+          "passes_profile": false,
+          "constraint_fails": [
+            "regret_p90 ratio vs baseline = 1.372 > 1.1 (cand p90 = $172, baseline = $125)"
+          ],
+          "soft_warnings": [],
+          "constraint_details": {
+            "alert_precision_floor_1_05": {
+              "value": 0.20672514619883042,
+              "op": ">=",
+              "threshold": 0.1,
+              "pass": true
+            },
+            "buy_now_share": {
+              "value": 0.011278070122784903,
+              "op": "<=",
+              "threshold": 0.1,
+              "pass": true
+            },
+            "alert_rate": {
+              "value": 0.011531509900825012,
+              "op": "<=",
+              "threshold": 0.15,
+              "pass": true
+            },
+            "abstain_share": {
+              "value": 0.27889046732961176,
+              "op": "<=",
+              "threshold": 0.3,
+              "pass": true
+            },
+            "capture_median": {
+              "value": 0.8783006772853513,
+              "op": ">=",
+              "threshold": 0.85,
+              "pass": true
+            },
+            "_regret_p90_factor_vs_baseline_max": {
+              "value": 1.3719376245088462,
+              "op": "<=",
+              "threshold": 1.1,
+              "pass": false,
+              "raw_metric": "regret_abs_p90",
+              "raw_value": 172.0299835205078,
+              "baseline_v7a_p90": 125.39198608398438
+            }
+          }
+        },
+        {
+          "config": {
+            "max_width_over_price": 1.0,
+            "abstain_width_over_price": 1.25,
+            "buy_trigger_margin_usd": 10,
+            "drop_proba_buy_max": 0.4,
+            "alert_drop_threshold": 0.85,
+            "alert_near_floor_pct": 1.03,
+            "route_popularity_min": 100,
+            "ttd_lower": 1,
+            "ttd_upper": 60
+          },
+          "config_summary": "width\u22641.0 | abstain>1.25 | buy\u2265+$10 | drop\u22640.4 | alert\u22650.85 | floor\u00d71.03 | pop\u2265100 | ttd[1,60]",
+          "metrics": {
+            "alert_precision_floor_1_05": 0.20672514619883042,
+            "alert_precision_floor_1_10": 0.23304093567251463,
+            "alert_recall_floor_1_05": 0.03456367636274749,
+            "alert_rate": 0.011531509900825012,
+            "buy_now_share": 0.011278070122784903,
+            "abstain_share": 0.27889046732961176,
+            "monitor_share": 0.03750241768209315,
+            "wait_share": 0.6607975349646852,
+            "regret_abs_mean": 64.43577447011862,
+            "regret_abs_p50": 37.0,
+            "regret_abs_p90": 172.0299835205078,
+            "regret_abs_p99": 279.91901092529224,
+            "capture_mean": 0.8062028971002013,
+            "capture_median": 0.8783006772853513,
+            "false_buy_now_rate": 0.6043761088113542,
+            "trajectory_buy_coverage": 0.08994229183841715
+          },
+          "passes_profile": false,
+          "constraint_fails": [
+            "regret_p90 ratio vs baseline = 1.372 > 1.1 (cand p90 = $172, baseline = $125)"
+          ],
+          "soft_warnings": [],
+          "constraint_details": {
+            "alert_precision_floor_1_05": {
+              "value": 0.20672514619883042,
+              "op": ">=",
+              "threshold": 0.1,
+              "pass": true
+            },
+            "buy_now_share": {
+              "value": 0.011278070122784903,
+              "op": "<=",
+              "threshold": 0.1,
+              "pass": true
+            },
+            "alert_rate": {
+              "value": 0.011531509900825012,
+              "op": "<=",
+              "threshold": 0.15,
+              "pass": true
+            },
+            "abstain_share": {
+              "value": 0.27889046732961176,
+              "op": "<=",
+              "threshold": 0.3,
+              "pass": true
+            },
+            "capture_median": {
+              "value": 0.8783006772853513,
+              "op": ">=",
+              "threshold": 0.85,
+              "pass": true
+            },
+            "_regret_p90_factor_vs_baseline_max": {
+              "value": 1.3719376245088462,
+              "op": "<=",
+              "threshold": 1.1,
+              "pass": false,
+              "raw_metric": "regret_abs_p90",
+              "raw_value": 172.0299835205078,
+              "baseline_v7a_p90": 125.39198608398438
+            }
+          }
+        }
+      ],
+      "verdict": "no_feasible_candidate_in_pool"
+    },
+    "C_low_friction_ux": {
+      "profile_key": "C_low_friction_ux",
+      "title": "Low-friction UX",
+      "intent": "Avoid too many ABSTAIN; user-facing advice should remain actionable on most rows.",
+      "constraints": {
+        "abstain_share": {
+          "op": "<=",
+          "threshold": 0.2
+        },
+        "buy_now_share": {
+          "op": "<=",
+          "threshold": 0.15
+        },
+        "alert_rate": {
+          "op": "<=",
+          "threshold": 0.2
+        },
+        "capture_median": {
+          "op": ">=",
+          "threshold": 0.82
+        },
+        "_alert_precision_05_must_improve_vs_baseline": {
+          "op": ">",
+          "threshold": 1.0
+        }
+      },
+      "n_candidates_in_pool": 170,
+      "n_feasible": 0,
+      "selected_top_3": [],
+      "nearest_miss_top_5": [
+        {
+          "config": {
+            "max_width_over_price": 1.0,
+            "abstain_width_over_price": 1.0,
+            "buy_trigger_margin_usd": 0,
+            "drop_proba_buy_max": 0.4,
+            "alert_drop_threshold": 0.85,
+            "alert_near_floor_pct": 1.03,
+            "route_popularity_min": 30,
+            "ttd_lower": 1,
+            "ttd_upper": 60
+          },
+          "config_summary": "width\u22641.0 | abstain>1.0 | buy\u2265+$0 | drop\u22640.4 | alert\u22650.85 | floor\u00d71.03 | pop\u226530 | ttd[1,60]",
+          "metrics": {
+            "alert_precision_floor_1_05": 0.20719674985490424,
+            "alert_precision_floor_1_10": 0.23331398723157284,
+            "alert_recall_floor_1_05": 0.03490589098020044,
+            "alert_rate": 0.011531509900825012,
+            "buy_now_share": 0.011451476286707084,
+            "abstain_share": 0.40433648799162314,
+            "monitor_share": 0.03750241768209315,
+            "wait_share": 0.5351781081387517,
+            "regret_abs_mean": 64.76842010813084,
+            "regret_abs_p50": 37.4949951171875,
+            "regret_abs_p90": 172.0299835205078,
+            "regret_abs_p99": 278.5844090270992,
+            "capture_mean": 0.8034723306028833,
+            "capture_median": 0.8715574518558661,
+            "false_buy_now_rate": 0.6062900407687828,
+            "trajectory_buy_coverage": 0.09183841714756802
+          },
+          "passes_profile": false,
+          "constraint_fails": [
+            "abstain_share = 0.40433648799162314 fails <= 0.2"
+          ],
+          "soft_warnings": [],
+          "constraint_details": {
+            "abstain_share": {
+              "value": 0.40433648799162314,
+              "op": "<=",
+              "threshold": 0.2,
+              "pass": false
+            },
+            "buy_now_share": {
+              "value": 0.011451476286707084,
+              "op": "<=",
+              "threshold": 0.15,
+              "pass": true
+            },
+            "alert_rate": {
+              "value": 0.011531509900825012,
+              "op": "<=",
+              "threshold": 0.2,
+              "pass": true
+            },
+            "capture_median": {
+              "value": 0.8715574518558661,
+              "op": ">=",
+              "threshold": 0.82,
+              "pass": true
+            },
+            "_alert_precision_05_must_improve_vs_baseline": {
+              "value": 0.20719674985490424,
+              "op": ">",
+              "threshold": 0.030968398580046172,
+              "pass": true
+            }
+          }
+        },
+        {
+          "config": {
+            "max_width_over_price": 1.0,
+            "abstain_width_over_price": 1.0,
+            "buy_trigger_margin_usd": 0,
+            "drop_proba_buy_max": 0.4,
+            "alert_drop_threshold": 0.85,
+            "alert_near_floor_pct": 1.03,
+            "route_popularity_min": 100,
+            "ttd_lower": 1,
+            "ttd_upper": 60
+          },
+          "config_summary": "width\u22641.0 | abstain>1.0 | buy\u2265+$0 | drop\u22640.4 | alert\u22650.85 | floor\u00d71.03 | pop\u2265100 | ttd[1,60]",
+          "metrics": {
+            "alert_precision_floor_1_05": 0.20719674985490424,
+            "alert_precision_floor_1_10": 0.23331398723157284,
+            "alert_recall_floor_1_05": 0.03490589098020044,
+            "alert_rate": 0.011531509900825012,
+            "buy_now_share": 0.011451476286707084,
+            "abstain_share": 0.40433648799162314,
+            "monitor_share": 0.03750241768209315,
+            "wait_share": 0.5351781081387517,
+            "regret_abs_mean": 64.76842010813084,
+            "regret_abs_p50": 37.4949951171875,
+            "regret_abs_p90": 172.0299835205078,
+            "regret_abs_p99": 278.5844090270992,
+            "capture_mean": 0.8034723306028833,
+            "capture_median": 0.8715574518558661,
+            "false_buy_now_rate": 0.6062900407687828,
+            "trajectory_buy_coverage": 0.09183841714756802
+          },
+          "passes_profile": false,
+          "constraint_fails": [
+            "abstain_share = 0.40433648799162314 fails <= 0.2"
+          ],
+          "soft_warnings": [],
+          "constraint_details": {
+            "abstain_share": {
+              "value": 0.40433648799162314,
+              "op": "<=",
+              "threshold": 0.2,
+              "pass": false
+            },
+            "buy_now_share": {
+              "value": 0.011451476286707084,
+              "op": "<=",
+              "threshold": 0.15,
+              "pass": true
+            },
+            "alert_rate": {
+              "value": 0.011531509900825012,
+              "op": "<=",
+              "threshold": 0.2,
+              "pass": true
+            },
+            "capture_median": {
+              "value": 0.8715574518558661,
+              "op": ">=",
+              "threshold": 0.82,
+              "pass": true
+            },
+            "_alert_precision_05_must_improve_vs_baseline": {
+              "value": 0.20719674985490424,
+              "op": ">",
+              "threshold": 0.030968398580046172,
+              "pass": true
+            }
+          }
+        },
+        {
+          "config": {
+            "max_width_over_price": 1.0,
+            "abstain_width_over_price": 1.0,
+            "buy_trigger_margin_usd": 0,
+            "drop_proba_buy_max": 0.4,
+            "alert_drop_threshold": 0.85,
+            "alert_near_floor_pct": 1.03,
+            "route_popularity_min": 250,
+            "ttd_lower": 1,
+            "ttd_upper": 60
+          },
+          "config_summary": "width\u22641.0 | abstain>1.0 | buy\u2265+$0 | drop\u22640.4 | alert\u22650.85 | floor\u00d71.03 | pop\u2265250 | ttd[1,60]",
+          "metrics": {
+            "alert_precision_floor_1_05": 0.20719674985490424,
+            "alert_precision_floor_1_10": 0.23331398723157284,
+            "alert_recall_floor_1_05": 0.03490589098020044,
+            "alert_rate": 0.011531509900825012,
+            "buy_now_share": 0.011451476286707084,
+            "abstain_share": 0.40433648799162314,
+            "monitor_share": 0.03750241768209315,
+            "wait_share": 0.5351781081387517,
+            "regret_abs_mean": 64.76842010813084,
+            "regret_abs_p50": 37.4949951171875,
+            "regret_abs_p90": 172.0299835205078,
+            "regret_abs_p99": 278.5844090270992,
+            "capture_mean": 0.8034723306028833,
+            "capture_median": 0.8715574518558661,
+            "false_buy_now_rate": 0.6062900407687828,
+            "trajectory_buy_coverage": 0.09183841714756802
+          },
+          "passes_profile": false,
+          "constraint_fails": [
+            "abstain_share = 0.40433648799162314 fails <= 0.2"
+          ],
+          "soft_warnings": [],
+          "constraint_details": {
+            "abstain_share": {
+              "value": 0.40433648799162314,
+              "op": "<=",
+              "threshold": 0.2,
+              "pass": false
+            },
+            "buy_now_share": {
+              "value": 0.011451476286707084,
+              "op": "<=",
+              "threshold": 0.15,
+              "pass": true
+            },
+            "alert_rate": {
+              "value": 0.011531509900825012,
+              "op": "<=",
+              "threshold": 0.2,
+              "pass": true
+            },
+            "capture_median": {
+              "value": 0.8715574518558661,
+              "op": ">=",
+              "threshold": 0.82,
+              "pass": true
+            },
+            "_alert_precision_05_must_improve_vs_baseline": {
+              "value": 0.20719674985490424,
+              "op": ">",
+              "threshold": 0.030968398580046172,
+              "pass": true
+            }
+          }
+        },
+        {
+          "config": {
+            "max_width_over_price": 1.0,
+            "abstain_width_over_price": 1.25,
+            "buy_trigger_margin_usd": 0,
+            "drop_proba_buy_max": 0.4,
+            "alert_drop_threshold": 0.85,
+            "alert_near_floor_pct": 1.03,
+            "route_popularity_min": 30,
+            "ttd_lower": 1,
+            "ttd_upper": 60
+          },
+          "config_summary": "width\u22641.0 | abstain>1.25 | buy\u2265+$0 | drop\u22640.4 | alert\u22650.85 | floor\u00d71.03 | pop\u226530 | ttd[1,60]",
+          "metrics": {
+            "alert_precision_floor_1_05": 0.20719674985490424,
+            "alert_precision_floor_1_10": 0.23331398723157284,
+            "alert_recall_floor_1_05": 0.03490589098020044,
+            "alert_rate": 0.011531509900825012,
+            "buy_now_share": 0.011451476286707084,
+            "abstain_share": 0.27889046732961176,
+            "monitor_share": 0.03750241768209315,
+            "wait_share": 0.6606241288007629,
+            "regret_abs_mean": 64.76842010813084,
+            "regret_abs_p50": 37.4949951171875,
+            "regret_abs_p90": 172.0299835205078,
+            "regret_abs_p99": 278.5844090270992,
+            "capture_mean": 0.8034723306028833,
+            "capture_median": 0.8715574518558661,
+            "false_buy_now_rate": 0.6062900407687828,
+            "trajectory_buy_coverage": 0.09183841714756802
+          },
+          "passes_profile": false,
+          "constraint_fails": [
+            "abstain_share = 0.27889046732961176 fails <= 0.2"
+          ],
+          "soft_warnings": [],
+          "constraint_details": {
+            "abstain_share": {
+              "value": 0.27889046732961176,
+              "op": "<=",
+              "threshold": 0.2,
+              "pass": false
+            },
+            "buy_now_share": {
+              "value": 0.011451476286707084,
+              "op": "<=",
+              "threshold": 0.15,
+              "pass": true
+            },
+            "alert_rate": {
+              "value": 0.011531509900825012,
+              "op": "<=",
+              "threshold": 0.2,
+              "pass": true
+            },
+            "capture_median": {
+              "value": 0.8715574518558661,
+              "op": ">=",
+              "threshold": 0.82,
+              "pass": true
+            },
+            "_alert_precision_05_must_improve_vs_baseline": {
+              "value": 0.20719674985490424,
+              "op": ">",
+              "threshold": 0.030968398580046172,
+              "pass": true
+            }
+          }
+        },
+        {
+          "config": {
+            "max_width_over_price": 1.0,
+            "abstain_width_over_price": 1.25,
+            "buy_trigger_margin_usd": 0,
+            "drop_proba_buy_max": 0.4,
+            "alert_drop_threshold": 0.85,
+            "alert_near_floor_pct": 1.03,
+            "route_popularity_min": 100,
+            "ttd_lower": 1,
+            "ttd_upper": 60
+          },
+          "config_summary": "width\u22641.0 | abstain>1.25 | buy\u2265+$0 | drop\u22640.4 | alert\u22650.85 | floor\u00d71.03 | pop\u2265100 | ttd[1,60]",
+          "metrics": {
+            "alert_precision_floor_1_05": 0.20719674985490424,
+            "alert_precision_floor_1_10": 0.23331398723157284,
+            "alert_recall_floor_1_05": 0.03490589098020044,
+            "alert_rate": 0.011531509900825012,
+            "buy_now_share": 0.011451476286707084,
+            "abstain_share": 0.27889046732961176,
+            "monitor_share": 0.03750241768209315,
+            "wait_share": 0.6606241288007629,
+            "regret_abs_mean": 64.76842010813084,
+            "regret_abs_p50": 37.4949951171875,
+            "regret_abs_p90": 172.0299835205078,
+            "regret_abs_p99": 278.5844090270992,
+            "capture_mean": 0.8034723306028833,
+            "capture_median": 0.8715574518558661,
+            "false_buy_now_rate": 0.6062900407687828,
+            "trajectory_buy_coverage": 0.09183841714756802
+          },
+          "passes_profile": false,
+          "constraint_fails": [
+            "abstain_share = 0.27889046732961176 fails <= 0.2"
+          ],
+          "soft_warnings": [],
+          "constraint_details": {
+            "abstain_share": {
+              "value": 0.27889046732961176,
+              "op": "<=",
+              "threshold": 0.2,
+              "pass": false
+            },
+            "buy_now_share": {
+              "value": 0.011451476286707084,
+              "op": "<=",
+              "threshold": 0.15,
+              "pass": true
+            },
+            "alert_rate": {
+              "value": 0.011531509900825012,
+              "op": "<=",
+              "threshold": 0.2,
+              "pass": true
+            },
+            "capture_median": {
+              "value": 0.8715574518558661,
+              "op": ">=",
+              "threshold": 0.82,
+              "pass": true
+            },
+            "_alert_precision_05_must_improve_vs_baseline": {
+              "value": 0.20719674985490424,
+              "op": ">",
+              "threshold": 0.030968398580046172,
+              "pass": true
+            }
+          }
+        }
+      ],
+      "verdict": "no_feasible_candidate_in_pool"
+    },
+    "D_shadow_mode_learning": {
+      "profile_key": "D_shadow_mode_learning",
+      "title": "Shadow-mode learning",
+      "intent": "Maximize observation quality while remaining non-transactional. Real auto-buy stays disabled.",
+      "constraints": {
+        "buy_now_share": {
+          "op": "<=",
+          "threshold": 0.2
+        },
+        "alert_rate": {
+          "op": "<=",
+          "threshold": 0.25
+        },
+        "abstain_share": {
+          "op": "<=",
+          "threshold": 0.35
+        },
+        "capture_median": {
+          "op": ">=",
+          "threshold": 0.82
+        }
+      },
+      "n_candidates_in_pool": 170,
+      "n_feasible": 24,
+      "selected_top_3": [
+        {
+          "config": {
+            "max_width_over_price": 1.0,
+            "abstain_width_over_price": 1.25,
+            "buy_trigger_margin_usd": 0,
+            "drop_proba_buy_max": 0.4,
+            "alert_drop_threshold": 0.85,
+            "alert_near_floor_pct": 1.03,
+            "route_popularity_min": 30,
+            "ttd_lower": 1,
+            "ttd_upper": 60
+          },
+          "config_summary": "width\u22641.0 | abstain>1.25 | buy\u2265+$0 | drop\u22640.4 | alert\u22650.85 | floor\u00d71.03 | pop\u226530 | ttd[1,60]",
+          "metrics": {
+            "alert_precision_floor_1_05": 0.20719674985490424,
+            "alert_precision_floor_1_10": 0.23331398723157284,
+            "alert_recall_floor_1_05": 0.03490589098020044,
+            "alert_rate": 0.011531509900825012,
+            "buy_now_share": 0.011451476286707084,
+            "abstain_share": 0.27889046732961176,
+            "monitor_share": 0.03750241768209315,
+            "wait_share": 0.6606241288007629,
+            "regret_abs_mean": 64.76842010813084,
+            "regret_abs_p50": 37.4949951171875,
+            "regret_abs_p90": 172.0299835205078,
+            "regret_abs_p99": 278.5844090270992,
+            "capture_mean": 0.8034723306028833,
+            "capture_median": 0.8715574518558661,
+            "false_buy_now_rate": 0.6062900407687828,
+            "trajectory_buy_coverage": 0.09183841714756802
+          },
+          "passes_profile": true,
+          "constraint_fails": [],
+          "soft_warnings": [],
+          "constraint_details": {
+            "buy_now_share": {
+              "value": 0.011451476286707084,
+              "op": "<=",
+              "threshold": 0.2,
+              "pass": true
+            },
+            "alert_rate": {
+              "value": 0.011531509900825012,
+              "op": "<=",
+              "threshold": 0.25,
+              "pass": true
+            },
+            "abstain_share": {
+              "value": 0.27889046732961176,
+              "op": "<=",
+              "threshold": 0.35,
+              "pass": true
+            },
+            "capture_median": {
+              "value": 0.8715574518558661,
+              "op": ">=",
+              "threshold": 0.82,
+              "pass": true
+            }
+          }
+        },
+        {
+          "config": {
+            "max_width_over_price": 1.0,
+            "abstain_width_over_price": 1.25,
+            "buy_trigger_margin_usd": 0,
+            "drop_proba_buy_max": 0.4,
+            "alert_drop_threshold": 0.85,
+            "alert_near_floor_pct": 1.03,
+            "route_popularity_min": 100,
+            "ttd_lower": 1,
+            "ttd_upper": 60
+          },
+          "config_summary": "width\u22641.0 | abstain>1.25 | buy\u2265+$0 | drop\u22640.4 | alert\u22650.85 | floor\u00d71.03 | pop\u2265100 | ttd[1,60]",
+          "metrics": {
+            "alert_precision_floor_1_05": 0.20719674985490424,
+            "alert_precision_floor_1_10": 0.23331398723157284,
+            "alert_recall_floor_1_05": 0.03490589098020044,
+            "alert_rate": 0.011531509900825012,
+            "buy_now_share": 0.011451476286707084,
+            "abstain_share": 0.27889046732961176,
+            "monitor_share": 0.03750241768209315,
+            "wait_share": 0.6606241288007629,
+            "regret_abs_mean": 64.76842010813084,
+            "regret_abs_p50": 37.4949951171875,
+            "regret_abs_p90": 172.0299835205078,
+            "regret_abs_p99": 278.5844090270992,
+            "capture_mean": 0.8034723306028833,
+            "capture_median": 0.8715574518558661,
+            "false_buy_now_rate": 0.6062900407687828,
+            "trajectory_buy_coverage": 0.09183841714756802
+          },
+          "passes_profile": true,
+          "constraint_fails": [],
+          "soft_warnings": [],
+          "constraint_details": {
+            "buy_now_share": {
+              "value": 0.011451476286707084,
+              "op": "<=",
+              "threshold": 0.2,
+              "pass": true
+            },
+            "alert_rate": {
+              "value": 0.011531509900825012,
+              "op": "<=",
+              "threshold": 0.25,
+              "pass": true
+            },
+            "abstain_share": {
+              "value": 0.27889046732961176,
+              "op": "<=",
+              "threshold": 0.35,
+              "pass": true
+            },
+            "capture_median": {
+              "value": 0.8715574518558661,
+              "op": ">=",
+              "threshold": 0.82,
+              "pass": true
+            }
+          }
+        },
+        {
+          "config": {
+            "max_width_over_price": 1.0,
+            "abstain_width_over_price": 1.25,
+            "buy_trigger_margin_usd": 0,
+            "drop_proba_buy_max": 0.4,
+            "alert_drop_threshold": 0.85,
+            "alert_near_floor_pct": 1.03,
+            "route_popularity_min": 250,
+            "ttd_lower": 1,
+            "ttd_upper": 60
+          },
+          "config_summary": "width\u22641.0 | abstain>1.25 | buy\u2265+$0 | drop\u22640.4 | alert\u22650.85 | floor\u00d71.03 | pop\u2265250 | ttd[1,60]",
+          "metrics": {
+            "alert_precision_floor_1_05": 0.20719674985490424,
+            "alert_precision_floor_1_10": 0.23331398723157284,
+            "alert_recall_floor_1_05": 0.03490589098020044,
+            "alert_rate": 0.011531509900825012,
+            "buy_now_share": 0.011451476286707084,
+            "abstain_share": 0.27889046732961176,
+            "monitor_share": 0.03750241768209315,
+            "wait_share": 0.6606241288007629,
+            "regret_abs_mean": 64.76842010813084,
+            "regret_abs_p50": 37.4949951171875,
+            "regret_abs_p90": 172.0299835205078,
+            "regret_abs_p99": 278.5844090270992,
+            "capture_mean": 0.8034723306028833,
+            "capture_median": 0.8715574518558661,
+            "false_buy_now_rate": 0.6062900407687828,
+            "trajectory_buy_coverage": 0.09183841714756802
+          },
+          "passes_profile": true,
+          "constraint_fails": [],
+          "soft_warnings": [],
+          "constraint_details": {
+            "buy_now_share": {
+              "value": 0.011451476286707084,
+              "op": "<=",
+              "threshold": 0.2,
+              "pass": true
+            },
+            "alert_rate": {
+              "value": 0.011531509900825012,
+              "op": "<=",
+              "threshold": 0.25,
+              "pass": true
+            },
+            "abstain_share": {
+              "value": 0.27889046732961176,
+              "op": "<=",
+              "threshold": 0.35,
+              "pass": true
+            },
+            "capture_median": {
+              "value": 0.8715574518558661,
+              "op": ">=",
+              "threshold": 0.82,
+              "pass": true
+            }
+          }
+        }
+      ],
+      "nearest_miss_top_5": [],
+      "verdict": "feasible_candidate_found"
+    }
+  },
+  "rejected_candidates_summary": {
+    "A_safety_first": {
+      "n_feasible": 36,
+      "fail_token_counts_in_top_evaluated": {}
+    },
+    "B_balanced_product": {
+      "n_feasible": 0,
+      "fail_token_counts_in_top_evaluated": {
+        "regret_p90": 5
+      }
+    },
+    "C_low_friction_ux": {
+      "n_feasible": 0,
+      "fail_token_counts_in_top_evaluated": {
+        "abstain_share": 5
+      }
+    },
+    "D_shadow_mode_learning": {
+      "n_feasible": 24,
+      "fail_token_counts_in_top_evaluated": {}
+    }
+  },
+  "global_recommendation": {
+    "verdict": "PROMOTE \u2014 Profile A or B has at least one feasible candidate. Recommend opening b1/v7a-policy-apply-candidate to apply the selected thresholds to scripts/train/v7a/policy.py with a regression test.",
+    "whether_policy_py_should_be_modified_next": true,
+    "recommended_next_branch": "b1/v7a-policy-apply-candidate",
+    "recommended_next_action": "Edit scripts/train/v7a/policy.py to set: WIDTH_RATIO_ABSTAIN, BUY_THRESHOLD (or equivalent margin gate), and add the new drop_proba_buy_max + alert_near_floor_pct gates. Re-run backtest.py and confirm metrics match the offline sweep. No Modal, no retraining.",
+    "n_feasible_per_profile": {
+      "A_safety_first": 36,
+      "B_balanced_product": 0,
+      "C_low_friction_ux": 0,
+      "D_shadow_mode_learning": 24
+    }
+  },
+  "whether_policy_py_should_be_modified_next": true,
+  "recommended_next_branch": "b1/v7a-policy-apply-candidate",
+  "recommended_next_action": "Edit scripts/train/v7a/policy.py to set: WIDTH_RATIO_ABSTAIN, BUY_THRESHOLD (or equivalent margin gate), and add the new drop_proba_buy_max + alert_near_floor_pct gates. Re-run backtest.py and confirm metrics match the offline sweep. No Modal, no retraining.",
+  "limitations": [
+    "Selection draws only from the upstream pool (`top_candidates_by_safety_first_rank` \u222a `pareto_candidates`); candidates outside that pool are not re-scored.",
+    "Profile constraints are non-overlapping by design \u2014 a Profile-D feasible candidate is NOT automatically promoted for Profile A/B / production policy use.",
+    "`regret_p90` baseline is taken from `v7a_hybrid` (Phase-1 production baseline). Falls back to `v7a_ml_only` if absent.",
+    "Sweep underlying data is 2022-04 to 2022-10 only \u2014 no winter, no 2023+, no 2024+. Production behaviour on newer data is unmeasured.",
+    "AUTO_BUY remains hard-locked off regardless of any selected candidate \u2014 that gate is enforced inside `policy.py`, not by this selection script."
+  ]
+}
