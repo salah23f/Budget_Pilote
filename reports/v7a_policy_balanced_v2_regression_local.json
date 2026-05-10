@@ -1,0 +1,205 @@
+{
+  "status": "ok",
+  "generated_at": "2026-05-10T19:06:19Z",
+  "branch_expected": "b1/v7a-policy-apply-balanced-v2",
+  "selected_profile": "balanced_v2_strict",
+  "source_report": "reports/v7a_policy_sweep_v2_local.json",
+  "config": {
+    "max_width_over_price": 1.5,
+    "abstain_width_over_price": 2.0,
+    "buy_trigger_margin_usd": 20,
+    "drop_proba_buy_max": 0.25,
+    "alert_drop_threshold": 0.95,
+    "alert_near_floor_pct": 1.01,
+    "route_popularity_min": 30,
+    "ttd_lower": 5,
+    "ttd_upper": 90,
+    "monitor_drop_proba_min": 0.3,
+    "monitor_ttd_min": 7,
+    "monitor_width_over_price_max": 0.5
+  },
+  "n_rows": 149937,
+  "action_match": {
+    "match_rate": 1.0,
+    "n_mismatch": 0,
+    "first_10_mismatches": []
+  },
+  "actual_action_distribution": {
+    "ABSTAIN": 26195,
+    "ALERT": 239,
+    "BUY_NOW": 1014,
+    "MONITOR": 9176,
+    "WAIT": 113313
+  },
+  "expected_action_distribution": {
+    "ABSTAIN": 26195,
+    "ALERT": 239,
+    "BUY_NOW": 1014,
+    "MONITOR": 9176,
+    "WAIT": 113313
+  },
+  "actual_metrics": {
+    "config": {
+      "max_width_over_price": 1.5,
+      "abstain_width_over_price": 2.0,
+      "buy_trigger_margin_usd": 20,
+      "drop_proba_buy_max": 0.25,
+      "alert_drop_threshold": 0.95,
+      "alert_near_floor_pct": 1.01,
+      "route_popularity_min": 30,
+      "ttd_lower": 5,
+      "ttd_upper": 90,
+      "monitor_drop_proba_min": 0.3,
+      "monitor_ttd_min": 7,
+      "monitor_width_over_price_max": 0.5
+    },
+    "n_rows": 149937,
+    "action_distribution_count": {
+      "ABSTAIN": 26195,
+      "BUY_NOW": 1014,
+      "ALERT": 239,
+      "MONITOR": 9176,
+      "WAIT": 113313
+    },
+    "action_share": {
+      "ABSTAIN": 0.174706710151597,
+      "BUY_NOW": 0.006762840392965045,
+      "ALERT": 0.00159400281451543,
+      "MONITOR": 0.061199036928843445,
+      "WAIT": 0.755737409712079
+    },
+    "alert_rate": 0.00159400281451543,
+    "buy_now_share": 0.006762840392965045,
+    "abstain_share": 0.174706710151597,
+    "monitor_share": 0.061199036928843445,
+    "wait_share": 0.755737409712079,
+    "alert_precision_floor_1_05": 0.45251396648044695,
+    "alert_precision_floor_1_10": 0.5019952114924182,
+    "alert_recall_floor_1_05": 0.027719384013688585,
+    "false_buy_now_rate": 0.363905325443787,
+    "regret_abs_mean": 24.753138690058854,
+    "regret_abs_p50": 1.0,
+    "regret_abs_p90": 73.9919921875,
+    "regret_abs_p99": 157.94800537109373,
+    "capture_mean": 0.8827456125522702,
+    "capture_median": 0.9941211054431625,
+    "n_trajectories_with_buy": 819,
+    "n_trajectories_total": 12130,
+    "trajectory_buy_coverage": 0.06751854905193734,
+    "segment_metrics_by_ttd": {
+      "0-7": {
+        "n": 23440,
+        "alert_rate": 0.0,
+        "buy_now_share": 0.01348122866894198,
+        "alert_precision_floor_1_05": 0.5
+      },
+      "8-21": {
+        "n": 44281,
+        "alert_rate": 0.0005871592782457488,
+        "buy_now_share": 0.0077234028138479256,
+        "alert_precision_floor_1_05": 0.48641304347826086
+      },
+      "22-60": {
+        "n": 82216,
+        "alert_rate": 0.002590736596282962,
+        "buy_now_share": 0.004330057409749927,
+        "alert_precision_floor_1_05": 0.40421792618629176
+      }
+    }
+  },
+  "expected_reference_metrics": {
+    "alert_precision_floor_1_05": 0.45251396648044695,
+    "alert_precision_floor_1_10": 0.5019952114924182,
+    "alert_recall_floor_1_05": 0.027719384013688585,
+    "buy_now_share": 0.006762840392965045,
+    "alert_rate": 0.00159400281451543,
+    "abstain_share": 0.174706710151597,
+    "regret_abs_mean": 24.753138690058854,
+    "regret_abs_p90": 73.9919921875,
+    "regret_abs_p99": 157.94800537109373,
+    "capture_median": 0.9941211054431625
+  },
+  "metric_checks": {
+    "alert_precision_floor_1_05": {
+      "expected": 0.45251396648044695,
+      "actual": 0.45251396648044695,
+      "diff": 0.0,
+      "tolerance": 0.005,
+      "passed": true
+    },
+    "alert_precision_floor_1_10": {
+      "expected": 0.5019952114924182,
+      "actual": 0.5019952114924182,
+      "diff": 0.0,
+      "tolerance": 0.005,
+      "passed": true
+    },
+    "alert_recall_floor_1_05": {
+      "expected": 0.027719384013688585,
+      "actual": 0.027719384013688585,
+      "diff": 0.0,
+      "tolerance": 0.005,
+      "passed": true
+    },
+    "buy_now_share": {
+      "expected": 0.006762840392965045,
+      "actual": 0.006762840392965045,
+      "diff": 0.0,
+      "tolerance": 0.005,
+      "passed": true
+    },
+    "alert_rate": {
+      "expected": 0.00159400281451543,
+      "actual": 0.00159400281451543,
+      "diff": 0.0,
+      "tolerance": 0.005,
+      "passed": true
+    },
+    "abstain_share": {
+      "expected": 0.174706710151597,
+      "actual": 0.174706710151597,
+      "diff": 0.0,
+      "tolerance": 0.005,
+      "passed": true
+    },
+    "regret_abs_mean": {
+      "expected": 24.753138690058854,
+      "actual": 24.753138690058854,
+      "diff": 0.0,
+      "tolerance": 1.0,
+      "passed": true
+    },
+    "regret_abs_p90": {
+      "expected": 73.9919921875,
+      "actual": 73.9919921875,
+      "diff": 0.0,
+      "tolerance": 1.8497998046875002,
+      "passed": true
+    },
+    "regret_abs_p99": {
+      "expected": 157.94800537109373,
+      "actual": 157.94800537109373,
+      "diff": 0.0,
+      "tolerance": 3.9487001342773436,
+      "passed": true
+    },
+    "capture_median": {
+      "expected": 0.9941211054431625,
+      "actual": 0.9941211054431625,
+      "diff": 0.0,
+      "tolerance": 0.005,
+      "passed": true
+    }
+  },
+  "limitations": [
+    "budget_max forced to 1e6 to neutralize budget gate (sweep has no budget gate).",
+    "backtest.py still uses legacy ALERT_SOFT/ALERT_STRONG counters \u2014 not edited.",
+    "preference_match defaulted to 1.0 for all rows.",
+    "MONITOR params are now parameterized (differs from policy_tune hardcoded defaults)."
+  ],
+  "auto_buy": {
+    "enabled_in_regression_context": false,
+    "emitted_count": 0,
+    "note": "AUTO_BUY remains disabled in Phase 1."
+  }
+}
