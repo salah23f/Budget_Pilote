@@ -1,0 +1,197 @@
+{
+  "status": "ok",
+  "generated_at": "2026-05-10T14:21:56Z",
+  "branch_expected": "b1/v7a-policy-apply-candidate",
+  "selected_profile": "A_safety_first",
+  "config": {
+    "max_width_over_price": 1.0,
+    "abstain_width_over_price": 1.0,
+    "buy_trigger_margin_usd": 0,
+    "drop_proba_buy_max": 0.4,
+    "alert_drop_threshold": 0.85,
+    "alert_near_floor_pct": 1.03,
+    "route_popularity_min": 30,
+    "ttd_lower": 1,
+    "ttd_upper": 60
+  },
+  "n_rows": 149937,
+  "action_match": {
+    "match_rate": 1.0,
+    "n_mismatch": 0,
+    "first_10_mismatches": []
+  },
+  "actual_action_distribution": {
+    "ABSTAIN": 60625,
+    "ALERT": 1729,
+    "BUY_NOW": 1717,
+    "MONITOR": 5623,
+    "WAIT": 80243
+  },
+  "expected_action_distribution": {
+    "ABSTAIN": 60625,
+    "ALERT": 1729,
+    "BUY_NOW": 1717,
+    "MONITOR": 5623,
+    "WAIT": 80243
+  },
+  "actual_metrics": {
+    "config": {
+      "max_width_over_price": 1.0,
+      "abstain_width_over_price": 1.0,
+      "buy_trigger_margin_usd": 0,
+      "drop_proba_buy_max": 0.4,
+      "alert_drop_threshold": 0.85,
+      "alert_near_floor_pct": 1.03,
+      "route_popularity_min": 30,
+      "ttd_lower": 1,
+      "ttd_upper": 60
+    },
+    "n_rows": 149937,
+    "action_distribution_count": {
+      "ABSTAIN": 60625,
+      "BUY_NOW": 1717,
+      "ALERT": 1729,
+      "MONITOR": 5623,
+      "WAIT": 80243
+    },
+    "action_share": {
+      "ABSTAIN": 0.40433648799162314,
+      "BUY_NOW": 0.011451476286707084,
+      "ALERT": 0.011531509900825012,
+      "MONITOR": 0.03750241768209315,
+      "WAIT": 0.5351781081387517
+    },
+    "alert_rate": 0.011531509900825012,
+    "buy_now_share": 0.011451476286707084,
+    "abstain_share": 0.40433648799162314,
+    "monitor_share": 0.03750241768209315,
+    "wait_share": 0.5351781081387517,
+    "alert_precision_floor_1_05": 0.20719674985490424,
+    "alert_precision_floor_1_10": 0.23331398723157284,
+    "alert_recall_floor_1_05": 0.03490589098020044,
+    "false_buy_now_rate": 0.6062900407687828,
+    "regret_abs_mean": 64.76842010813084,
+    "regret_abs_p50": 37.4949951171875,
+    "regret_abs_p90": 172.0299835205078,
+    "regret_abs_p99": 278.5844090270992,
+    "capture_mean": 0.8034723306028833,
+    "capture_median": 0.8715574518558661,
+    "n_trajectories_with_buy": 1114,
+    "n_trajectories_total": 12130,
+    "trajectory_buy_coverage": 0.09183841714756802,
+    "segment_metrics_by_ttd": {
+      "0-7": {
+        "n": 23440,
+        "alert_rate": 0.0,
+        "buy_now_share": 0.055204778156996585,
+        "alert_precision_floor_1_05": 0.37094281298299847
+      },
+      "8-21": {
+        "n": 44281,
+        "alert_rate": 0.004290779341026625,
+        "buy_now_share": 0.004765023373455884,
+        "alert_precision_floor_1_05": 0.2518703241895262
+      },
+      "22-60": {
+        "n": 82216,
+        "alert_rate": 0.018718984139340273,
+        "buy_now_share": 0.002578573513671305,
+        "alert_precision_floor_1_05": 0.0759565962307253
+      }
+    }
+  },
+  "expected_reference_metrics": {
+    "alert_precision_floor_1_05": 0.2072,
+    "alert_precision_floor_1_10": 0.2333,
+    "alert_recall_floor_1_05": 0.0349,
+    "buy_now_share": 0.0115,
+    "alert_rate": 0.0115,
+    "abstain_share": 0.4043,
+    "regret_abs_mean": 64.77,
+    "regret_abs_p90": 172.0,
+    "regret_abs_p99": 278.6,
+    "capture_median": 0.8716
+  },
+  "metric_checks": {
+    "alert_precision_floor_1_05": {
+      "expected": 0.2072,
+      "actual": 0.20719674985490424,
+      "diff": 3.250145095751167e-06,
+      "tolerance": 0.005,
+      "passed": true
+    },
+    "alert_precision_floor_1_10": {
+      "expected": 0.2333,
+      "actual": 0.23331398723157284,
+      "diff": 1.3987231572837322e-05,
+      "tolerance": 0.005,
+      "passed": true
+    },
+    "alert_recall_floor_1_05": {
+      "expected": 0.0349,
+      "actual": 0.03490589098020044,
+      "diff": 5.890980200436158e-06,
+      "tolerance": 0.005,
+      "passed": true
+    },
+    "buy_now_share": {
+      "expected": 0.0115,
+      "actual": 0.011451476286707084,
+      "diff": 4.852371329291602e-05,
+      "tolerance": 0.005,
+      "passed": true
+    },
+    "alert_rate": {
+      "expected": 0.0115,
+      "actual": 0.011531509900825012,
+      "diff": 3.150990082501255e-05,
+      "tolerance": 0.005,
+      "passed": true
+    },
+    "abstain_share": {
+      "expected": 0.4043,
+      "actual": 0.40433648799162314,
+      "diff": 3.648799162314642e-05,
+      "tolerance": 0.005,
+      "passed": true
+    },
+    "regret_abs_mean": {
+      "expected": 64.77,
+      "actual": 64.76842010813084,
+      "diff": 0.0015798918691558583,
+      "tolerance": 1.61925,
+      "passed": true
+    },
+    "regret_abs_p90": {
+      "expected": 172.0,
+      "actual": 172.0299835205078,
+      "diff": 0.0299835205078125,
+      "tolerance": 4.3,
+      "passed": true
+    },
+    "regret_abs_p99": {
+      "expected": 278.6,
+      "actual": 278.5844090270992,
+      "diff": 0.015590972900838551,
+      "tolerance": 6.965000000000001,
+      "passed": true
+    },
+    "capture_median": {
+      "expected": 0.8716,
+      "actual": 0.8715574518558661,
+      "diff": 4.254814413395813e-05,
+      "tolerance": 0.005,
+      "passed": true
+    }
+  },
+  "limitations": [
+    "budget_max forced to 1e6 to neutralize budget gate (policy_tune has no budget gate).",
+    "backtest.py still uses legacy ALERT_SOFT/ALERT_STRONG counters \u2014 not edited in this sprint.",
+    "preference_match defaulted to 1.0 for all rows."
+  ],
+  "auto_buy": {
+    "enabled_in_regression_context": false,
+    "emitted_count": 0,
+    "note": "AUTO_BUY remains disabled in Phase 1."
+  }
+}
