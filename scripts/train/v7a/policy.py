@@ -1,8 +1,8 @@
 """
-v7a/policy.py — V7a decision policy, Profile-A (Safety-first).
+v7a/policy.py — V7a decision policy, Balanced V2 (strict).
 
-Selected candidate from docs/v7a/V7A_POLICY_SELECTION_DECISION.md.
-Sprint: b1/v7a-policy-apply-candidate.
+Selected candidate from docs/v7a/V7A_POLICY_SWEEP_V2_RESULTS.md.
+Sprint: b1/v7a-policy-apply-balanced-v2.
 
 Actions (ordered): ABSTAIN → BUY_NOW → ALERT → MONITOR → WAIT.
 AUTO_BUY is hard-locked off in Phase 1.
@@ -27,23 +27,23 @@ from _env import log  # noqa: E402
 
 
 # =============================================================================
-# Profile-A thresholds — docs/v7a/V7A_POLICY_SELECTION_DECISION.md §5
+# Balanced V2 thresholds — docs/v7a/V7A_POLICY_SWEEP_V2_RESULTS.md
 # =============================================================================
 
-MAX_WIDTH_OVER_PRICE = 1.00          # BUY/ALERT width gate
-ABSTAIN_WIDTH_OVER_PRICE = 1.00      # ABSTAIN width gate
-BUY_TRIGGER_MARGIN_USD = 0.0         # buy_trigger >= margin to fire BUY_NOW
-DROP_PROBA_BUY_MAX = 0.40            # BUY_NOW only if drop_proba <= this
-ALERT_DROP_THRESHOLD = 0.85          # ALERT requires drop_proba >= this
-ALERT_NEAR_FLOOR_PCT = 1.03          # ALERT requires price <= q10_train * pct
+MAX_WIDTH_OVER_PRICE = 1.50          # BUY/ALERT width gate
+ABSTAIN_WIDTH_OVER_PRICE = 2.00      # ABSTAIN width gate
+BUY_TRIGGER_MARGIN_USD = 20.0        # buy_trigger >= margin to fire BUY_NOW
+DROP_PROBA_BUY_MAX = 0.25            # BUY_NOW only if drop_proba <= this
+ALERT_DROP_THRESHOLD = 0.95          # ALERT requires drop_proba >= this
+ALERT_NEAR_FLOOR_PCT = 1.01          # ALERT requires price <= q10_train * pct
 ROUTE_POPULARITY_MIN = 30            # ABSTAIN if route_popularity < this
-TTD_LOWER = 1                        # ABSTAIN if ttd < this
-TTD_UPPER = 60                       # ABSTAIN if ttd > this
+TTD_LOWER = 5                        # ABSTAIN if ttd < this
+TTD_UPPER = 90                       # ABSTAIN if ttd > this
 
 # MONITOR band constants
-MONITOR_DROP_PROBA_MIN = 0.40        # MONITOR requires drop_proba >= this
-MONITOR_TTD_MIN = 14                 # MONITOR requires ttd >= this
-MONITOR_WIDTH_OVER_PRICE_MAX = 0.75  # MONITOR requires width_over_price <= this
+MONITOR_DROP_PROBA_MIN = 0.30        # MONITOR requires drop_proba >= this
+MONITOR_TTD_MIN = 7                  # MONITOR requires ttd >= this
+MONITOR_WIDTH_OVER_PRICE_MAX = 0.50  # MONITOR requires width_over_price <= this
 
 
 # =============================================================================

@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """
-v7a/policy_regression_check.py — regression check for Profile-A policy.
+v7a/policy_regression_check.py — regression check for Balanced V2 policy.
 
 Verifies that policy.py classify() reproduces the vectorized sweep logic
-from policy_tune._classify_candidate() on the same test dataset.
+from policy_sweep_v2._classify_v2() on the same test dataset.
 
 Usage:
   python3 scripts/train/v7a/policy_regression_check.py
 
-Writes: reports/v7a_policy_regression_local.json
+Writes: reports/v7a_policy_balanced_v2_regression_local.json
 Exit 0 on success, non-zero on failure.
 """
 
@@ -24,50 +24,51 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from policy import PolicyContext, classify, decision_to_dict  # noqa: E402
 from policy_tune import (  # noqa: E402
-    _bucket_key,
-    _c_for,
-    _classify_candidate,
-    _eval_candidate,
     _build_arrays,
+    _eval_candidate,
     _load_true_sweep_inputs,
-    ALPHA_CONFORMAL,
-    ARTIFACT_PROBE,
     map_aliases,
     probe_artifacts,
 )
+from policy_sweep_v2 import _classify_v2  # noqa: E402
 
 # =============================================================================
-# Config — Profile A (mirrors V7A_POLICY_SELECTION_DECISION.md §5)
+# Config — Balanced V2 strict (from sweep v2 recommendation)
 # =============================================================================
 
-PROFILE_A_CFG = {
-    "max_width_over_price": 1.0,
-    "abstain_width_over_price": 1.0,
-    "buy_trigger_margin_usd": 0,
-    "drop_proba_buy_max": 0.4,
-    "alert_drop_threshold": 0.85,
-    "alert_near_floor_pct": 1.03,
+SWEEP_V2_REPORT = REPO_ROOT / "reports" / "v7a_policy_sweep_v2_local.json"
+
+BALANCED_V2_CFG = {
+    "max_width_over_price": 1.5,
+    "abstain_width_over_price": 2.0,
+    "buy_trigger_margin_usd": 20,
+    "drop_proba_buy_max": 0.25,
+    "alert_drop_threshold": 0.95,
+    "alert_near_floor_pct": 1.01,
     "route_popularity_min": 30,
-    "ttd_lower": 1,
-    "ttd_upper": 60,
+    "ttd_lower": 5,
+    "ttd_upper": 90,
+    "monitor_drop_proba_min": 0.30,
+    "monitor_ttd_min": 7,
+    "monitor_width_over_price_max": 0.50,
 }
 
 EXPECTED_METRICS = {
-    "alert_precision_floor_1_05": 0.2072,
-    "alert_precision_floor_1_10": 0.2333,
-    "alert_recall_floor_1_05": 0.0349,
-    "buy_now_share": 0.0115,
-    "alert_rate": 0.0115,
-    "abstain_share": 0.4043,
-    "regret_abs_mean": 64.77,
-    "regret_abs_p90": 172.0,
-    "regret_abs_p99": 278.6,
-    "capture_median": 0.8716,
+    "alert_precision_floor_1_05": 0.45251396648044695,
+    "alert_precision_floor_1_10": 0.5019952114924182,
+    "alert_recall_floor_1_05": 0.027719384013688585,
+    "buy_now_share": 0.006762840392965045,
+    "alert_rate": 0.00159400281451543,
+    "abstain_share": 0.174706710151597,
+    "regret_abs_mean": 24.753138690058854,
+    "regret_abs_p90": 73.9919921875,
+    "regret_abs_p99": 157.94800537109373,
+    "capture_median": 0.9941211054431625,
 }
 
 MATCH_RATE_MIN = 0.995
 
-OUT_JSON = REPO_ROOT / "reports" / "v7a_policy_regression_local.json"
+OUT_JSON = REPO_ROOT / "reports" / "v7a_policy_balanced_v2_regression_local.json"
 
 
 # =============================================================================
@@ -92,15 +93,27 @@ def fail(report: dict) -> None:
 
 def main() -> None:
     import numpy as np  # type: ignore
-    import pandas as pd  # type: ignore
 
     report: dict = {
         "status": "running",
         "generated_at": now_iso(),
-        "branch_expected": "b1/v7a-policy-apply-candidate",
-        "selected_profile": "A_safety_first",
-        "config": PROFILE_A_CFG,
+        "branch_expected": "b1/v7a-policy-apply-balanced-v2",
+        "selected_profile": "balanced_v2_strict",
+        "source_report": "reports/v7a_policy_sweep_v2_local.json",
+        "config": BALANCED_V2_CFG,
     }
+
+    # --- Validate sweep v2 report exists and matches ---
+    if SWEEP_V2_REPORT.exists():
+        sweep_data = json.loads(SWEEP_V2_REPORT.read_text(encoding="utf-8"))
+        rec = sweep_data.get("recommendation", {})
+        if rec.get("verdict") != "PROMOTE_BALANCED_V2_STRICT_CANDIDATE":
+            report["warning"] = (
+                f"sweep v2 verdict is '{rec.get('verdict')}', "
+                "expected PROMOTE_BALANCED_V2_STRICT_CANDIDATE"
+            )
+    else:
+        report["warning"] = "sweep v2 report not found; using hardcoded config"
 
     # --- Load artifacts via policy_tune infrastructure ---
     _checked, found = probe_artifacts()
@@ -132,8 +145,8 @@ def main() -> None:
     # Build arrays (same as policy_tune)
     arr = _build_arrays(df_pred, df_feat, mondrian, df_train_q10, pred_map, feat_map)
 
-    # --- Expected actions via vectorized logic ---
-    expected_actions = _classify_candidate(arr, PROFILE_A_CFG)
+    # --- Expected actions via vectorized logic (sweep v2 classifier) ---
+    expected_actions = _classify_v2(arr, BALANCED_V2_CFG)
 
     # --- Actual actions via policy.classify() ---
     actual_actions_list: list[str] = []
@@ -213,7 +226,7 @@ def main() -> None:
         fail(report)
 
     # --- Metrics comparison ---
-    actual_metrics = _eval_candidate(arr, actual_actions, PROFILE_A_CFG)
+    actual_metrics = _eval_candidate(arr, actual_actions, BALANCED_V2_CFG)
     report["actual_metrics"] = actual_metrics
     report["expected_reference_metrics"] = EXPECTED_METRICS
 
@@ -256,9 +269,10 @@ def main() -> None:
     # --- Success ---
     report["status"] = "ok"
     report["limitations"] = [
-        "budget_max forced to 1e6 to neutralize budget gate (policy_tune has no budget gate).",
-        "backtest.py still uses legacy ALERT_SOFT/ALERT_STRONG counters — not edited in this sprint.",
+        "budget_max forced to 1e6 to neutralize budget gate (sweep has no budget gate).",
+        "backtest.py still uses legacy ALERT_SOFT/ALERT_STRONG counters — not edited.",
         "preference_match defaulted to 1.0 for all rows.",
+        "MONITOR params are now parameterized (differs from policy_tune hardcoded defaults).",
     ]
     report["auto_buy"] = {
         "enabled_in_regression_context": False,
