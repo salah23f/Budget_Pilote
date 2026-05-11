@@ -1,0 +1,160 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "v7a_shadow_decision_log",
+  "title": "V7a Shadow Decision Log",
+  "description": "Application-boundary contract for a single V7a shadow/advisory policy decision. AUTO_BUY is intentionally excluded.",
+  "type": "object",
+  "required": [
+    "route",
+    "action",
+    "policy_version",
+    "can_autobuy",
+    "score_autobuy",
+    "thresholds",
+    "decision_reasons"
+  ],
+  "properties": {
+    "environment": {
+      "type": "string",
+      "enum": ["local", "staging", "production", "test"],
+      "default": "local"
+    },
+    "shadow_run_id": {
+      "type": ["string", "null"]
+    },
+    "trace_id": {
+      "type": ["string", "null"]
+    },
+    "mission_id": {
+      "type": ["string", "null"],
+      "format": "uuid"
+    },
+    "user_id": {
+      "type": ["string", "null"],
+      "format": "uuid"
+    },
+    "route": {
+      "type": "string",
+      "minLength": 1
+    },
+    "origin": {
+      "type": ["string", "null"]
+    },
+    "destination": {
+      "type": ["string", "null"]
+    },
+    "depart_date": {
+      "type": ["string", "null"],
+      "format": "date"
+    },
+    "fetched_at": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "ttd_days": {
+      "type": ["number", "null"]
+    },
+    "price_usd": {
+      "type": ["number", "null"],
+      "minimum": 0
+    },
+    "q10_gain": {
+      "type": ["number", "null"]
+    },
+    "q50_gain": {
+      "type": ["number", "null"]
+    },
+    "q90_gain": {
+      "type": ["number", "null"]
+    },
+    "c_alpha_gain": {
+      "type": ["number", "null"]
+    },
+    "width_over_price": {
+      "type": ["number", "null"],
+      "minimum": 0
+    },
+    "drop_proba": {
+      "type": ["number", "null"],
+      "minimum": 0,
+      "maximum": 1
+    },
+    "q10_train_route": {
+      "type": ["number", "null"]
+    },
+    "route_known": {
+      "type": ["boolean", "null"]
+    },
+    "route_popularity": {
+      "type": ["integer", "null"]
+    },
+    "action": {
+      "type": "string",
+      "enum": ["ABSTAIN", "BUY_NOW", "ALERT", "MONITOR", "WAIT"]
+    },
+    "confidence": {
+      "type": ["number", "null"],
+      "minimum": 0,
+      "maximum": 1
+    },
+    "score_alert": {
+      "type": ["number", "null"]
+    },
+    "score_buy": {
+      "type": ["number", "null"]
+    },
+    "score_autobuy": {
+      "type": "number",
+      "const": 0
+    },
+    "can_autobuy": {
+      "type": "boolean",
+      "const": false
+    },
+    "autobuy_enabled_input": {
+      "type": "boolean",
+      "default": false
+    },
+    "policy_version": {
+      "type": "string",
+      "default": "v7a-balanced-v2"
+    },
+    "policy_source": {
+      "type": "string",
+      "default": "scripts/train/v7a/policy.py"
+    },
+    "model_version": {
+      "type": ["string", "null"]
+    },
+    "thresholds": {
+      "type": "object",
+      "description": "Snapshot of policy threshold constants at decision time."
+    },
+    "decision_reasons": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of reason strings from classify()."
+    },
+    "feature_snapshot": {
+      "type": "object",
+      "default": {}
+    },
+    "artifact_versions": {
+      "type": "object",
+      "default": {}
+    },
+    "decision_latency_ms": {
+      "type": ["integer", "null"],
+      "minimum": 0
+    },
+    "error_code": {
+      "type": ["string", "null"]
+    },
+    "error_message": {
+      "type": ["string", "null"]
+    }
+  },
+  "additionalProperties": false
+}
