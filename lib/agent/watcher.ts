@@ -32,6 +32,7 @@ import {
 import { predict, type Prediction } from './predictor';
 import { predictV7, type EnsembleDecision } from './v7';
 import { predictV7aFirst, type EnrichedPrediction } from './v7a';
+import { logV7aShadowFromPrediction } from '../v7a/shadow-logging-runtime-wiring';
 import type { Mission, Offer } from '../types';
 
 /**
@@ -276,6 +277,18 @@ export async function watchMission(mission: Mission): Promise<WatchResult> {
             daysUntilDeparture,
             provider
           );
+          // V7a structured shadow log → staging v7a_shadow_decision_logs
+          void logV7aShadowFromPrediction(
+            enriched.v7a,
+            {
+              mission_id: mission.id,
+              origin: mission.origin,
+              destination: mission.destination,
+              depart_date: mission.departDate,
+              fetched_at: checkedAt,
+            },
+            { env: process.env as Record<string, string | undefined> }
+          ).catch(() => {/* non-fatal */});
           console.log('[v7a-shadow-watcher]', {
             route: `${mission.origin}-${mission.destination}`,
             engine: enriched.engine,
