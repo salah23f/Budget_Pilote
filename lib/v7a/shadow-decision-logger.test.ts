@@ -14,7 +14,7 @@ import {
   type SupabaseLikeClient,
   validateV7aShadowDecisionLog,
   logV7aShadowDecision,
-} from "./shadow-decision-logger.js";
+} from "./shadow-decision-logger";
 
 // =============================================================================
 // Mock Supabase client

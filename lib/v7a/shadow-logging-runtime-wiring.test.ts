@@ -5,13 +5,13 @@
  */
 
 import assert from "node:assert/strict";
-import type { SupabaseLikeClient } from "./shadow-decision-logger.js";
+import type { SupabaseLikeClient } from "./shadow-decision-logger";
 import {
   logV7aShadowFromPrediction,
   type V7aPredictionInput,
   type WiringContext,
   type WiringDeps,
-} from "./shadow-logging-runtime-wiring.js";
+} from "./shadow-logging-runtime-wiring";
 
 // =============================================================================
 // Mock
@@ -191,7 +191,7 @@ async function test_logger_failure_nonfatal() {
 }
 
 async function test_no_forbidden_imports() {
-  const mod = await import("./shadow-logging-runtime-wiring.js");
+  const mod = await import("./shadow-logging-runtime-wiring");
   const keys = Object.keys(mod);
   for (const forbidden of ["payment", "checkout", "escrow", "booking", "modal"]) {
     assert.equal(

@@ -7,8 +7,8 @@
  */
 
 import assert from "node:assert/strict";
-import type { V7aShadowDecisionLogInput, SupabaseLikeClient } from "./shadow-decision-logger.js";
-import { logV7aShadowDecisionIfEnabled, type AdapterDeps } from "./shadow-logging-runtime-adapter.js";
+import type { V7aShadowDecisionLogInput, SupabaseLikeClient } from "./shadow-decision-logger";
+import { logV7aShadowDecisionIfEnabled, type AdapterDeps } from "./shadow-logging-runtime-adapter";
 
 // =============================================================================
 // Mock
@@ -195,7 +195,7 @@ async function test_handles_logger_failure() {
 
 async function test_no_forbidden_imports() {
   // Verify by checking module exports — no payment/escrow terms
-  const mod = await import("./shadow-logging-runtime-adapter.js");
+  const mod = await import("./shadow-logging-runtime-adapter");
   const keys = Object.keys(mod);
   for (const forbidden of ["payment", "checkout", "escrow", "modal", "purchase"]) {
     assert.equal(

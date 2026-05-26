@@ -11,12 +11,12 @@
  * No payment. No checkout. No escrow. No auto-buy. No production.
  */
 
-import type { V7aShadowDecisionLogInput, SupabaseLikeClient } from "./shadow-decision-logger.js";
+import type { V7aShadowDecisionLogInput, SupabaseLikeClient } from "./shadow-decision-logger";
 import {
   logV7aShadowDecisionIfEnabled,
   type AdapterEnv,
   type AdapterResult,
-} from "./shadow-logging-runtime-adapter.js";
+} from "./shadow-logging-runtime-adapter";
 
 // =============================================================================
 // Types (matches V7aPrediction from lib/agent/v7a/client.ts)

@@ -16,8 +16,8 @@ import type {
   V7aShadowDecisionLogInput,
   V7aShadowDecisionLogResult,
   SupabaseLikeClient,
-} from "./shadow-decision-logger.js";
-import { logV7aShadowDecision } from "./shadow-decision-logger.js";
+} from "./shadow-decision-logger";
+import { logV7aShadowDecision } from "./shadow-decision-logger";
 
 // =============================================================================
 // Types
