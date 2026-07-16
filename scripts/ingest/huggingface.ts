@@ -162,3 +162,20 @@ export async function ingestHuggingFace(): Promise<{
 
   return { datasetsFound: datasets.length, datasetsIngested, rowsInserted: totalRows, errors };
 }
+
+// CLI entry
+const isMain =
+  import.meta.url === `file://${process.argv[1]}` ||
+  process.argv[1]?.endsWith('huggingface.ts');
+
+if (isMain) {
+  ingestHuggingFace()
+    .then((r) => {
+      console.log('[huggingface] Done:', JSON.stringify(r, null, 2));
+      process.exit(0);
+    })
+    .catch((err) => {
+      console.error('[huggingface] Fatal:', err);
+      process.exit(1);
+    });
+}

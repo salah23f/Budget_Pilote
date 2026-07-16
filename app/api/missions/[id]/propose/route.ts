@@ -55,6 +55,17 @@ export async function POST(
   const missionId = context.params.id;
   const logCtx: Record<string, any> = { missionId };
 
+  // Only internal callers (the cron + sweep agent loops, which hold
+  // CRON_SECRET) are allowed to MOVE MONEY. A browser-initiated "Check now"
+  // may refresh the price and open a proposal, but must never silently
+  // capture a card / release escrow — so the auto-buy path below
+  // additionally requires this internal secret. Once per-user auth is wired,
+  // extend this to also allow the authenticated mission owner.
+  const authHeader = req.headers.get('authorization');
+  const isInternalCall =
+    !!process.env.CRON_SECRET &&
+    authHeader === `Bearer ${process.env.CRON_SECRET}`;
+
   try {
     const mission = await getMission(missionId);
     if (!mission) {
@@ -194,7 +205,7 @@ export async function POST(
       prediction.action === 'BUY_NOW' &&
       prediction.confidence >= AUTO_BUY_MIN_CONFIDENCE;
 
-    if (meetsThresholdGate && meetsPredictorGate) {
+    if (meetsThresholdGate && meetsPredictorGate && isInternalCall) {
       const proposal: MissionProposal = {
         id: crypto.randomUUID(),
         missionId,

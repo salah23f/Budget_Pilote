@@ -25,9 +25,9 @@ from sklearn.model_selection import TimeSeriesSplit
 OUTPUT_DIR = "models"
 INPUT_DIR = "data/features"
 QUANTILES = [0.05, 0.1, 0.25, 0.5, 0.75, 0.9, 0.95]
-N_TREES = 200
+N_TREES = 300
 MAX_DEPTH = 12
-MIN_SAMPLES_LEAF = 20
+MIN_SAMPLES_LEAF = 30
 
 
 def quantile_predict(forest, X, quantiles):
@@ -64,7 +64,19 @@ def main():
         return
 
     df = pd.read_parquet(path)
-    print(f"Loaded {len(df)} training rows")
+    print(f"Loaded {len(df):,} training rows")
+
+    TARGET_ROWS = 1_200_000
+    if len(df) > TARGET_ROWS and "origin" in df.columns and "destination" in df.columns:
+        df["__route__"] = df["origin"].astype(str) + "-" + df["destination"].astype(str)
+        n_routes = df["__route__"].nunique()
+        target_per_route = max(20, TARGET_ROWS // n_routes)
+        print(f"Stratified sampling: {n_routes:,} routes, target {target_per_route} per route")
+        df = (df.groupby("__route__", group_keys=False)
+                .apply(lambda g: g.sample(n=min(len(g), target_per_route), random_state=42))
+                .drop(columns="__route__")
+                .reset_index(drop=True))
+        print(f"After stratified sample: {len(df):,} rows")
 
     # Select numeric features
     exclude = {'price_usd', 'id', 'fetched_at', 'created_at', 'depart_date', 'origin', 'destination',
@@ -96,6 +108,10 @@ def main():
         n_estimators=N_TREES,
         max_depth=MAX_DEPTH,
         min_samples_leaf=MIN_SAMPLES_LEAF,
+        min_samples_split=50,
+        max_features='sqrt',
+        bootstrap=True,
+        max_samples=0.7,
         n_jobs=-1,
         random_state=42,
         verbose=1,

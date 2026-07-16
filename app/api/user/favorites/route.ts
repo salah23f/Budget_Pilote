@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const rows = items.map((item: Record<string, unknown>) => ({
+  const rows = (items as Record<string, unknown>[]).map((item) => ({
     id: item.id as string,
     user_id: userId,
     item_type: item.kind as string,

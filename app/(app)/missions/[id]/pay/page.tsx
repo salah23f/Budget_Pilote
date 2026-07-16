@@ -11,7 +11,11 @@
  *   - On success, redirect to the cockpit — the webhook will flip
  *     the mission state from 'awaiting_payment' → 'monitoring'
  *
- * Wallet rail:
+ * Wallet rail (HIDDEN — product decision, Stripe only for this version):
+ *   The full wallet flow is kept below behind WALLET_RAIL_ENABLED so it
+ *   can be reactivated later. While the flag is false, WalletPaySection
+ *   is never rendered, so no Privy hook runs (PrivyProvider is not
+ *   mounted in this build and usePrivy() would crash at runtime).
  *   - Connect via Privy (already wired elsewhere in the app)
  *   - Call USDC.approve(escrow, budget) — one tx
  *   - Call MissionEscrow.deposit(id, budget, autoBuyLimit, expiresAt)
@@ -24,38 +28,15 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { encodeFunctionData } from 'viem';
-import { usePrivy, useSendTransaction, useWallets } from '@privy-io/react-auth';
 import type { Mission } from '@/lib/types';
+import nextDynamic from 'next/dynamic';
 
-// Minimal ABI fragments for the two calls we need
-const USDC_APPROVE_ABI = [
-  {
-    type: 'function',
-    name: 'approve',
-    stateMutability: 'nonpayable',
-    inputs: [
-      { name: 'spender', type: 'address' },
-      { name: 'amount', type: 'uint256' },
-    ],
-    outputs: [{ name: '', type: 'bool' }],
-  },
-] as const;
+// Wallet rail ships in its own chunk — zero cost while the flag is off
+const WalletPaySection = nextDynamic(() => import('./wallet-pay-section'), { ssr: false });
 
-const ESCROW_DEPOSIT_ABI = [
-  {
-    type: 'function',
-    name: 'deposit',
-    stateMutability: 'nonpayable',
-    inputs: [
-      { name: 'id', type: 'bytes32' },
-      { name: 'budget', type: 'uint256' },
-      { name: 'autoBuyLimit', type: 'uint256' },
-      { name: 'expiresAt', type: 'uint256' },
-    ],
-    outputs: [],
-  },
-] as const;
+// Product decision: Stripe only for this release. Flip to true to bring
+// the wallet rail back (requires PrivyProvider to be mounted again).
+const WALLET_RAIL_ENABLED: boolean = false;
 
 // Base mainnet chain id (8453). Override via NEXT_PUBLIC_ESCROW_CHAIN_ID.
 const DEFAULT_CHAIN_ID = 8453;
@@ -122,23 +103,26 @@ export default function MissionPayPage() {
 
   if (loading) {
     return (
-      <div className="max-w-xl mx-auto p-6">
-        <div className="animate-pulse space-y-3">
-          <div className="h-8 w-3/4 bg-white/5 rounded" />
-          <div className="h-48 bg-white/5 rounded-xl" />
-        </div>
+      <div className="max-w-xl mx-auto p-4 md:p-6 space-y-4">
+        <div className="h-4 w-28 rounded-md flyeas-shimmer" />
+        <div className="h-9 w-3/4 rounded-md flyeas-shimmer" />
+        <div className="h-40 rounded-lg flyeas-shimmer" />
+        <div className="h-64 rounded-lg flyeas-shimmer" />
       </div>
     );
   }
 
   if (error || !data) {
     return (
-      <div className="max-w-xl mx-auto p-6">
+      <div className="max-w-xl mx-auto p-4 md:p-6">
         <Card>
-          <p className="text-red-300">{error || 'Mission not found'}</p>
+          <p className="text-body text-danger">{error || 'Mission not found'}</p>
           <div className="mt-4">
-            <Link href="/missions" className="text-sm text-amber-300 underline">
-              ← Back
+            <Link
+              href="/missions"
+              className="text-caption text-pen-2 hover:text-pen-1 underline underline-offset-4 transition-colors duration-default"
+            >
+              ← Back to missions
             </Link>
           </div>
         </Card>
@@ -153,70 +137,68 @@ export default function MissionPayPage() {
       <header>
         <Link
           href={`/missions/${mission.id}/cockpit`}
-          className="text-xs text-white/40 hover:text-white"
+          className="text-caption text-pen-3 hover:text-pen-1 transition-colors duration-default"
         >
           ← Back to cockpit
         </Link>
-        <h1 className="text-2xl font-semibold text-white mt-2">
-          Fund your mission
+        <p className="text-micro uppercase tracking-wider text-pen-3 mt-4">
+          Secure your mission
+        </p>
+        <h1 className="editorial text-h1 text-pen-1 mt-1">
+          {mission.destinationCity || mission.destination}
+          <span className="font-sans text-body-lg text-pen-3 ml-2.5">
+            from {mission.originCity || mission.origin}
+          </span>
         </h1>
-        <p className="text-sm text-white/50 mt-1">
-          {mission.originCity || mission.origin} →{' '}
-          {mission.destinationCity || mission.destination} ·{' '}
+        <p className="text-caption text-pen-3 mt-1.5">
           {mission.departDate}
+          {mission.returnDate ? ` → ${mission.returnDate}` : ''}
         </p>
       </header>
 
       <Card>
-        <div className="flex items-center justify-between">
+        <div className="flex items-end justify-between gap-4 flex-wrap">
           <div>
-            <p className="text-[11px] uppercase tracking-wider text-white/40">
-              Mission budget
+            <p className="text-micro uppercase tracking-wider text-pen-3">
+              Refundable hold
             </p>
-            <p className="text-3xl font-semibold text-white mt-1">
+            <p className="num text-h1 font-semibold text-pen-1 mt-1">
               ${mission.maxBudgetUsd}
             </p>
           </div>
           <div className="text-right">
-            <p className="text-[11px] uppercase tracking-wider text-white/40">
+            <p className="text-micro uppercase tracking-wider text-pen-3">
               Auto-buy under
             </p>
-            <p className="text-xl font-semibold text-white mt-1">
+            <p className="num text-h2 font-semibold text-pen-1 mt-1">
               {mission.autoBuyThresholdUsd
                 ? `$${mission.autoBuyThresholdUsd}`
                 : '—'}
             </p>
           </div>
         </div>
-        <p className="text-xs text-white/40 mt-4 pt-4 border-t border-white/5">
-          {mission.paymentRail === 'wallet' ? (
-            <>
-              Your USDC is deposited into the non-custodial{' '}
-              <code className="text-amber-300">MissionEscrow</code> contract.
-              You keep the private key. Withdraw anytime.
-            </>
-          ) : (
-            <>
-              Stripe authorizes the full amount on your card but does not
-              charge it. Any unused budget is released back automatically.
-            </>
-          )}
+        <div className="h-px bg-line-1 my-4" />
+        <p className="text-body text-pen-2 leading-relaxed">
+          A refundable hold of ${mission.maxBudgetUsd} secures your mission.
+          You&apos;re only charged if we book — any unused amount is released
+          back to your card automatically.
         </p>
       </Card>
 
-      {mission.paymentRail === 'stripe' ? (
+      {/* Wallet rail hidden for this release — Stripe only. */}
+      {WALLET_RAIL_ENABLED && mission.paymentRail === 'wallet' ? (
+        <WalletPaySection
+          missionId={mission.id}
+          wallet={data.wallet}
+          onDepositConfirmed={() => router.push(`/missions/${mission.id}/cockpit`)}
+        />
+      ) : (
         <StripePaySection
           missionId={mission.id}
           clientSecret={data.stripe?.clientSecret}
           publishableKey={data.stripe?.publishableKey}
           liveMode={data.stripe?.liveMode}
           amount={mission.maxBudgetUsd}
-        />
-      ) : (
-        <WalletPaySection
-          missionId={mission.id}
-          wallet={data.wallet}
-          onDepositConfirmed={() => router.push(`/missions/${mission.id}/cockpit`)}
         />
       )}
     </div>
@@ -226,6 +208,36 @@ export default function MissionPayPage() {
 /* ==================================================================
    Stripe section — Elements + manual-capture confirm
    ================================================================ */
+
+/** Build the Elements appearance from the design-system CSS variables
+ *  so the card form matches the current theme (light or .dark). */
+function themedStripeAppearance() {
+  const styles = getComputedStyle(document.documentElement);
+  const cssVar = (name: string) => styles.getPropertyValue(name).trim();
+  const isDark = document.documentElement.classList.contains('dark');
+
+  const variables: Record<string, string> = {
+    borderRadius: '12px',
+    fontFamily: 'system-ui, sans-serif',
+  };
+  const tokenMap: Record<string, string> = {
+    colorPrimary: '--accent',
+    colorBackground: '--ink-800',
+    colorText: '--pen-1',
+    colorTextSecondary: '--pen-2',
+    colorTextPlaceholder: '--pen-3',
+    colorDanger: '--danger',
+  };
+  for (const [key, token] of Object.entries(tokenMap)) {
+    const value = cssVar(token);
+    if (value) variables[key] = value;
+  }
+
+  return {
+    theme: isDark ? ('night' as const) : ('stripe' as const),
+    variables,
+  };
+}
 
 function StripePaySection({
   missionId,
@@ -243,6 +255,7 @@ function StripePaySection({
   const [stripePromise, setStripePromise] = useState<any>(null);
   const [Elements, setElementsComp] = useState<any>(null);
   const [PaymentElement, setPEComp] = useState<any>(null);
+  const [appearance, setAppearance] = useState<any>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
 
   // Lazy-load Stripe.js + react-stripe-js on the client only
@@ -253,6 +266,7 @@ function StripePaySection({
       );
       return;
     }
+    setAppearance(themedStripeAppearance());
     (async () => {
       try {
         const [{ loadStripe }, rsj] = await Promise.all([
@@ -273,7 +287,7 @@ function StripePaySection({
   if (loadError) {
     return (
       <Card>
-        <p className="text-red-300 text-sm">{loadError}</p>
+        <p className="text-body text-danger">{loadError}</p>
       </Card>
     );
   }
@@ -281,11 +295,13 @@ function StripePaySection({
   if (!clientSecret) {
     return (
       <Card>
-        <p className="text-amber-300 text-sm">
-          No active Stripe hold for this mission. Go back and create the
-          mission again — the client secret is only returned once at
-          creation time.
-        </p>
+        <div className="rounded-md bg-warning-soft p-3">
+          <p className="text-body text-warning">
+            No active hold found for this mission. The secure payment form is
+            only available right after a mission is created — please go back
+            and create the mission again.
+          </p>
+        </div>
       </Card>
     );
   }
@@ -293,7 +309,7 @@ function StripePaySection({
   if (!Elements || !PaymentElement || !stripePromise) {
     return (
       <Card>
-        <div className="animate-pulse h-32 bg-white/5 rounded" />
+        <div className="h-32 rounded-md flyeas-shimmer" />
       </Card>
     );
   }
@@ -301,24 +317,15 @@ function StripePaySection({
   return (
     <Card>
       {liveMode === false && (
-        <div className="mb-3 p-2 rounded bg-amber-500/10 border border-amber-400/30 text-amber-300 text-xs">
-          ⚡ Stripe test mode — use 4242 4242 4242 4242
+        <div className="mb-4 rounded-md bg-warning-soft px-3 py-2 text-caption text-warning">
+          Stripe test mode — use card 4242 4242 4242 4242.
         </div>
       )}
       <Elements
         stripe={stripePromise}
         options={{
           clientSecret,
-          appearance: {
-            theme: 'night' as const,
-            variables: {
-              colorPrimary: '#f59e0b',
-              colorBackground: '#0c0a09',
-              colorText: '#fafaf9',
-              borderRadius: '10px',
-              fontFamily: 'system-ui, sans-serif',
-            },
-          },
+          appearance: appearance || undefined,
         }}
       >
         <StripeConfirmForm
@@ -355,7 +362,7 @@ function StripeConfirmForm({
   }, []);
 
   if (!useStripeHook || !useElementsHook) {
-    return <div className="animate-pulse h-32 bg-white/5 rounded" />;
+    return <div className="h-32 rounded-md flyeas-shimmer" />;
   }
 
   return (
@@ -426,203 +433,35 @@ function StripeConfirmInner({
     <form onSubmit={handleSubmit} className="space-y-4">
       <PaymentElement />
       {error && (
-        <p className="text-sm text-red-300 bg-red-500/10 border border-red-400/30 p-2 rounded">
+        <p className="text-body text-danger bg-danger-soft rounded-md p-3">
           {error}
         </p>
       )}
       <Button type="submit" disabled={!stripe || submitting} className="w-full">
-        {submitting ? 'Authorizing…' : `Place $${amount} hold`}
+        {submitting
+          ? 'Placing your hold…'
+          : `Place refundable $${amount} hold`}
       </Button>
-      <p className="text-[11px] text-white/30 text-center">
-        Your card is authorized — not charged. Released in 7 days if no flight
-        is found.
-      </p>
-    </form>
-  );
-}
-
-/* ==================================================================
-   Wallet section — USDC approve + escrow deposit via Privy
-   ================================================================ */
-
-function WalletPaySection({
-  missionId,
-  wallet,
-  onDepositConfirmed,
-}: {
-  missionId: string;
-  wallet?: PayData['wallet'];
-  onDepositConfirmed: () => void;
-}) {
-  const { ready, authenticated, login } = usePrivy();
-  const { wallets } = useWallets();
-  const { sendTransaction } = useSendTransaction();
-
-  const [phase, setPhase] = useState<
-    'idle' | 'approving' | 'depositing' | 'verifying' | 'done' | 'error'
-  >('idle');
-  const [msg, setMsg] = useState<string | null>(null);
-  const [err, setErr] = useState<string | null>(null);
-
-  const activeWallet = wallets?.[0];
-  const chainId = Number(
-    process.env.NEXT_PUBLIC_ESCROW_CHAIN_ID || DEFAULT_CHAIN_ID
-  );
-
-  const runDepositFlow = useCallback(async () => {
-    if (!wallet) {
-      setErr('Wallet rail not configured');
-      setPhase('error');
-      return;
-    }
-    try {
-      // Step 1 — USDC.approve(escrow, budget)
-      setPhase('approving');
-      setMsg('Step 1/2 · Approving USDC spend for the escrow');
-      const approveData = encodeFunctionData({
-        abi: USDC_APPROVE_ABI,
-        functionName: 'approve',
-        args: [wallet.escrowAddress as `0x${string}`, BigInt(wallet.approvalAmount)],
-      });
-      await sendTransaction({
-        to: wallet.usdcAddress as `0x${string}`,
-        data: approveData,
-        chainId,
-      } as any);
-
-      // Step 2 — MissionEscrow.deposit(id, budget, autoBuyLimit, expiresAt)
-      setPhase('depositing');
-      setMsg('Step 2/2 · Depositing USDC into MissionEscrow');
-      const depositData = encodeFunctionData({
-        abi: ESCROW_DEPOSIT_ABI,
-        functionName: 'deposit',
-        args: [
-          wallet.depositArgs.id as `0x${string}`,
-          BigInt(wallet.depositArgs.budget),
-          BigInt(wallet.depositArgs.autoBuyLimit),
-          BigInt(wallet.depositArgs.expiresAt),
-        ],
-      });
-      const depositRes = (await sendTransaction({
-        to: wallet.escrowAddress as `0x${string}`,
-        data: depositData,
-        chainId,
-      } as any)) as any;
-
-      const depositTxHash =
-        depositRes?.transactionHash || depositRes?.hash || 'unknown';
-
-      // Step 3 — tell the server to verify on-chain state
-      setPhase('verifying');
-      setMsg('Verifying on-chain deposit…');
-      const res = await fetch(`/api/missions/${missionId}/confirm-deposit`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ depositTxHash }),
-      });
-      const json = await res.json();
-      if (!json.success) {
-        throw new Error(json.error || 'Confirm-deposit failed');
-      }
-
-      setPhase('done');
-      setMsg('Funds escrowed. The agent is now watching.');
-      setTimeout(onDepositConfirmed, 1500);
-    } catch (error: any) {
-      console.error('[wallet-pay]', error);
-      setErr(error?.message || 'Wallet flow failed');
-      setPhase('error');
-    }
-  }, [wallet, missionId, sendTransaction, chainId, onDepositConfirmed]);
-
-  if (!wallet) {
-    return (
-      <Card>
-        <p className="text-amber-300 text-sm">
-          Wallet deposit payload missing for this mission.
-        </p>
-      </Card>
-    );
-  }
-
-  if (!ready) {
-    return (
-      <Card>
-        <div className="animate-pulse h-16 bg-white/5 rounded" />
-      </Card>
-    );
-  }
-
-  if (!authenticated || !activeWallet) {
-    return (
-      <Card>
-        <p className="text-white/70 mb-3">
-          Connect a wallet that holds at least ${wallet.approvalAmount ? (Number(wallet.approvalAmount) / 1e6).toFixed(0) : '?'} USDC on {wallet.chain}.
-        </p>
-        <Button onClick={() => login()} className="w-full">
-          Connect wallet
-        </Button>
-      </Card>
-    );
-  }
-
-  return (
-    <Card>
-      <div className="space-y-2 mb-4 text-sm">
-        <div className="flex justify-between">
-          <span className="text-white/50">Chain</span>
-          <span className="text-white capitalize">{wallet.chain}</span>
-        </div>
-        <div className="flex justify-between">
-          <span className="text-white/50">USDC contract</span>
-          <code className="text-xs text-white/70">
-            {wallet.usdcAddress.slice(0, 6)}…{wallet.usdcAddress.slice(-4)}
-          </code>
-        </div>
-        <div className="flex justify-between">
-          <span className="text-white/50">Escrow contract</span>
-          <code className="text-xs text-white/70">
-            {wallet.escrowAddress.slice(0, 6)}…{wallet.escrowAddress.slice(-4)}
-          </code>
-        </div>
-        <div className="flex justify-between">
-          <span className="text-white/50">Your wallet</span>
-          <code className="text-xs text-white/70">
-            {activeWallet.address.slice(0, 6)}…{activeWallet.address.slice(-4)}
-          </code>
-        </div>
+      <div className="secure-badge w-full justify-center text-center">
+        <svg
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+          <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+        </svg>
+        <span>
+          Secured by Stripe. Your card is authorized, not charged — the hold is
+          released within 7 days if we don&apos;t book.
+        </span>
       </div>
-
-      {msg && (
-        <div className="mb-3 p-2 rounded bg-sky-500/10 border border-sky-400/30 text-sky-300 text-xs">
-          {msg}
-        </div>
-      )}
-      {err && (
-        <div className="mb-3 p-2 rounded bg-red-500/10 border border-red-400/30 text-red-300 text-xs">
-          {err}
-        </div>
-      )}
-
-      <Button
-        onClick={runDepositFlow}
-        disabled={phase !== 'idle' && phase !== 'error'}
-        className="w-full"
-      >
-        {phase === 'idle' || phase === 'error'
-          ? 'Approve + Deposit USDC'
-          : phase === 'approving'
-          ? 'Approving…'
-          : phase === 'depositing'
-          ? 'Depositing…'
-          : phase === 'verifying'
-          ? 'Verifying…'
-          : 'Done'}
-      </Button>
-
-      <p className="text-[11px] text-white/30 text-center mt-3">
-        Two on-chain transactions. Gas is paid in ETH on {wallet.chain}.
-      </p>
-    </Card>
+    </form>
   );
 }

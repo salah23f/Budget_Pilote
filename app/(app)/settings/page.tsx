@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useWallet } from '@/components/wallet-provider';
-import { ThemeCustomizer } from '@/components/theme-customizer';
 import { requestNotificationPermission, getNotificationPermission } from '@/lib/push-notifications';
 
 /* ── Component ────────────────────────────────────────────── */
@@ -148,11 +147,6 @@ export default function SettingsPage() {
                 </select>
               </div>
             </div>
-          </div>
-
-          {/* Theme Customizer */}
-          <div className="glass rounded-2xl p-6">
-            <ThemeCustomizer userTier="free" />
           </div>
 
           {/* Notifications */}

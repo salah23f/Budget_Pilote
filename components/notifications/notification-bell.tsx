@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { useUserStore } from '@/stores/user-store';
+import { useUserStore } from '@/lib/store/user-store';
 
 export type Notification = {
   id: string;

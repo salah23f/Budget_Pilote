@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useRef, useEffect } from 'react';
+import { useState, useMemo, useRef, useEffect, type MutableRefObject } from 'react';
 import { useLocale, SUPPORTED_LOCALES } from '@/lib/i18n';
 import type { Locale } from '@/lib/i18n';
 import { Globe, Search, Check } from 'lucide-react';
@@ -20,7 +20,7 @@ export function LanguagePicker({
   const [open, setOpen] = useState(variant === 'inline');
   const [query, setQuery] = useState('');
   const ref = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null) as MutableRefObject<HTMLInputElement | null>;
 
   useEffect(() => {
     if (variant !== 'dropdown') return;
@@ -127,7 +127,7 @@ function PickerContent({
   setQuery: (q: string) => void;
   locale: Locale;
   pick: (code: Locale) => void;
-  inputRef: React.RefObject<HTMLInputElement | null>;
+  inputRef: MutableRefObject<HTMLInputElement | null>;
 }) {
   const regionOrder = ['Europe', 'Middle East', 'Asia', 'Africa', 'Americas'];
 
@@ -137,7 +137,7 @@ function PickerContent({
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white/30" strokeWidth={1.8} />
           <input
-            ref={inputRef}
+            ref={(el) => { inputRef.current = el; }}
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}

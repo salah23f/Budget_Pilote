@@ -114,3 +114,72 @@ def seed_everything(seed: int = 42):
             torch.cuda.manual_seed_all(seed)
     except ImportError:
         pass
+
+
+def enrich_features(df):
+    """Add calendar + trailing-price features to a features DataFrame.
+
+    All new columns are prefixed `feat_*` so they are picked up by
+    `feature_cols()` automatically and do not collide with existing fields.
+
+    Assumes df has: origin (str), destination (str), fetched_at (datetime
+    or parseable string), price_usd (float).  Returns a NEW DataFrame
+    (does not mutate input) that is sorted by (origin, destination,
+    fetched_at) with extra columns appended.
+
+    All trailing features are causal: they are computed per-route with
+    rolling windows that look only at past rows, so there is no leakage.
+    """
+    import numpy as np
+    import pandas as pd
+
+    df = df.copy()
+    df = df.sort_values(["origin", "destination", "fetched_at"]).reset_index(drop=True)
+
+    # --- 1. Calendar features from fetched_at ---
+    fa = pd.to_datetime(df["fetched_at"], errors="coerce", utc=True)
+    df["feat_dow"] = fa.dt.dayofweek.fillna(0).astype(np.int32)
+    df["feat_month"] = fa.dt.month.fillna(1).astype(np.int32)
+    df["feat_is_weekend"] = (df["feat_dow"] >= 5).astype(np.int32)
+    df["feat_day_of_year"] = fa.dt.dayofyear.fillna(1).astype(np.int32)
+
+    # --- 2. Travel-season flags (simple US holiday heuristics) ---
+    dom = fa.dt.day.fillna(1).astype(np.int32)
+    month = df["feat_month"]
+    df["feat_is_holiday_season"] = (
+        ((month == 12) & (dom >= 20))
+        | ((month == 1) & (dom <= 5))
+        | ((month == 11) & (dom >= 22) & (dom <= 28))
+        | ((month == 7) & (dom >= 3) & (dom <= 5))
+    ).astype(np.int32)
+
+    # --- 3. Trailing-price features per route (causal rolling) ---
+    route = df["origin"].astype(str) + "-" + df["destination"].astype(str)
+    price = df["price_usd"].astype(np.float64)
+    df_tmp = pd.DataFrame({"route": route.values, "price": price.values})
+    grp = df_tmp.groupby("route")["price"]
+
+    df["feat_trailing_min_7"] = grp.transform(lambda s: s.rolling(7, min_periods=1).min()).astype(np.float32)
+    df["feat_trailing_min_14"] = grp.transform(lambda s: s.rolling(14, min_periods=1).min()).astype(np.float32)
+    df["feat_trailing_min_30"] = grp.transform(lambda s: s.rolling(30, min_periods=1).min()).astype(np.float32)
+    df["feat_trailing_mean_14"] = grp.transform(lambda s: s.rolling(14, min_periods=1).mean()).astype(np.float32)
+    df["feat_trailing_std_14"] = grp.transform(
+        lambda s: s.rolling(14, min_periods=2).std().fillna(0)
+    ).astype(np.float32)
+
+    # --- 4. Price-vs-trailing relative features ---
+    eps = 1.0
+    df["feat_price_vs_min_14"] = (
+        (df["price_usd"] - df["feat_trailing_min_14"])
+        / df["feat_trailing_min_14"].clip(lower=eps)
+    ).astype(np.float32)
+    df["feat_price_vs_mean_14"] = (
+        (df["price_usd"] - df["feat_trailing_mean_14"])
+        / df["feat_trailing_mean_14"].clip(lower=eps)
+    ).astype(np.float32)
+    df["feat_z_14"] = (
+        (df["price_usd"] - df["feat_trailing_mean_14"])
+        / df["feat_trailing_std_14"].clip(lower=eps)
+    ).astype(np.float32)
+
+    return df

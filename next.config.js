@@ -24,6 +24,17 @@ const nextConfig = {
       },
     ];
   },
+  // Standalone car rental is retired — cars only exist inside a mission.
+  // The cars API stays (used by the mission watcher and packages).
+  async redirects() {
+    return [
+      {
+        source: '/cars',
+        destination: '/missions/new',
+        permanent: false,
+      },
+    ];
+  },
   // Compression
   compress: true,
 };

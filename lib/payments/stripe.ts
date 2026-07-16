@@ -123,10 +123,10 @@ export async function captureMissionHold(params: {
 
   const pi = await stripe.paymentIntents.capture(params.paymentIntentId, {
     amount_to_capture: amountCents,
-    metadata_final: {
+    metadata: {
       offerReference: params.offerReference,
-    } as any,
-  } as any);
+    },
+  });
 
   const chargeId =
     typeof pi.latest_charge === 'string'

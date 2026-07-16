@@ -1,1104 +1,628 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { Card } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Select } from '@/components/ui/select';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { AirportInput, type AirportSelection } from '@/components/ui/airport-input';
-import { HotelDestinationInput, type HotelDestination } from '@/components/ui/hotel-destination-input';
+import { useCallback, useEffect, useMemo, useRef, useState, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
+import { useLocale } from '@/lib/i18n';
+import { AirportInput } from '@/components/ui/airport-input';
+import { StepShell, FlowNav, FieldError } from '@/components/missions/flow/flow-shell';
+import { Check, Minus, Plus } from 'lucide-react';
 
-/* ------------------------------------------------------------------ */
-/*  Types                                                              */
-/* ------------------------------------------------------------------ */
+/**
+ * Mission creation — conversational flow.
+ *
+ * One question per screen, ~6 screens, phase-segmented progress,
+ * Back never destroys input, draft autosaved locally (30-day TTL).
+ * Replaces the previous 1,100-line single-form wizard.
+ *
+ * Screens: where → when → who → budget → what matters → review → done.
+ * POST /api/missions/create (Stripe rail) then hands off to the
+ * deposit page — the honest "your mission is created" moment.
+ */
 
-type MissionType = 'flight' | 'hotel' | 'package';
+type CabinClass = 'economy' | 'premium_economy' | 'business';
 
-type PaymentRailUi = 'stripe' | 'wallet';
-
-interface FormState {
-  // Step 1
-  type: MissionType;
-  // Payment rail selection (Step 3)
-  paymentRail: PaymentRailUi;
-  // Flight fields
+interface FlowForm {
   origin: string;
   originSkyId: string;
   originEntityId: string;
   destination: string;
   destinationSkyId: string;
   destinationEntityId: string;
-  // Hotel fields
-  hotelDestination: string;
-  hotelEntityId: string;
-  // Dates
   departDate: string;
   returnDate: string;
-  checkIn: string;
-  checkOut: string;
   passengers: number;
-  rooms: number;
-  // Step 2
-  cabinClass: string;
-  stopsPreference: string;
-  ecoPreference: string;
-  preferredAirlines: string;
-  // Car rental (package)
-  includeCar: boolean;
-  carType: string;
-  carMaxPerDay: number;
-  // Insurance (package)
-  includeInsurance: boolean;
-  insurancePlan: string;
-  // Step 3
-  maxBudget: number;
-  autoBuyEnabled: boolean;
-  autoBuyThreshold: number;
-  budgetPoolDeposit: number;
-  monitoringFrequency: string;
-  emailAlerts: boolean;
+  budget: string;
+  autoBookEnabled: boolean;
+  autoBook: string;
+  cheapest: boolean;
+  direct: boolean;
+  bag: boolean;
+  eco: boolean;
+  cabinClass: CabinClass;
 }
 
-const STEPS = ['Trip Details', 'Preferences', 'Budget & Auto-Buy'];
+const EMPTY_FORM: FlowForm = {
+  origin: '',
+  originSkyId: '',
+  originEntityId: '',
+  destination: '',
+  destinationSkyId: '',
+  destinationEntityId: '',
+  departDate: '',
+  returnDate: '',
+  passengers: 1,
+  budget: '',
+  autoBookEnabled: false,
+  autoBook: '',
+  cheapest: true,
+  direct: false,
+  bag: true,
+  eco: false,
+  cabinClass: 'economy',
+};
 
-function defaultDate(offsetDays: number): string {
-  const d = new Date();
-  d.setDate(d.getDate() + offsetDays);
-  return d.toISOString().split('T')[0];
-}
+const STEPS = ['where', 'when', 'who', 'budget', 'matters', 'review'] as const;
+type StepId = (typeof STEPS)[number];
 
-/* ------------------------------------------------------------------ */
-/*  Trip Type Selector                                                 */
-/* ------------------------------------------------------------------ */
-
-interface TripOption {
-  value: MissionType;
-  title: string;
-  subtitle: string;
-  icon: React.ReactNode;
-}
-
-const TRIP_OPTIONS: TripOption[] = [
-  {
-    value: 'flight',
-    title: 'Flight Only',
-    subtitle: 'Track and auto-book flights',
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z" />
-      </svg>
-    ),
-  },
-  {
-    value: 'hotel',
-    title: 'Hotel Only',
-    subtitle: 'Track and auto-book hotels',
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M3 22V8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14" />
-        <path d="M1 22h22" />
-        <path d="M7 10h1M11 10h1M15 10h1M7 14h1M11 14h1M15 14h1M7 18h1M11 18h1M15 18h1" />
-      </svg>
-    ),
-  },
-  {
-    value: 'package',
-    title: 'Flight + Hotel',
-    subtitle: 'Complete trip as one package',
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M20.5 7.3 12 2 3.5 7.3v9.4L12 22l8.5-5.3z" />
-        <path d="M12 22V12M3.5 7.3 12 12l8.5-4.7" />
-      </svg>
-    ),
-  },
+// phase → steps mapping for the segmented progress bar
+const PHASES: { key: string; steps: StepId[] }[] = [
+  { key: 'flow.phase.trip', steps: ['where', 'when', 'who'] },
+  { key: 'flow.phase.rules', steps: ['budget', 'matters'] },
+  { key: 'flow.phase.review', steps: ['review'] },
 ];
 
-/* ------------------------------------------------------------------ */
-/*  Component                                                          */
-/* ------------------------------------------------------------------ */
+const DRAFT_KEY = 'flyeas_mission_flow_draft';
+const DRAFT_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 
 export default function NewMissionPage() {
+  return (
+    <Suspense fallback={null}>
+      <MissionFlow />
+    </Suspense>
+  );
+}
+
+function MissionFlow() {
   const router = useRouter();
-  const [step, setStep] = useState(0);
-  const [submitted, setSubmitted] = useState(false);
+  const searchParams = useSearchParams();
+  const { t } = useLocale();
+
+  const [form, setForm] = useState<FlowForm>(EMPTY_FORM);
+  const [stepIndex, setStepIndex] = useState(0);
+  const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const [errors, setErrors] = useState<string[]>([]);
+  const [createdId, setCreatedId] = useState<string | null>(null);
+  const [resumedDraft, setResumedDraft] = useState(false);
+  // After editing from the review screen, "Next" returns straight to review
+  const returnToReview = useRef(false);
+  const [hydrated, setHydrated] = useState(false);
 
-  const [form, setForm] = useState<FormState>({
-    type: 'flight',
-    paymentRail: 'stripe',
-    origin: '',
-    originSkyId: '',
-    originEntityId: '',
-    destination: '',
-    destinationSkyId: '',
-    destinationEntityId: '',
-    hotelDestination: '',
-    hotelEntityId: '',
-    departDate: defaultDate(30),
-    returnDate: defaultDate(37),
-    checkIn: defaultDate(30),
-    checkOut: defaultDate(37),
-    passengers: 1,
-    rooms: 1,
-    cabinClass: 'economy',
-    stopsPreference: 'any',
-    ecoPreference: 'balanced',
-    preferredAirlines: '',
-    maxBudget: 0,
-    autoBuyEnabled: false,
-    autoBuyThreshold: 0,
-    budgetPoolDeposit: 0,
-    includeCar: false,
-    carType: 'economy',
-    carMaxPerDay: 0,
-    includeInsurance: false,
-    insurancePlan: 'standard',
-    monitoringFrequency: 'every_3h',
-    emailAlerts: true,
-  });
+  const step = STEPS[stepIndex];
 
-  // AI advisory state — computed from real market data when user reaches step 3
-  const [marketInsight, setMarketInsight] = useState<{
-    loading: boolean;
-    cheapest?: number;
-    average?: number;
-    count?: number;
-    error?: string;
-    kind?: 'flight' | 'hotel';
-  }>({ loading: false });
-
-  // When user reaches step 3 with enough info, fetch a real price preview.
-  // This is advisory — we never overwrite the user's budget.
+  /* ── Draft: restore on mount, save on change ── */
   useEffect(() => {
-    if (step !== 2) return;
-    if (marketInsight.cheapest !== undefined && !marketInsight.error) return; // already fetched
-
-    const canFlight =
-      (form.type === 'flight' || form.type === 'package') &&
-      form.origin && form.destination && form.departDate;
-    const canHotel =
-      form.type === 'hotel' && form.hotelEntityId && form.checkIn && form.checkOut;
-
-    if (!canFlight && !canHotel) return;
-
-    let cancelled = false;
-    setMarketInsight({ loading: true });
-
-    const run = async () => {
-      try {
-        if (canFlight) {
-          const res = await fetch('/api/flights/search', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              origin: form.originSkyId || form.origin,
-              destination: form.destinationSkyId || form.destination,
-              departDate: form.departDate,
-              returnDate: form.returnDate || undefined,
-              adults: form.passengers,
-              cabinClass: form.cabinClass,
-              originSkyId: form.originSkyId || undefined,
-              originEntityId: form.originEntityId || undefined,
-              destSkyId: form.destinationSkyId || undefined,
-              destEntityId: form.destinationEntityId || undefined,
-            }),
-          });
-          const data = await res.json();
-          if (cancelled) return;
-          if (data.success && Array.isArray(data.data) && data.data.length > 0) {
-            const prices: number[] = data.data.map((d: any) => d.priceUsd).filter((p: number) => p > 0);
-            const cheapest = Math.min(...prices);
-            const average = Math.round(prices.reduce((s: number, p: number) => s + p, 0) / prices.length);
-            setMarketInsight({ loading: false, cheapest, average, count: prices.length, kind: 'flight' });
-          } else {
-            setMarketInsight({ loading: false, error: data.error || 'No live data available for this route right now.', kind: 'flight' });
-          }
-        } else if (canHotel) {
-          const res = await fetch('/api/hotels/search', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              entityId: form.hotelEntityId,
-              query: form.hotelDestination,
-              checkIn: form.checkIn,
-              checkOut: form.checkOut,
-              adults: form.passengers,
-              rooms: form.rooms,
-            }),
-          });
-          const data = await res.json();
-          if (cancelled) return;
-          if (data.success && Array.isArray(data.data) && data.data.length > 0) {
-            const prices: number[] = data.data.map((d: any) => d.priceUsd).filter((p: number) => p > 0);
-            const cheapest = Math.min(...prices);
-            const average = Math.round(prices.reduce((s: number, p: number) => s + p, 0) / prices.length);
-            setMarketInsight({ loading: false, cheapest, average, count: prices.length, kind: 'hotel' });
-          } else {
-            setMarketInsight({ loading: false, error: data.error || 'No live data available for this destination.', kind: 'hotel' });
-          }
-        }
-      } catch (e: any) {
-        if (!cancelled) setMarketInsight({ loading: false, error: e?.message || 'Price preview unavailable.' });
-      }
-    };
-    run();
-    return () => {
-      cancelled = true;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [step]);
-
-  function update(partial: Partial<FormState>) {
-    setForm((prev) => ({ ...prev, ...partial }));
-  }
-
-  function validateStep(s: number): string[] {
-    const errs: string[] = [];
-    if (s === 0) {
-      if (form.type === 'flight' || form.type === 'package') {
-        if (!form.origin) errs.push('Please pick an origin airport.');
-        if (!form.destination) errs.push('Please pick a destination airport.');
-        if (!form.departDate) errs.push('Please set a departure date.');
-      }
-      if (form.type === 'hotel' || form.type === 'package') {
-        if (!form.hotelDestination && form.type === 'hotel') errs.push('Please pick a hotel destination.');
-        if (!form.checkIn) errs.push('Please set a check-in date.');
-        if (!form.checkOut) errs.push('Please set a check-out date.');
-      }
-    }
-    return errs;
-  }
-
-  function next() {
-    const errs = validateStep(step);
-    if (errs.length > 0) {
-      setErrors(errs);
-      return;
-    }
-    setErrors([]);
-    if (step < 2) setStep(step + 1);
-  }
-
-  function back() {
-    setErrors([]);
-    if (step > 0) setStep(step - 1);
-  }
-
-  async function handleSubmit() {
-    const errs = validateStep(0);
-    if (errs.length > 0) {
-      setErrors(errs);
-      setStep(0);
-      return;
-    }
-    if (form.maxBudget <= 0) {
-      setErrors(['Please enter a maximum budget greater than $0.']);
-      return;
-    }
-    if (form.autoBuyEnabled) {
-      if (form.autoBuyThreshold <= 0) {
-        setErrors(['Auto-buy is on — please set a threshold greater than $0.']);
-        return;
-      }
-      if (form.autoBuyThreshold > form.maxBudget) {
-        setErrors(['Auto-buy threshold must be lower than your maximum budget.']);
-        return;
-      }
-    }
-    setSubmitting(true);
-    setErrors([]);
-
     try {
-      const payload: any = {
-        type: form.type,
-        cabinClass: form.cabinClass,
-        stopsPreference: form.stopsPreference,
-        ecoPreference: form.ecoPreference,
-        preferredAirlines: form.preferredAirlines
-          .split(',')
-          .map((s) => s.trim())
-          .filter(Boolean),
-        maxBudgetUsd: form.maxBudget,
-        autoBuyThresholdUsd: form.autoBuyEnabled ? form.autoBuyThreshold : undefined,
-        budgetDepositedUsd: form.autoBuyEnabled ? form.budgetPoolDeposit : 0,
-        monitoringEnabled: true,
-        alertEmailEnabled: form.emailAlerts,
-        passengers: form.passengers,
-      };
-
-      if (form.type === 'flight' || form.type === 'package') {
-        payload.origin = form.originSkyId || form.origin;
-        payload.originCity = form.origin;
-        payload.destination = form.destinationSkyId || form.destination;
-        payload.destinationCity = form.destination;
-        payload.departDate = form.departDate;
-        payload.returnDate = form.returnDate || undefined;
-      }
-      if (form.type === 'hotel' || form.type === 'package') {
-        payload.hotelEntityId = form.hotelEntityId;
-        payload.hotelDestination = form.hotelDestination;
-        payload.checkIn = form.checkIn;
-        payload.checkOut = form.checkOut;
-        payload.rooms = form.rooms;
-      }
-
-      // Car rental (package missions)
-      if (form.includeCar) {
-        payload.packageIncludes = [...(payload.packageIncludes || []), 'car'];
-        payload.carPickupLocation = form.destination || form.hotelDestination;
-        payload.carPickupDate = form.departDate || form.checkIn;
-        payload.carDropoffDate = form.returnDate || form.checkOut;
-        payload.carType = form.carType;
-        payload.carMaxPerDay = form.carMaxPerDay || undefined;
-      }
-
-      // Insurance
-      if (form.includeInsurance) {
-        payload.packageIncludes = [...(payload.packageIncludes || []), 'insurance'];
-        payload.insurancePlan = form.insurancePlan;
-        payload.insuranceIncluded = true;
-      }
-
-      // Set packageIncludes for flight/hotel base
-      if (form.type === 'package' || form.includeCar || form.includeInsurance) {
-        const includes: string[] = [];
-        if (form.type === 'flight' || form.type === 'package') includes.push('flight');
-        if (form.type === 'hotel' || form.type === 'package') includes.push('hotel');
-        if (form.includeCar) includes.push('car');
-        if (form.includeInsurance) includes.push('insurance');
-        payload.packageIncludes = includes;
-        if (includes.length > 1) payload.type = 'package';
-      }
-
-      // Route through the payment-enabled create endpoint. This one
-      // actually reserves funds (Stripe hold OR on-chain escrow) — the
-      // legacy /api/mission only did a price search without a hold.
-      payload.paymentRail = form.paymentRail;
-
-      // The wallet rail needs the user's address. If Privy is
-      // connected at form time, read it from the Privy wallets list.
-      // The pay page will re-check and prompt connect if missing.
-      try {
-        const privy = (window as any).__privyLastWallet;
-        if (form.paymentRail === 'wallet' && privy) {
-          payload.walletAddress = privy;
+      const raw = localStorage.getItem(DRAFT_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed?.ts && Date.now() - parsed.ts < DRAFT_TTL_MS && parsed.form) {
+          setForm({ ...EMPTY_FORM, ...parsed.form });
+          setStepIndex(Math.min(Number(parsed.step) || 0, STEPS.length - 1));
+          setResumedDraft(true);
         }
-      } catch (_) {}
+      }
+    } catch {}
+    // URL prefill fills an empty destination, never overwrites a draft
+    const dest = searchParams?.get('destination');
+    if (dest) {
+      setForm((f) => (f.destination ? f : { ...f, destination: dest }));
+    }
+    setHydrated(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
+  useEffect(() => {
+    if (!hydrated || createdId) return;
+    try {
+      localStorage.setItem(DRAFT_KEY, JSON.stringify({ form, step: stepIndex, ts: Date.now() }));
+    } catch {}
+  }, [form, stepIndex, hydrated, createdId]);
+
+  const patch = useCallback((p: Partial<FlowForm>) => {
+    setForm((f) => ({ ...f, ...p }));
+    setError(null);
+  }, []);
+
+  /* ── Validation per step ── */
+  function validate(current: StepId): string | null {
+    switch (current) {
+      case 'where':
+        if (!form.origin || !form.destination) return t('flow.where.error');
+        return null;
+      case 'when':
+        if (!form.departDate) return t('flow.when.error');
+        if (form.returnDate && form.returnDate < form.departDate) return t('flow.when.errorOrder');
+        return null;
+      case 'budget': {
+        const b = Number(form.budget);
+        if (!Number.isFinite(b) || b <= 0) return t('flow.budget.error');
+        if (form.autoBookEnabled) {
+          const a = Number(form.autoBook);
+          if (!Number.isFinite(a) || a <= 0 || a > b) return t('flow.budget.autoError');
+        }
+        return null;
+      }
+      default:
+        return null;
+    }
+  }
+
+  function goNext() {
+    const problem = validate(step);
+    if (problem) {
+      setError(problem);
+      return;
+    }
+    setError(null);
+    if (step === 'review') {
+      void submit();
+      return;
+    }
+    if (returnToReview.current) {
+      returnToReview.current = false;
+      setStepIndex(STEPS.indexOf('review'));
+      return;
+    }
+    setStepIndex((i) => Math.min(i + 1, STEPS.length - 1));
+  }
+
+  function goBack() {
+    setError(null);
+    if (returnToReview.current) {
+      returnToReview.current = false;
+      setStepIndex(STEPS.indexOf('review'));
+      return;
+    }
+    setStepIndex((i) => Math.max(i - 1, 0));
+  }
+
+  function editFromReview(target: StepId) {
+    returnToReview.current = true;
+    setError(null);
+    setStepIndex(STEPS.indexOf(target));
+  }
+
+  /* ── Submit ── */
+  async function submit() {
+    setSubmitting(true);
+    setError(null);
+    try {
       const res = await fetch('/api/missions/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          origin: form.origin,
+          originSkyId: form.originSkyId || undefined,
+          originEntityId: form.originEntityId || undefined,
+          destination: form.destination,
+          destinationSkyId: form.destinationSkyId || undefined,
+          destinationEntityId: form.destinationEntityId || undefined,
+          departDate: form.departDate,
+          returnDate: form.returnDate || undefined,
+          passengers: form.passengers,
+          maxBudgetUsd: Number(form.budget),
+          autoBuyThresholdUsd: form.autoBookEnabled ? Number(form.autoBook) : undefined,
+          cabinClass: form.cabinClass,
+          cabinBagRequired: form.bag,
+          stopsPreference: form.direct ? 'direct' : 'any',
+          ecoPreference: form.eco ? 'eco' : 'balanced',
+          paymentRail: 'stripe',
+        }),
       });
       const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || 'Failed to create mission');
+      if (!res.ok || !data?.success || !data?.mission?.id) {
+        throw new Error(data?.error || t('flow.review.error'));
       }
-
-      // Cache the rail-specific payload so the /pay page can pick it up
-      // without us re-hitting the API (the Stripe client secret in
-      // particular is only returned ONCE at creation time).
-      try {
-        sessionStorage.setItem(
-          `flyeas:mission:${data.mission.id}:pay`,
-          JSON.stringify({
-            mission: data.mission,
-            stripe: data.stripe,
-            wallet: data.wallet,
-          })
-        );
-      } catch (_) {}
-
-      setSubmitted(true);
-      setTimeout(
-        () => router.push(`/missions/${data.mission.id}/pay`),
-        1200
-      );
-    } catch (err: any) {
-      setErrors([err.message || 'Failed to create mission']);
+      try { localStorage.removeItem(DRAFT_KEY); } catch {}
+      setCreatedId(data.mission.id);
+    } catch (e: any) {
+      setError(e?.message || t('flow.review.error'));
     } finally {
       setSubmitting(false);
     }
   }
 
-  if (submitted) {
-    return (
-      <div className="mx-auto max-w-3xl px-4 py-12 md:px-8 fade-in">
-        <Card padding="lg" className="text-center">
-          <div className="flex flex-col items-center gap-5 py-8">
-            <div
-              className="w-16 h-16 rounded-full flex items-center justify-center"
-              style={{ background: 'linear-gradient(135deg, #10b981, #D4A24C)' }}
-            >
-              <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M8 16l6 6L24 10" />
-              </svg>
-            </div>
-            <div>
-              <h2 className="text-2xl font-bold text-white">Mission Launched</h2>
-              <p className="text-white/50 mt-2 text-sm">Your AI agent is now monitoring prices for the best deals.</p>
-              <p className="text-white/30 mt-1 text-xs">Redirecting to missions...</p>
-            </div>
-          </div>
-        </Card>
-      </div>
-    );
+  /* ── Progress segments ── */
+  const segments = useMemo(() => {
+    return PHASES.map((phase) => {
+      const idxs = phase.steps.map((s) => STEPS.indexOf(s));
+      const first = idxs[0];
+      const last = idxs[idxs.length - 1];
+      let fill = 0;
+      if (stepIndex > last) fill = 1;
+      else if (stepIndex >= first) fill = (stepIndex - first + 1) / phase.steps.length;
+      return { label: t(phase.key), fill };
+    });
+  }, [stepIndex, t]);
+
+  const phaseKicker = t(PHASES.find((p) => p.steps.includes(step))!.key);
+
+  if (createdId) {
+    return <DoneScreen t={t} missionId={createdId} onLater={() => router.push('/missions')} />;
   }
 
-  const showFlight = form.type === 'flight' || form.type === 'package';
-  const showHotel = form.type === 'hotel' || form.type === 'package';
-
   return (
-    <div className="mx-auto max-w-6xl px-4 py-6 md:px-8 md:py-8 fade-in">
-      {/* Header */}
-      <div className="mb-6">
-        <Badge variant="highlight">New Mission</Badge>
-        <h1 className="text-2xl font-bold text-white mt-3 tracking-tight">Configure Your Booking Agent</h1>
-        <p className="text-sm text-white/50 mt-1">Set up an AI agent to find and book the best travel deals for you.</p>
-      </div>
+    <div className="pb-44">
+      {resumedDraft && stepIndex > 0 && (
+        <p className="mx-auto max-w-[560px] mt-2 text-caption text-pen-3">
+          {t('flow.draft.resumed')}
+        </p>
+      )}
 
-      {/* Progress bar */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between mb-3">
-          {STEPS.map((label, i) => (
-            <div key={label} className="flex items-center gap-2">
-              <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 ${
-                  i < step
-                    ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                    : i === step
-                    ? 'text-white border-2 border-amber-400'
-                    : 'text-white/30 border border-white/10'
-                }`}
-                style={i === step ? { background: 'linear-gradient(135deg, rgba(245,158,11,0.15), rgba(239,68,68,0.15))' } : {}}
-              >
-                {i < step ? (
-                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                    <path d="M3 7l3 3L11 4" />
-                  </svg>
-                ) : (
-                  i + 1
-                )}
-              </div>
-              <span className={`text-sm hidden sm:inline ${i === step ? 'text-white font-medium' : 'text-white/40'}`}>{label}</span>
-              {i < STEPS.length - 1 && (
-                <div className={`hidden sm:block w-16 lg:w-24 h-px mx-2 ${i < step ? 'bg-emerald-500/40' : 'bg-white/10'}`} />
-              )}
-            </div>
-          ))}
-        </div>
-        <div className="w-full h-1 rounded-full bg-white/5 overflow-hidden">
-          <div
-            className="h-full rounded-full transition-all duration-500"
-            style={{
-              width: `${((step + 1) / STEPS.length) * 100}%`,
-              background: 'linear-gradient(90deg, #D4A24C, #F97316, #EF4444)',
-            }}
-          />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6">
-        {/* Form area */}
-        <Card padding="lg">
-          {/* Step 1: Trip Details */}
-          {step === 0 && (
-            <div className="space-y-6">
-              <h2 className="text-lg font-semibold text-white">Trip Details</h2>
-
-              {/* Visual trip type selector */}
-              <div>
-                <label className="block text-xs font-medium text-white/50 mb-2">What do you want to book?</label>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  {TRIP_OPTIONS.map((opt) => {
-                    const active = form.type === opt.value;
-                    return (
-                      <button
-                        key={opt.value}
-                        type="button"
-                        onClick={() => update({ type: opt.value })}
-                        className="relative text-left rounded-xl p-4 transition-all duration-200"
-                        style={{
-                          background: active
-                            ? 'linear-gradient(135deg, rgba(245,158,11,0.12), rgba(239,68,68,0.12))'
-                            : 'rgba(255,255,255,0.02)',
-                          border: active
-                            ? '1px solid rgba(245,158,11,0.5)'
-                            : '1px solid rgba(255,255,255,0.06)',
-                          boxShadow: active ? '0 0 0 3px rgba(245,158,11,0.08)' : undefined,
-                        }}
-                      >
-                        <div
-                          className={`w-10 h-10 rounded-lg flex items-center justify-center mb-2 ${active ? 'text-amber-300' : 'text-white/40'}`}
-                          style={{
-                            background: active ? 'rgba(245,158,11,0.15)' : 'rgba(255,255,255,0.03)',
-                          }}
-                        >
-                          {opt.icon}
-                        </div>
-                        <p className={`text-sm font-semibold ${active ? 'text-white' : 'text-white/80'}`}>
-                          {opt.title}
-                        </p>
-                        <p className="text-xs text-white/40 mt-0.5">{opt.subtitle}</p>
-                        {active && (
-                          <div className="absolute top-3 right-3 w-5 h-5 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #D4A24C, #F97316)' }}>
-                            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                              <path d="M2 5l2 2 4-4" />
-                            </svg>
-                          </div>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Flight section */}
-              {showFlight && (
-                <div className="space-y-4 rounded-xl p-4" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}>
-                  <div className="flex items-center gap-2">
-                    <span className="text-amber-300">✈</span>
-                    <h3 className="text-sm font-semibold text-white/80">Flight</h3>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <AirportInput
-                      label="Origin"
-                      placeholder="From airport..."
-                      value={form.origin}
-                      onChange={(sel: AirportSelection) =>
-                        update({ origin: sel.code, originSkyId: sel.skyId, originEntityId: sel.entityId })
-                      }
-                    />
-                    <AirportInput
-                      label="Destination"
-                      placeholder="To airport..."
-                      value={form.destination}
-                      onChange={(sel: AirportSelection) =>
-                        update({ destination: sel.code, destinationSkyId: sel.skyId, destinationEntityId: sel.entityId })
-                      }
-                    />
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Input label="Departure Date" type="date" value={form.departDate} onChange={(e) => update({ departDate: e.target.value })} />
-                    <Input label="Return Date (optional)" type="date" value={form.returnDate} onChange={(e) => update({ returnDate: e.target.value })} />
-                  </div>
-                  <Input label="Passengers" type="number" min={1} max={9} value={form.passengers} onChange={(e) => update({ passengers: Number(e.target.value) })} />
-                </div>
-              )}
-
-              {/* Hotel section */}
-              {showHotel && (
-                <div className="space-y-4 rounded-xl p-4" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}>
-                  <div className="flex items-center gap-2">
-                    <span className="text-amber-300">Hotel</span>
-                    <h3 className="text-sm font-semibold text-white/80">Hotel</h3>
-                  </div>
-                  {form.type === 'hotel' && (
-                    <HotelDestinationInput
-                      label="Destination"
-                      placeholder="City, neighborhood, hotel..."
-                      value={form.hotelDestination}
-                      onChange={(sel: HotelDestination) => update({ hotelDestination: sel.name, hotelEntityId: sel.entityId })}
-                    />
-                  )}
-                  {form.type === 'package' && (
-                    <p className="text-xs text-white/40">Hotel destination will use your flight destination city.</p>
-                  )}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Input label="Check-in" type="date" value={form.checkIn} onChange={(e) => update({ checkIn: e.target.value })} />
-                    <Input label="Check-out" type="date" value={form.checkOut} onChange={(e) => update({ checkOut: e.target.value })} />
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Input label="Guests" type="number" min={1} max={10} value={form.passengers} onChange={(e) => update({ passengers: Number(e.target.value) })} />
-                    <Input label="Rooms" type="number" min={1} max={5} value={form.rooms} onChange={(e) => update({ rooms: Number(e.target.value) })} />
-                  </div>
-                </div>
-              )}
-
-              {/* Car rental add-on */}
-              <div className="rounded-xl p-4 space-y-3" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}>
-                <label className="flex items-center gap-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={form.includeCar}
-                    onChange={(e) => update({ includeCar: e.target.checked })}
-                    className="w-5 h-5 rounded accent-amber-400"
-                  />
-                  <div>
-                    <span className="text-sm font-semibold text-white flex items-center gap-2">
-                      + Add car rental
-                    </span>
-                    <p className="text-xs text-white/35">Monitor car prices at your destination</p>
-                  </div>
-                </label>
-                {form.includeCar && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
-                    <div>
-                      <label className="block text-xs text-white/50 mb-1.5">Car type</label>
-                      <select
-                        value={form.carType}
-                        onChange={(e) => update({ carType: e.target.value })}
-                        className="glass-input w-full rounded-xl py-2.5 px-3 text-sm"
-                      >
-                        <option value="economy">Economy</option>
-                        <option value="compact">Compact</option>
-                        <option value="intermediate">Intermediate</option>
-                        <option value="suv">SUV</option>
-                        <option value="premium">Premium</option>
-                        <option value="minivan">Minivan</option>
-                      </select>
-                    </div>
-                    <Input
-                      label="Max price per day (USD)"
-                      type="number"
-                      placeholder="e.g. 40"
-                      min={0}
-                      value={form.carMaxPerDay || ''}
-                      onChange={(e) => update({ carMaxPerDay: Number(e.target.value) })}
-                    />
-                  </div>
-                )}
-              </div>
-
-              {/* Insurance add-on */}
-              <div className="rounded-xl p-4 space-y-3" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}>
-                <label className="flex items-center gap-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={form.includeInsurance}
-                    onChange={(e) => update({ includeInsurance: e.target.checked })}
-                    className="w-5 h-5 rounded accent-amber-400"
-                  />
-                  <div>
-                    <span className="text-sm font-semibold text-white flex items-center gap-2">
-                      + Add travel insurance
-                    </span>
-                    <p className="text-xs text-white/35">Protect your trip with VisitorsCoverage</p>
-                  </div>
-                </label>
-                {form.includeInsurance && (
-                  <div className="grid grid-cols-3 gap-2 pt-2">
-                    {[
-                      { value: 'basic', label: 'Basic', price: '$29', desc: 'Medical $50K' },
-                      { value: 'standard', label: 'Standard', price: '$49', desc: 'Medical $100K + car' },
-                      { value: 'premium', label: 'Premium', price: '$79', desc: 'Full coverage' },
-                    ].map((plan) => (
-                      <button
-                        key={plan.value}
-                        type="button"
-                        onClick={() => update({ insurancePlan: plan.value })}
-                        className={`rounded-xl p-3 text-center transition-all ${
-                          form.insurancePlan === plan.value
-                            ? 'bg-amber-500/10 border border-amber-500/30 text-white'
-                            : 'bg-white/2 border border-white/6 text-white/50 hover:text-white/70'
-                        }`}
-                      >
-                        <p className="text-xs font-semibold">{plan.label}</p>
-                        <p className="text-sm font-bold text-amber-400 mt-1">{plan.price}</p>
-                        <p className="text-[9px] text-white/30 mt-0.5">{plan.desc}</p>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Step 2: Preferences */}
-          {step === 1 && (
-            <div className="space-y-5">
-              <h2 className="text-lg font-semibold text-white">Preferences</h2>
-              {showFlight && (
-                <>
-                  <Select
-                    label="Cabin Class"
-                    value={form.cabinClass}
-                    onChange={(e) => update({ cabinClass: e.target.value })}
-                    options={[
-                      { value: 'economy', label: 'Economy' },
-                      { value: 'premium_economy', label: 'Premium Economy' },
-                      { value: 'business', label: 'Business' },
-                      { value: 'first', label: 'First' },
-                    ]}
-                  />
-                  <Select
-                    label="Stops Preference"
-                    value={form.stopsPreference}
-                    onChange={(e) => update({ stopsPreference: e.target.value })}
-                    options={[
-                      { value: 'any', label: 'Any number of stops' },
-                      { value: 'nonstop', label: 'Nonstop only' },
-                      { value: 'max_1', label: 'Max 1 stop' },
-                    ]}
-                  />
-                </>
-              )}
-              <Select
-                label="Eco Preference"
-                value={form.ecoPreference}
-                onChange={(e) => update({ ecoPreference: e.target.value })}
-                options={[
-                  { value: 'balanced', label: 'Balanced' },
-                  { value: 'green', label: 'Prefer greener options' },
-                  { value: 'cheapest', label: 'Cheapest regardless' },
-                ]}
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          goNext();
+        }}
+      >
+        {step === 'where' && (
+          <StepShell kicker={phaseKicker} title={t('flow.where.title')} sub={t('flow.where.sub')}>
+            <div className="grid gap-4">
+              <AirportInput
+                label={t('flow.where.from')}
+                value={form.origin}
+                placeholder={t('flow.where.fromPlaceholder')}
+                onChange={(s) => patch({ origin: s.code, originSkyId: s.skyId, originEntityId: s.entityId })}
               />
-              {showFlight && (
-                <Input
-                  label="Preferred Airlines (optional)"
-                  placeholder="e.g. Swiss, Lufthansa, SAS"
-                  value={form.preferredAirlines}
-                  onChange={(e) => update({ preferredAirlines: e.target.value })}
-                  helperText="Comma-separated airline names"
-                />
-              )}
+              <AirportInput
+                label={t('flow.where.to')}
+                value={form.destination}
+                placeholder={t('flow.where.toPlaceholder')}
+                onChange={(s) => patch({ destination: s.code, destinationSkyId: s.skyId, destinationEntityId: s.entityId })}
+              />
             </div>
-          )}
+            <FieldError message={error} />
+          </StepShell>
+        )}
 
-          {/* Step 3: Budget & Auto-Buy */}
-          {step === 2 && (
-            <div className="space-y-5">
-              <h2 className="text-lg font-semibold text-white">Budget & Auto-Buy</h2>
-
-              {/* Live market insight — real data from Sky-Scrapper */}
-              <div
-                className="rounded-xl p-4"
-                style={{
-                  background: 'linear-gradient(135deg, rgba(16,185,129,0.06), rgba(245,158,11,0.06))',
-                  border: '1px solid rgba(16,185,129,0.15)',
-                }}
-              >
-                <div className="flex items-start gap-3">
-                  <div
-                    className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
-                    style={{ background: 'rgba(16,185,129,0.15)' }}
-                  >
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#10b981" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M2 13l4-4 3 3 5-6" />
-                      <path d="M10 6h4v4" />
-                    </svg>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-semibold text-emerald-300 uppercase tracking-wider">Live Market Insight</p>
-                    {marketInsight.loading ? (
-                      <p className="text-sm text-white/50 mt-1">Checking current prices…</p>
-                    ) : marketInsight.error ? (
-                      <p className="text-sm text-white/50 mt-1">{marketInsight.error}</p>
-                    ) : marketInsight.cheapest !== undefined ? (
-                      <div className="mt-1">
-                        <p className="text-sm text-white/70">
-                          Right now we see <span className="text-white font-bold">{marketInsight.count}</span> {marketInsight.kind === 'flight' ? 'flights' : 'hotels'} for your dates.
-                        </p>
-                        <div className="flex gap-4 mt-2">
-                          <div>
-                            <p className="text-[10px] text-white/40 uppercase">Cheapest</p>
-                            <p className="text-lg font-bold text-emerald-300">${marketInsight.cheapest}</p>
-                          </div>
-                          <div>
-                            <p className="text-[10px] text-white/40 uppercase">Average</p>
-                            <p className="text-lg font-bold text-white">${marketInsight.average}</p>
-                          </div>
-                        </div>
-                        <p className="text-[11px] text-white/40 mt-2 italic">
-                          Set any budget you're comfortable with. This is information, not a recommendation.
-                        </p>
-                      </div>
-                    ) : (
-                      <p className="text-sm text-white/50 mt-1">
-                        Complete step 1 to see real-time market prices for your route.
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Payment rail — choose how the budget is held */}
-              <div>
-                <p className="text-xs font-medium text-white/50 mb-2 uppercase tracking-wider">Payment method</p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <button
-                    type="button"
-                    onClick={() => update({ paymentRail: 'stripe' })}
-                    className="rounded-xl p-4 text-left transition-all"
-                    style={{
-                      background: form.paymentRail === 'stripe' ? 'rgba(245,158,11,0.08)' : 'rgba(255,255,255,0.03)',
-                      border: form.paymentRail === 'stripe' ? '1px solid rgba(245,158,11,0.35)' : '1px solid rgba(255,255,255,0.06)',
-                    }}
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="text-xl">💳</span>
-                      <p className="text-sm font-semibold text-white">Credit / Debit card</p>
-                    </div>
-                    <p className="text-xs text-white/50 mt-2 leading-relaxed">
-                      Stripe authorizes your full budget but never charges it until we book. Remaining amount released automatically. Non-custodial.
-                    </p>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => update({ paymentRail: 'wallet' })}
-                    className="rounded-xl p-4 text-left transition-all"
-                    style={{
-                      background: form.paymentRail === 'wallet' ? 'rgba(99,102,241,0.08)' : 'rgba(255,255,255,0.03)',
-                      border: form.paymentRail === 'wallet' ? '1px solid rgba(99,102,241,0.35)' : '1px solid rgba(255,255,255,0.06)',
-                    }}
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="text-xl">🔗</span>
-                      <p className="text-sm font-semibold text-white">Crypto wallet · USDC</p>
-                    </div>
-                    <p className="text-xs text-white/50 mt-2 leading-relaxed">
-                      Deposit USDC into a non-custodial escrow on Base. You keep the keys. Withdraw anytime. ~$0.01 gas.
-                    </p>
-                  </button>
-                </div>
-              </div>
-
-              <Input
-                label="Maximum Budget (USD)"
-                type="number"
-                min={0}
-                placeholder="e.g. 500"
-                value={form.maxBudget || ''}
-                onChange={(e) => update({ maxBudget: Number(e.target.value) })}
-                helperText="Your absolute ceiling — the agent will never book above this amount."
-              />
-
-              {/* Auto-buy toggle */}
-              <div
-                className="rounded-xl px-4 py-4"
-                style={{
-                  background: form.autoBuyEnabled ? 'rgba(245,158,11,0.06)' : 'rgba(255,255,255,0.03)',
-                  border: form.autoBuyEnabled ? '1px solid rgba(245,158,11,0.2)' : '1px solid rgba(255,255,255,0.06)',
-                  transition: 'all 0.2s ease',
-                }}
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-semibold text-white">Auto-Buy</p>
-                    <p className="text-xs text-white/40 mt-0.5">
-                      When a deal drops below your threshold, our AI agent automatically books it for you
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    role="switch"
-                    aria-checked={form.autoBuyEnabled}
-                    onClick={() => update({ autoBuyEnabled: !form.autoBuyEnabled })}
-                    className="relative h-7 w-12 rounded-full transition-colors duration-200 flex-shrink-0 ml-4"
-                    style={{
-                      background: form.autoBuyEnabled
-                        ? 'linear-gradient(135deg, #D4A24C, #F97316)'
-                        : 'rgba(255,255,255,0.1)',
-                    }}
-                  >
-                    <span
-                      className="absolute top-0.5 left-0.5 h-6 w-6 rounded-full bg-white shadow-sm transition-transform duration-200"
-                      style={{
-                        transform: form.autoBuyEnabled ? 'translateX(20px)' : 'translateX(0)',
-                      }}
-                    />
-                  </button>
-                </div>
-
-                {form.autoBuyEnabled && (
-                  <div className="mt-4 space-y-4 pt-3 border-t border-white/[0.07]">
-                    <Input
-                      label="Auto-Buy Threshold (USD)"
-                      type="number"
-                      min={0}
-                      placeholder="e.g. 400"
-                      value={form.autoBuyThreshold || ''}
-                      onChange={(e) => update({ autoBuyThreshold: Number(e.target.value) })}
-                      helperText="If a deal falls below this price, the agent auto-books it instantly."
-                    />
-                    <Input
-                      label="Budget Pool Deposit (USD)"
-                      type="number"
-                      min={0}
-                      placeholder="e.g. 500"
-                      value={form.budgetPoolDeposit || ''}
-                      onChange={(e) => update({ budgetPoolDeposit: Number(e.target.value) })}
-                      helperText="Funds reserved for auto-buy. Fully refundable if unused."
-                    />
-                  </div>
-                )}
-              </div>
-
-              <Select
-                label="Monitoring Frequency"
-                value={form.monitoringFrequency}
-                onChange={(e) => update({ monitoringFrequency: e.target.value })}
-                options={[
-                  { value: 'every_1h', label: 'Every hour' },
-                  { value: 'every_3h', label: 'Every 3 hours' },
-                  { value: 'every_6h', label: 'Every 6 hours' },
-                  { value: 'every_12h', label: 'Every 12 hours' },
-                  { value: 'daily', label: 'Once daily' },
-                ]}
-              />
-
-              <label className="flex items-center gap-3 cursor-pointer">
+        {step === 'when' && (
+          <StepShell kicker={phaseKicker} title={t('flow.when.title')} sub={t('flow.when.sub')}>
+            <div className="grid sm:grid-cols-2 gap-4">
+              <label className="block">
+                <span className="text-caption text-pen-2 block mb-1.5">{t('flow.when.depart')}</span>
                 <input
-                  type="checkbox"
-                  checked={form.emailAlerts}
-                  onChange={(e) => update({ emailAlerts: e.target.checked })}
-                  className="w-5 h-5 rounded accent-amber-400"
+                  type="date"
+                  className="glass-input"
+                  value={form.departDate}
+                  min={new Date().toISOString().slice(0, 10)}
+                  onChange={(e) => patch({ departDate: e.target.value })}
+                  autoFocus
                 />
-                <div>
-                  <p className="text-sm font-medium text-white">Email Alerts</p>
-                  <p className="text-xs text-white/40">Get notified when the agent finds a good deal</p>
-                </div>
+              </label>
+              <label className="block">
+                <span className="text-caption text-pen-2 block mb-1.5">{t('flow.when.return')}</span>
+                <input
+                  type="date"
+                  className="glass-input"
+                  value={form.returnDate}
+                  min={form.departDate || undefined}
+                  onChange={(e) => patch({ returnDate: e.target.value })}
+                />
               </label>
             </div>
-          )}
+            <FieldError message={error} />
+          </StepShell>
+        )}
 
-          {errors.length > 0 && (
-            <div className="mt-4 rounded-xl px-4 py-3 border border-red-500/30 bg-red-500/5">
-              {errors.map((e, i) => (
-                <p key={i} className="text-xs text-red-300">
-                  {e}
-                </p>
-              ))}
+        {step === 'who' && (
+          <StepShell kicker={phaseKicker} title={t('flow.who.title')} sub={t('flow.who.sub')}>
+            <div className="flex items-center justify-between rounded-lg border border-line-1 bg-ink-800 px-5 py-4 max-w-[320px]">
+              <span className="text-body text-pen-1">{t('flow.who.travelers')}</span>
+              <div className="flex items-center gap-4">
+                <button
+                  type="button"
+                  aria-label="−"
+                  onClick={() => patch({ passengers: Math.max(1, form.passengers - 1) })}
+                  className="flex items-center justify-center w-9 h-9 rounded-full border border-line-2 text-pen-1 hover:bg-ink-600 transition disabled:opacity-40"
+                  disabled={form.passengers <= 1}
+                >
+                  <Minus className="w-4 h-4" strokeWidth={2} />
+                </button>
+                <span className="num text-body-lg font-semibold text-pen-1 w-6 text-center">{form.passengers}</span>
+                <button
+                  type="button"
+                  aria-label="+"
+                  onClick={() => patch({ passengers: Math.min(9, form.passengers + 1) })}
+                  className="flex items-center justify-center w-9 h-9 rounded-full border border-line-2 text-pen-1 hover:bg-ink-600 transition disabled:opacity-40"
+                  disabled={form.passengers >= 9}
+                >
+                  <Plus className="w-4 h-4" strokeWidth={2} />
+                </button>
+              </div>
             </div>
-          )}
+          </StepShell>
+        )}
 
-          {/* Navigation */}
-          <div className="flex items-center justify-between mt-8 pt-6 border-t border-white/[0.07]">
-            <Button variant="ghost" onClick={back} disabled={step === 0}>
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M10 4L6 8l4 4" />
-              </svg>
-              Back
-            </Button>
-            {step < 2 ? (
-              <Button variant="primary" onClick={next}>
-                Next
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M6 4l4 4-4 4" />
-                </svg>
-              </Button>
-            ) : (
-              <Button variant="primary" onClick={handleSubmit} disabled={submitting}>
-                {submitting ? 'Launching...' : 'Launch Mission'}
-              </Button>
-            )}
-          </div>
-        </Card>
+        {step === 'budget' && (
+          <StepShell kicker={phaseKicker} title={t('flow.budget.title')} sub={t('flow.budget.sub')}>
+            <label className="block max-w-[320px]">
+              <span className="text-caption text-pen-2 block mb-1.5">{t('flow.budget.label')}</span>
+              <div className="relative">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-body-lg text-pen-3">$</span>
+                <input
+                  type="number"
+                  inputMode="numeric"
+                  min={1}
+                  className="glass-input num !pl-8 !text-[22px] !py-3 font-semibold"
+                  value={form.budget}
+                  onChange={(e) => patch({ budget: e.target.value })}
+                  autoFocus
+                />
+              </div>
+            </label>
 
-        {/* Summary Preview */}
-        <div className="space-y-4">
-          <Card padding="md">
-            <h3 className="text-sm font-semibold text-white/70 uppercase tracking-wider mb-4">Mission Summary</h3>
-            <div className="space-y-3">
-              <div className="flex justify-between text-sm">
-                <span className="text-white/50">Type</span>
-                <span className="text-white font-medium capitalize">
-                  {form.type === 'package' ? 'Flight + Hotel' : form.type}
+            {/* Optional auto-book — off by default, honest framing */}
+            <div className="mt-6 rounded-lg border border-line-1 bg-ink-800 p-4 max-w-[420px]">
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={form.autoBookEnabled}
+                  onChange={(e) => patch({ autoBookEnabled: e.target.checked })}
+                  className="mt-1 accent-[var(--accent)]"
+                />
+                <span>
+                  <span className="text-body text-pen-1 font-medium block">{t('flow.budget.autoTitle')}</span>
+                  <span className="text-caption text-pen-3">{t('flow.budget.autoSub')}</span>
                 </span>
-              </div>
-              {showFlight && form.origin && (
-                <div className="flex justify-between text-sm">
-                  <span className="text-white/50">Route</span>
-                  <span className="text-white font-medium">
-                    {form.origin} {form.destination ? `\u2192 ${form.destination}` : ''}
-                  </span>
-                </div>
-              )}
-              {showHotel && form.hotelDestination && form.type === 'hotel' && (
-                <div className="flex justify-between text-sm">
-                  <span className="text-white/50">Hotel</span>
-                  <span className="text-white font-medium truncate max-w-[160px]">{form.hotelDestination}</span>
-                </div>
-              )}
-              {showFlight && form.departDate && (
-                <div className="flex justify-between text-sm">
-                  <span className="text-white/50">Depart</span>
-                  <span className="text-white font-medium">{form.departDate}</span>
-                </div>
-              )}
-              {showFlight && form.returnDate && (
-                <div className="flex justify-between text-sm">
-                  <span className="text-white/50">Return</span>
-                  <span className="text-white font-medium">{form.returnDate}</span>
-                </div>
-              )}
-              {showHotel && form.checkIn && (
-                <div className="flex justify-between text-sm">
-                  <span className="text-white/50">Check-in</span>
-                  <span className="text-white font-medium">{form.checkIn}</span>
-                </div>
-              )}
-              {showHotel && form.checkOut && (
-                <div className="flex justify-between text-sm">
-                  <span className="text-white/50">Check-out</span>
-                  <span className="text-white font-medium">{form.checkOut}</span>
-                </div>
-              )}
-              <div className="flex justify-between text-sm">
-                <span className="text-white/50">{showHotel ? 'Guests' : 'Passengers'}</span>
-                <span className="text-white font-medium">{form.passengers}</span>
-              </div>
-              {showFlight && (
-                <div className="border-t border-white/[0.07] pt-3 mt-3">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-white/50">Cabin</span>
-                    <span className="text-white font-medium capitalize">{form.cabinClass.replace('_', ' ')}</span>
+              </label>
+              {form.autoBookEnabled && (
+                <label className="block mt-3 pl-7">
+                  <span className="text-caption text-pen-2 block mb-1.5">{t('flow.budget.autoLabel')}</span>
+                  <div className="relative max-w-[200px]">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-body text-pen-3">$</span>
+                    <input
+                      type="number"
+                      inputMode="numeric"
+                      min={1}
+                      className="glass-input num !pl-8"
+                      value={form.autoBook}
+                      onChange={(e) => patch({ autoBook: e.target.value })}
+                    />
                   </div>
-                </div>
+                </label>
               )}
-              <div className="flex justify-between text-sm">
-                <span className="text-white/50">Eco</span>
-                <span className="text-white font-medium capitalize">{form.ecoPreference}</span>
-              </div>
-              <div className="border-t border-white/[0.07] pt-3 mt-3">
-                <div className="flex justify-between text-sm">
-                  <span className="text-white/50">Budget</span>
-                  <span className="text-white font-bold">
-                    {form.maxBudget > 0 ? `$${form.maxBudget}` : 'Not set'}
-                  </span>
-                </div>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-white/50">Auto-buy</span>
-                <span className={`font-bold ${form.autoBuyEnabled && form.autoBuyThreshold > 0 ? 'text-amber-300' : 'text-white/30'}`}>
-                  {form.autoBuyEnabled && form.autoBuyThreshold > 0 ? `< $${form.autoBuyThreshold}` : 'Off'}
-                </span>
-              </div>
-              {form.autoBuyEnabled && form.budgetPoolDeposit > 0 && (
-                <div className="flex justify-between text-sm">
-                  <span className="text-white/50">Pool deposit</span>
-                  <span className="text-emerald-300 font-bold">${form.budgetPoolDeposit}</span>
-                </div>
-              )}
-              <div className="flex justify-between text-sm">
-                <span className="text-white/50">Alerts</span>
-                <span className="text-white font-medium">{form.emailAlerts ? 'On' : 'Off'}</span>
-              </div>
             </div>
-          </Card>
+            <FieldError message={error} />
+          </StepShell>
+        )}
 
-          <Card padding="md" className="border-amber-500/10">
-            <div className="flex items-start gap-3">
-              <div
-                className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
-                style={{ background: 'linear-gradient(135deg, rgba(245,158,11,0.2), rgba(239,68,68,0.2))' }}
-              >
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#D4A24C" strokeWidth="1.5" strokeLinecap="round">
-                  <circle cx="8" cy="8" r="6" />
-                  <path d="M8 5v3l2 1" />
-                </svg>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-white">AI-Powered Monitoring</p>
-                <p className="text-xs text-white/40 mt-1">Your agent continuously scans for the best fares using live market data and price prediction.</p>
-              </div>
+        {step === 'matters' && (
+          <StepShell kicker={phaseKicker} title={t('flow.matters.title')} sub={t('flow.matters.sub')}>
+            <div className="grid gap-2.5">
+              <PriorityChip
+                checked={form.cheapest}
+                onToggle={() => patch({ cheapest: !form.cheapest })}
+                title={t('flow.matters.cheapest')}
+                sub={t('flow.matters.cheapestSub')}
+              />
+              <PriorityChip
+                checked={form.direct}
+                onToggle={() => patch({ direct: !form.direct })}
+                title={t('flow.matters.direct')}
+                sub={t('flow.matters.directSub')}
+              />
+              <PriorityChip
+                checked={form.bag}
+                onToggle={() => patch({ bag: !form.bag })}
+                title={t('flow.matters.bag')}
+                sub={t('flow.matters.bagSub')}
+              />
+              <PriorityChip
+                checked={form.eco}
+                onToggle={() => patch({ eco: !form.eco })}
+                title={t('flow.matters.eco')}
+                sub={t('flow.matters.ecoSub')}
+              />
             </div>
-          </Card>
-        </div>
+
+            <label className="block mt-6 max-w-[280px]">
+              <span className="text-caption text-pen-2 block mb-1.5">{t('flow.matters.cabin')}</span>
+              <select
+                className="glass-input"
+                value={form.cabinClass}
+                onChange={(e) => patch({ cabinClass: e.target.value as CabinClass })}
+              >
+                <option value="economy">{t('flow.cabin.economy')}</option>
+                <option value="premium_economy">{t('flow.cabin.premium_economy')}</option>
+                <option value="business">{t('flow.cabin.business')}</option>
+              </select>
+            </label>
+          </StepShell>
+        )}
+
+        {step === 'review' && (
+          <StepShell kicker={phaseKicker} title={t('flow.review.title')} sub={t('flow.review.sub')}>
+            <div className="grid gap-3">
+              <ReviewCard
+                label={t('flow.review.trip')}
+                onEdit={() => editFromReview('where')}
+                editLabel={t('flow.review.edit')}
+              >
+                <p className="editorial text-[20px] text-pen-1">
+                  {form.origin} <span className="text-pen-3">→</span> {form.destination}
+                </p>
+                <p className="text-caption text-pen-3 mt-1">
+                  {form.departDate}
+                  {form.returnDate ? ` → ${form.returnDate}` : ''} · {form.passengers}{' '}
+                  {form.passengers > 1 ? t('mission.travelers') : t('mission.traveler')}
+                </p>
+              </ReviewCard>
+
+              <ReviewCard
+                label={t('flow.review.budget')}
+                onEdit={() => editFromReview('budget')}
+                editLabel={t('flow.review.edit')}
+              >
+                <p className="num text-[22px] font-semibold text-pen-1">
+                  ${Number(form.budget || 0).toLocaleString('en-US')}
+                </p>
+                <p className="text-caption text-pen-3 mt-1">
+                  {form.autoBookEnabled && Number(form.autoBook) > 0
+                    ? `${t('flow.review.autoOn')} $${Number(form.autoBook).toLocaleString('en-US')}`
+                    : t('flow.review.autoOff')}
+                </p>
+              </ReviewCard>
+
+              <ReviewCard
+                label={t('flow.review.preferences')}
+                onEdit={() => editFromReview('matters')}
+                editLabel={t('flow.review.edit')}
+              >
+                <p className="text-body text-pen-1">
+                  {[
+                    form.cheapest ? t('flow.matters.cheapest') : null,
+                    form.direct ? t('flow.matters.direct') : null,
+                    form.bag ? t('flow.matters.bag') : null,
+                    form.eco ? t('flow.matters.eco') : null,
+                  ]
+                    .filter(Boolean)
+                    .join(' · ') || '—'}
+                </p>
+                <p className="text-caption text-pen-3 mt-1">{t(`flow.cabin.${form.cabinClass}`)}</p>
+              </ReviewCard>
+            </div>
+
+            <p className="text-caption text-pen-3 mt-5 leading-relaxed">{t('flow.review.finePrint')}</p>
+            <FieldError message={error} />
+          </StepShell>
+        )}
+
+        {/* Submit-on-Enter target */}
+        <button type="submit" className="hidden" aria-hidden />
+      </form>
+
+      <FlowNav
+        segments={segments}
+        backLabel={t('flow.back')}
+        nextLabel={step === 'review' ? t('flow.review.launch') : t('flow.next')}
+        onBack={goBack}
+        onNext={goNext}
+        nextBusy={submitting}
+        showBack={stepIndex > 0}
+      />
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════
+   Sub-components
+   ══════════════════════════════════════════════════════════ */
+
+function PriorityChip({
+  checked,
+  onToggle,
+  title,
+  sub,
+}: {
+  checked: boolean;
+  onToggle: () => void;
+  title: string;
+  sub: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      aria-pressed={checked}
+      className={`flex items-start gap-3 rounded-lg border p-4 text-left transition-all duration-default ${
+        checked
+          ? 'border-accent/40 bg-accent-soft'
+          : 'border-line-1 bg-ink-800 hover:border-line-2'
+      }`}
+    >
+      <span
+        className={`flex items-center justify-center w-5 h-5 rounded-full border shrink-0 mt-0.5 transition ${
+          checked ? 'bg-accent border-accent text-accent-ink' : 'border-line-3 bg-transparent'
+        }`}
+      >
+        {checked && <Check className="w-3 h-3" strokeWidth={3} />}
+      </span>
+      <span>
+        <span className="text-body text-pen-1 font-medium block">{title}</span>
+        <span className="text-caption text-pen-3">{sub}</span>
+      </span>
+    </button>
+  );
+}
+
+function ReviewCard({
+  label,
+  editLabel,
+  onEdit,
+  children,
+}: {
+  label: string;
+  editLabel: string;
+  onEdit: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="rounded-lg border border-line-1 bg-ink-800 p-4 shadow-elev-1">
+      <div className="flex items-center justify-between mb-2">
+        <p className="text-micro uppercase tracking-widest text-pen-3">{label}</p>
+        <button
+          type="button"
+          onClick={onEdit}
+          className="text-caption text-accent hover:text-accent-hover transition font-medium"
+        >
+          {editLabel}
+        </button>
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function DoneScreen({
+  t,
+  missionId,
+  onLater,
+}: {
+  t: (k: string) => string;
+  missionId: string;
+  onLater: () => void;
+}) {
+  return (
+    <div className="mx-auto max-w-[480px] pt-16 sm:pt-24 text-center px-4">
+      {/* Check draws itself in ~350ms — the whole celebration */}
+      <svg viewBox="0 0 48 48" className="w-16 h-16 mx-auto" fill="none" aria-hidden>
+        <circle cx="24" cy="24" r="22" stroke="var(--accent)" strokeOpacity="0.25" strokeWidth="2" />
+        <path
+          d="M14 25l7 7 13-15"
+          stroke="var(--accent)"
+          strokeWidth="3"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="check-draw"
+        />
+      </svg>
+      <h2 className="editorial text-[28px] text-pen-1 mt-6">{t('flow.done.title')}</h2>
+      <p className="text-body text-pen-2 mt-3 leading-relaxed">{t('flow.done.sub')}</p>
+      <div className="mt-8 flex flex-col items-center gap-3">
+        <Link
+          href={`/missions/${missionId}/pay`}
+          className="premium-button inline-flex items-center justify-center rounded-md px-7 py-3 text-body font-semibold w-full sm:w-auto"
+        >
+          {t('flow.done.cta')}
+        </Link>
+        <button
+          type="button"
+          onClick={onLater}
+          className="text-caption text-pen-3 hover:text-pen-1 transition py-1"
+        >
+          {t('flow.done.later')}
+        </button>
       </div>
     </div>
   );

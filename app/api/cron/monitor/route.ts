@@ -67,6 +67,9 @@ export async function GET(req: Request) {
             headers: {
               'Content-Type': 'application/json',
               'x-flyeas-cron': '1',
+              // Forward the cron secret so propose recognizes this as an
+              // internal call and is allowed to auto-buy (mirrors sweep).
+              ...(authHeader ? { authorization: authHeader } : {}),
             },
             body: JSON.stringify({ source: 'cron' }),
           });

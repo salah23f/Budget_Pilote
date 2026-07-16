@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useStreakStore } from '@/lib/store/streak-store';
 import { useReferralStore } from '@/lib/store/referral-store';
-import { useUserStore } from '@/stores/user-store';
+import { useUserStore } from '@/lib/store/user-store';
 import {
   Backpack,
   Briefcase,
@@ -32,6 +32,7 @@ const TRAVEL_STYLES: Array<{
   subtitle: string;
   icon: typeof Backpack;
   gradient: string;
+  photo: string;
   description: string;
 }> = [
   {

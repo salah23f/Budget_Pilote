@@ -51,12 +51,12 @@ export function Tabs({ tabs, activeTab, onChange, className = '' }: TabsProps) {
   return (
     <div
       ref={containerRef}
-      className={`relative inline-flex gap-1 p-1 rounded-xl glass ${className}`}
+      className={`relative inline-flex gap-1 p-1 rounded-md bg-ink-900 border border-line-1 ${className}`}
       role="tablist"
     >
       {/* Animated indicator */}
       <span
-        className="absolute bottom-0 h-0.5 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 transition-all duration-300 ease-out"
+        className="absolute bottom-0 h-0.5 rounded-full bg-accent transition-all duration-300 ease-out"
         style={{ left: indicator.left, width: indicator.width }}
       />
 
@@ -70,10 +70,10 @@ export function Tabs({ tabs, activeTab, onChange, className = '' }: TabsProps) {
             data-tab-id={tab.id}
             onClick={() => onChange(tab.id)}
             className={[
-              'relative z-10 inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-200 select-none',
+              'relative z-10 inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md transition-colors duration-200 select-none focus-visible:ring-2 focus-visible:ring-accent/50',
               isActive
-                ? 'text-white bg-white/[0.08]'
-                : 'text-white/55 hover:text-white/80 hover:bg-white/[0.04]',
+                ? 'text-pen-1 bg-ink-700'
+                : 'text-pen-3 hover:text-pen-2 hover:bg-ink-600',
             ].join(' ')}
           >
             {tab.icon && <span className="flex-shrink-0">{tab.icon}</span>}

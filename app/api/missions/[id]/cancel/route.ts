@@ -70,9 +70,12 @@ export async function POST(
       ms: Date.now() - started,
     });
 
+    // Don't echo the full Mission (userId, stripePaymentIntentId,
+    // stripeClientSecret, walletUserAddress...). The cockpit ignores this
+    // body and re-fetches; return a minimal, non-sensitive view.
     return NextResponse.json({
       success: true,
-      mission: await getMission(missionId),
+      mission: { id: missionId, status: 'cancelled', paymentStatus: 'cancelled' },
     });
   } catch (err: any) {
     console.error('[missions/cancel] unhandled', {

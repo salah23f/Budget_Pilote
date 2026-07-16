@@ -2,8 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useWallet } from '@/components/wallet-provider';
-import { useUserStore } from '@/stores/user-store';
+import { useUserStore } from '@/lib/store/user-store';
 import { useSavingsStore } from '@/lib/store/savings-store';
 import { useThemeStore } from '@/lib/store/theme-store';
 import { useLocale } from '@/lib/i18n';
@@ -18,10 +17,8 @@ import {
   Sun,
   Moon,
   TrendingUp,
-  Plane,
-  Building2,
   Target,
-  Wallet,
+  UserCircle,
 } from 'lucide-react';
 
 type TopbarProps = {
@@ -30,7 +27,6 @@ type TopbarProps = {
 
 export default function Topbar({ onMenuToggle }: TopbarProps) {
   const router = useRouter();
-  const { walletAddress } = useWallet();
   const { unreadNotifications } = useUserStore();
   const { displayName, initials } = useIdentity();
   const { t } = useLocale();
@@ -38,7 +34,6 @@ export default function Topbar({ onMenuToggle }: TopbarProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchFocused, setSearchFocused] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const [copied, setCopied] = useState(false);
 
   const userRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLDivElement>(null);
@@ -52,41 +47,27 @@ export default function Topbar({ onMenuToggle }: TopbarProps) {
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
 
-  const shortAddress = walletAddress ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}` : null;
-
-  function copyAddress() {
-    if (!walletAddress) return;
-    navigator.clipboard.writeText(walletAddress);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
-  }
-
   function handleSearch(e: React.FormEvent) {
     e.preventDefault();
-    const q = searchQuery.trim().toLowerCase();
+    const q = searchQuery.trim();
     if (!q) return;
-    if (q.includes('hotel') || q.includes('stay') || q.includes('room')) {
-      router.push('/hotels');
-    } else if (q.includes('mission') || q.includes('monitor') || q.includes('alert')) {
+    const lower = q.toLowerCase();
+    if (lower.includes('mission') || lower.includes('monitor') || lower.includes('watch')) {
       router.push('/missions');
-    } else if (q.includes('wallet') || q.includes('deposit') || q.includes('pay')) {
-      router.push('/wallet');
-    } else if (q.includes('setting') || q.includes('account') || q.includes('profile')) {
-      router.push('/settings');
-    } else if (q.includes('book')) {
-      router.push('/bookings');
+    } else if (lower.includes('setting') || lower.includes('account') || lower.includes('profile')) {
+      router.push('/account');
     } else {
-      router.push('/flights');
+      // "Where do you want to go?" — a destination starts a mission
+      router.push(`/missions/new?destination=${encodeURIComponent(q)}`);
     }
     setSearchQuery('');
     setSearchFocused(false);
   }
 
   const quickLinks = [
-    { label: t('pages.searchFlights'), href: '/flights', icon: Plane },
-    { label: t('pages.searchHotels'), href: '/hotels', icon: Building2 },
-    { label: t('misc.newMission'), href: '/missions/new', icon: Target },
-    { label: t('misc.wallet'), href: '/wallet', icon: Wallet },
+    { label: t('nav.newMission'), href: '/missions/new', icon: Target },
+    { label: t('sidebar.missions'), href: '/missions', icon: Target },
+    { label: t('sidebar.profile'), href: '/account', icon: UserCircle },
   ];
 
   return (
@@ -158,20 +139,6 @@ export default function Topbar({ onMenuToggle }: TopbarProps) {
           )}
         </button>
 
-        {/* Wallet chip */}
-        {shortAddress && (
-          <button onClick={copyAddress} className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-mono text-text-muted border border-border-subtle transition hover:bg-white/5">
-            {copied ? (
-              <span className="text-emerald-400">Copied!</span>
-            ) : (
-              <>
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                {shortAddress}
-              </>
-            )}
-          </button>
-        )}
-
         {/* User avatar */}
         <div className="relative" ref={userRef}>
           <button onClick={() => setUserMenuOpen(!userMenuOpen)} className="flex items-center p-0.5 rounded-xl hover:bg-white/5 transition">
@@ -187,8 +154,8 @@ export default function Topbar({ onMenuToggle }: TopbarProps) {
                 <p className="text-caption text-pen-3">{t('misc.freePlan')}</p>
               </div>
               {[
+                { label: t('sidebar.profile'), href: '/account' },
                 { label: t('sidebar.settings'), href: '/settings' },
-                { label: t('misc.wallet'), href: '/wallet' },
               ].map((item) => (
                 <Link key={item.href} href={item.href} className="block px-4 py-2 text-[13px] text-text-secondary hover:bg-white/5 hover:text-text-primary transition" onClick={() => setUserMenuOpen(false)}>
                   {item.label}
@@ -229,19 +196,24 @@ function SavingsBadge() {
 }
 
 function ThemeToggle() {
-  const mode = useThemeStore((s) => s.mode);
+  // Mode comes from localStorage — render the SSR-stable icon (Moon)
+  // until mounted so server and client first-render markup match.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const storeMode = useThemeStore((s) => s.mode);
   const toggleMode = useThemeStore((s) => s.toggleMode);
+  const mode = mounted ? storeMode : 'light';
 
   return (
     <button
       onClick={toggleMode}
-      className="p-2.5 rounded-xl hover:bg-white/5 transition"
+      className="p-2.5 rounded-md hover:bg-ink-600 transition"
       aria-label={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
     >
       {mode === 'dark' ? (
-        <Sun className="w-[18px] h-[18px] text-text-secondary" strokeWidth={1.8} />
+        <Sun className="w-[18px] h-[18px] text-pen-2" strokeWidth={1.8} />
       ) : (
-        <Moon className="w-[18px] h-[18px] text-text-secondary" strokeWidth={1.8} />
+        <Moon className="w-[18px] h-[18px] text-pen-2" strokeWidth={1.8} />
       )}
     </button>
   );

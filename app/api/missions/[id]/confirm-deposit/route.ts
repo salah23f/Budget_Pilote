@@ -80,9 +80,17 @@ export async function POST(
         ms: Date.now() - started,
       });
 
+      // Don't echo the full Mission (it carries userId, wallet address,
+      // escrow id, and tx hashes). The pay page only reads `success`;
+      // return a minimal, non-sensitive view. On-chain state is public.
       return NextResponse.json({
         success: true,
-        mission: await getMission(missionId),
+        mission: {
+          id: missionId,
+          status: 'monitoring',
+          paymentStatus: 'authorized',
+          budgetDepositedUsd: state.budgetUsd,
+        },
         onchain: state,
       });
     } catch (err: any) {

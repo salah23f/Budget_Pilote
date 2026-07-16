@@ -99,9 +99,21 @@ export async function runQualityGate(): Promise<QualityReport> {
     }
   }
 
-  // Deduplication: remove rows with identical (origin, destination, depart_date, price_usd, source, fetched_at::date)
-  // Note: Supabase doesn't have native DISTINCT ON delete, so we use a conservative approach
-  const duplicatesRemoved = 0; // Dedup is better handled at INSERT time with UPSERT
+  // Deduplication: count duplicates (same origin, dest, depart_date, price_usd, source)
+  // We use a conservative approach: identify and remove exact duplicates via SQL RPC
+  let duplicatesRemoved = 0;
+  try {
+    const { data: dupCount, error: dupErr } = await supabase.rpc('remove_duplicate_price_samples');
+    if (!dupErr && dupCount != null) {
+      duplicatesRemoved = typeof dupCount === 'number' ? dupCount : 0;
+      console.log(`[quality-gate] Removed ${duplicatesRemoved} duplicate rows`);
+    } else if (dupErr) {
+      // RPC may not exist — that's OK, dedup is best-effort
+      console.warn(`[quality-gate] Dedup RPC not available: ${dupErr.message}`);
+    }
+  } catch {
+    console.warn('[quality-gate] Dedup skipped (RPC not configured)');
+  }
 
   // Get route count and date range
   const { data: summary } = await supabase

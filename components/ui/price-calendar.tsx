@@ -103,10 +103,10 @@ export function PriceCalendar({
     text: string;
     label: string;
   } {
-    if (!price || price <= 0) return { bg: 'rgba(255,255,255,0.02)', text: 'text-white/20', label: '' };
-    if (price <= priceValues.p25) return { bg: 'rgba(16,185,129,0.15)', text: 'text-emerald-300', label: 'cheap' };
-    if (price <= priceValues.p75) return { bg: 'rgba(245,158,11,0.12)', text: 'text-amber-300', label: 'average' };
-    return { bg: 'rgba(239,68,68,0.12)', text: 'text-red-300', label: 'expensive' };
+    if (!price || price <= 0) return { bg: 'var(--ink-900)', text: 'text-pen-3', label: '' };
+    if (price <= priceValues.p25) return { bg: 'var(--success-soft)', text: 'text-success', label: 'cheap' };
+    if (price <= priceValues.p75) return { bg: 'var(--warning-soft)', text: 'text-warning', label: 'average' };
+    return { bg: 'var(--danger-soft)', text: 'text-danger', label: 'expensive' };
   }
 
   const today = new Date().toISOString().split('T')[0];
@@ -118,17 +118,17 @@ export function PriceCalendar({
         <button
           type="button"
           onClick={() => onMonthChange?.(prevMonth(month))}
-          className="p-2 rounded-lg hover:bg-white/5 transition text-white/50 hover:text-white"
+          className="p-2 rounded-md hover:bg-ink-600 transition text-pen-3 hover:text-pen-1 focus-visible:ring-2 focus-visible:ring-accent/50"
         >
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
             <path d="M10 4l-4 4 4 4" />
           </svg>
         </button>
-        <h3 className="text-sm font-semibold text-white">{monthLabel(month)}</h3>
+        <h3 className="text-sm font-semibold text-pen-1">{monthLabel(month)}</h3>
         <button
           type="button"
           onClick={() => onMonthChange?.(nextMonth(month))}
-          className="p-2 rounded-lg hover:bg-white/5 transition text-white/50 hover:text-white"
+          className="p-2 rounded-md hover:bg-ink-600 transition text-pen-3 hover:text-pen-1 focus-visible:ring-2 focus-visible:ring-accent/50"
         >
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
             <path d="M6 4l4 4-4 4" />
@@ -139,23 +139,23 @@ export function PriceCalendar({
       {/* Legend */}
       <div className="flex items-center justify-center gap-4 mb-4 text-[10px]">
         <span className="flex items-center gap-1.5">
-          <span className="w-3 h-3 rounded" style={{ background: 'rgba(16,185,129,0.4)' }} />
-          <span className="text-white/40">Cheap</span>
+          <span className="w-3 h-3 rounded" style={{ background: 'var(--success)' }} />
+          <span className="text-pen-3">Cheap</span>
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="w-3 h-3 rounded" style={{ background: 'rgba(245,158,11,0.35)' }} />
-          <span className="text-white/40">Average</span>
+          <span className="w-3 h-3 rounded" style={{ background: 'var(--warning)' }} />
+          <span className="text-pen-3">Average</span>
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="w-3 h-3 rounded" style={{ background: 'rgba(239,68,68,0.35)' }} />
-          <span className="text-white/40">Expensive</span>
+          <span className="w-3 h-3 rounded" style={{ background: 'var(--danger)' }} />
+          <span className="text-pen-3">Expensive</span>
         </span>
       </div>
 
       {/* Day headers */}
       <div className="grid grid-cols-7 gap-1 mb-1">
         {DAYS.map((d) => (
-          <div key={d} className="text-center text-[10px] text-white/30 font-medium py-1">
+          <div key={d} className="text-center text-[10px] text-pen-3 font-medium py-1">
             {d}
           </div>
         ))}
@@ -165,7 +165,7 @@ export function PriceCalendar({
       {loading ? (
         <div className="grid grid-cols-7 gap-1">
           {Array.from({ length: 35 }, (_, i) => (
-            <div key={i} className="aspect-square rounded-lg bg-white/[0.03] animate-pulse" />
+            <div key={i} className="aspect-square rounded-md bg-ink-600 animate-pulse" />
           ))}
         </div>
       ) : (
@@ -186,17 +186,17 @@ export function PriceCalendar({
                 type="button"
                 disabled={isPast || !price}
                 onClick={() => onDateSelect?.(cell.date)}
-                className={`aspect-square rounded-lg flex flex-col items-center justify-center transition-all relative ${
+                className={`aspect-square rounded-md flex flex-col items-center justify-center transition-all relative focus-visible:ring-2 focus-visible:ring-accent/50 ${
                   isPast ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer hover:scale-105'
-                } ${isSelected ? 'ring-2 ring-amber-400 ring-offset-1 ring-offset-[#0c0a09]' : ''}`}
+                } ${isSelected ? 'ring-2 ring-accent ring-offset-1 ring-offset-[var(--ink-950)]' : ''}`}
                 style={{ background: color.bg }}
                 title={price ? `$${price} — ${color.label}` : 'No data'}
               >
-                <span className={`text-xs font-medium ${price ? color.text : 'text-white/20'}`}>
+                <span className={`text-xs font-medium num ${price ? color.text : 'text-pen-3'}`}>
                   {cell.day}
                 </span>
                 {price ? (
-                  <span className={`text-[9px] font-semibold ${color.text}`}>
+                  <span className={`text-[9px] font-semibold num ${color.text}`}>
                     ${price}
                   </span>
                 ) : null}
@@ -208,9 +208,9 @@ export function PriceCalendar({
 
       {/* Price range summary */}
       {priceValues.min > 0 && (
-        <div className="mt-3 flex items-center justify-between text-[10px] text-white/30 px-1">
-          <span>Cheapest: <span className="text-emerald-300 font-semibold">${priceValues.min}</span></span>
-          <span>Most expensive: <span className="text-red-300 font-semibold">${priceValues.max}</span></span>
+        <div className="mt-3 flex items-center justify-between text-[10px] text-pen-3 px-1">
+          <span>Cheapest: <span className="text-success font-semibold num">${priceValues.min}</span></span>
+          <span>Most expensive: <span className="text-danger font-semibold num">${priceValues.max}</span></span>
         </div>
       )}
     </div>

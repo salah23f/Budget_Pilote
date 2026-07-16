@@ -5,26 +5,17 @@ import { useRouter } from 'next/navigation';
 import { useLocale } from '@/lib/i18n';
 import {
   LayoutGrid,
-  Plane,
-  Building2,
-  Car,
   Target,
-  Heart,
-  Receipt,
-  Star,
   Settings,
-  Shield,
-  Users,
-  Map,
+  UserCircle,
   Search,
   ArrowRight,
-  Gift,
 } from 'lucide-react';
 
 type CommandItem = {
   id: string;
   label: string;
-  icon: typeof Plane;
+  icon: typeof Target;
   href: string;
   section: 'pages' | 'actions';
   keywords?: string;
@@ -38,25 +29,16 @@ export default function CommandPalette() {
   const router = useRouter();
   const { t } = useLocale();
 
+  // Missions-first: hidden surfaces (flights, hotels, cars, rewards…)
+  // are no longer promoted here.
   const commands: CommandItem[] = useMemo(() => [
     // Pages
-    { id: 'dashboard', label: t('sidebar.dashboard'), icon: LayoutGrid, href: '/dashboard', section: 'pages', keywords: 'home overview' },
-    { id: 'flights', label: t('sidebar.flights'), icon: Plane, href: '/flights', section: 'pages', keywords: 'search fly airline ticket' },
-    { id: 'hotels', label: t('sidebar.hotels'), icon: Building2, href: '/hotels', section: 'pages', keywords: 'stay room accommodation' },
-    { id: 'cars', label: t('sidebar.cars'), icon: Car, href: '/cars', section: 'pages', keywords: 'rent rental drive' },
-    { id: 'missions', label: t('sidebar.missions'), icon: Target, href: '/missions', section: 'pages', keywords: 'monitor alert ai auto' },
-    { id: 'favorites', label: t('sidebar.favorites'), icon: Heart, href: '/favorites', section: 'pages', keywords: 'saved liked' },
-    { id: 'bookings', label: t('sidebar.bookings'), icon: Receipt, href: '/bookings', section: 'pages', keywords: 'reservation order' },
-    { id: 'rewards', label: t('sidebar.rewards'), icon: Star, href: '/rewards', section: 'pages', keywords: 'points badges streak level' },
-    { id: 'referral', label: t('sidebar.referral'), icon: Gift, href: '/referral', section: 'pages', keywords: 'invite friends earn credits referral' },
-    { id: 'insurance', label: t('sidebar.insurance'), icon: Shield, href: '/insurance', section: 'pages', keywords: 'protect coverage' },
-    { id: 'group-trip', label: t('sidebar.groupTrip'), icon: Users, href: '/group-trip', section: 'pages', keywords: 'friends family share' },
-    { id: 'trip-builder', label: t('sidebar.tripBuilder'), icon: Map, href: '/trip-builder', section: 'pages', keywords: 'plan itinerary' },
+    { id: 'home', label: t('sidebar.home'), icon: LayoutGrid, href: '/dashboard', section: 'pages', keywords: 'home overview dashboard' },
+    { id: 'missions', label: t('sidebar.missions'), icon: Target, href: '/missions', section: 'pages', keywords: 'monitor watch price trip' },
+    { id: 'profile', label: t('sidebar.profile'), icon: UserCircle, href: '/account', section: 'pages', keywords: 'account profile preferences' },
     { id: 'settings', label: t('sidebar.settings'), icon: Settings, href: '/settings', section: 'pages', keywords: 'preferences currency language' },
     // Actions
-    { id: 'new-mission', label: t('misc.newMission'), icon: Target, href: '/missions/new', section: 'actions', keywords: 'create alert monitor price' },
-    { id: 'search-flights', label: t('pages.searchFlights'), icon: Plane, href: '/flights', section: 'actions', keywords: 'find fly ticket' },
-    { id: 'search-hotels', label: t('pages.searchHotels'), icon: Building2, href: '/hotels', section: 'actions', keywords: 'find stay room' },
+    { id: 'new-mission', label: t('nav.newMission'), icon: Target, href: '/missions/new', section: 'actions', keywords: 'create mission watch monitor price trip travel' },
   ], [t]);
 
   const filtered = useMemo(() => {

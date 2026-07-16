@@ -89,14 +89,12 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ success: true, trips: trips || [] });
     }
 
-    // No email filter — return recent public trips (limit 20)
-    const { data: trips } = await db
-      .from('group_trips')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .limit(20);
-
-    return NextResponse.json({ success: true, trips: trips || [] });
+    // No email filter: this endpoint is UNAUTHENTICATED, and returning
+    // "recent public trips" via select('*') leaked every owner's email
+    // (owner_id) and each trip's secret invite_code (which gates /join).
+    // The dashboard always queries with ?email=, so return an empty list
+    // here instead of dumping other users' trips.
+    return NextResponse.json({ success: true, trips: [] });
   } catch (err: any) {
     return NextResponse.json({ error: err.message || 'Failed to list trips' }, { status: 500 });
   }

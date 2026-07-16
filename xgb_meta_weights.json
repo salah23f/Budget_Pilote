@@ -1,0 +1,27 @@
+{
+  "feature_importance": {
+    "chronos2": 0.05186917260289192,
+    "tirex": 0.21492937207221985,
+    "moirai2": 0.059920378029346466,
+    "patchtst": 0.24240228533744812,
+    "kan": 0.04356401786208153,
+    "garch_nn": 0.13057182729244232,
+    "mlcaformer": 0.19528035819530487,
+    "ts2vec": 0.028989914804697037,
+    "qrf": 0.03247262164950371
+  },
+  "val_mae": 116.41378784179688,
+  "n_samples": 56554,
+  "n_models": 9,
+  "models": [
+    "chronos2",
+    "tirex",
+    "moirai2",
+    "patchtst",
+    "kan",
+    "garch_nn",
+    "mlcaformer",
+    "ts2vec",
+    "qrf"
+  ]
+}

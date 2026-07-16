@@ -13,7 +13,7 @@ import {
   type InvitedFriend,
   type RewardTier,
 } from '@/lib/store/referral-store';
-import { useUserStore } from '@/stores/user-store';
+import { useUserStore } from '@/lib/store/user-store';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { PriceDisplay } from '@/components/ui/price-display';
 import {

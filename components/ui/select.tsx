@@ -35,7 +35,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
         {label && (
           <label
             htmlFor={selectId}
-            className="text-sm font-medium text-white/70"
+            className="text-sm font-medium text-pen-2"
           >
             {label}
           </label>
@@ -47,12 +47,12 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
             ref={ref}
             id={selectId}
             className={[
-              'w-full appearance-none rounded-xl px-4 py-2.5 pr-10 text-sm text-white',
-              'bg-white/[0.06] backdrop-blur-md border transition-colors duration-150',
-              'focus:outline-none focus:ring-2 focus:ring-amber-400/40 focus:border-amber-400/30',
+              'w-full appearance-none rounded-md px-4 py-2.5 pr-10 text-sm text-pen-1',
+              'bg-ink-900 border transition-colors duration-150',
+              'focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent/30',
               error
-                ? 'border-red-500/50 focus:ring-red-400/40 focus:border-red-400/30'
-                : 'border-white/[0.09] hover:border-white/[0.15]',
+                ? 'border-danger/50 focus:ring-danger/40 focus:border-danger/30'
+                : 'border-line-2 hover:border-line-3',
               className,
             ]
               .filter(Boolean)
@@ -60,7 +60,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
             {...rest}
           >
             {placeholder && (
-              <option value="" disabled className="bg-[#1C1917] text-white/50">
+              <option value="" disabled className="bg-ink-900 text-pen-3">
                 {placeholder}
               </option>
             )}
@@ -69,7 +69,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
                 key={opt.value}
                 value={opt.value}
                 disabled={opt.disabled}
-                className="bg-[#1C1917] text-white"
+                className="bg-ink-900 text-pen-1"
               >
                 {opt.label}
               </option>
@@ -77,7 +77,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
           </select>
 
           {/* Chevron icon */}
-          <span className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-white/40">
+          <span className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-pen-3">
             <svg
               width="14"
               height="14"
@@ -97,7 +97,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
         </div>
 
         {/* Error */}
-        {error && <p className="text-xs text-red-400 mt-0.5">{error}</p>}
+        {error && <p className="text-xs text-danger mt-0.5">{error}</p>}
       </div>
     );
   },

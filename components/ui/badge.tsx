@@ -26,20 +26,17 @@ export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
 /*  Style maps                                                         */
 /* ------------------------------------------------------------------ */
 
-/**
- * We combine the existing CSS classes from globals.css (badge,
- * highlight-badge, success-badge, warning-badge) with extra Tailwind
- * for the new variants that are not in the stylesheet.
- */
+/** Base pill styling shared by every variant (Design System v3 tokens). */
+const baseClasses =
+  'inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-medium';
+
 const variantClasses: Record<BadgeVariant, string> = {
-  default: 'badge',
-  highlight: 'badge highlight-badge',
-  success: 'badge success-badge',
-  warning: 'badge warning-badge',
-  danger:
-    'badge bg-red-500/15 text-red-300 border-red-500/25',
-  info:
-    'badge bg-blue-500/15 text-blue-300 border-blue-500/25',
+  default: 'bg-ink-700 text-pen-2 border-line-1',
+  highlight: 'bg-accent-soft text-accent border-accent/30',
+  success: 'bg-success-soft text-success border-success/30',
+  warning: 'bg-warning-soft text-warning border-warning/30',
+  danger: 'bg-danger-soft text-danger border-danger/30',
+  info: 'bg-ink-700 text-pen-1 border-line-2',
 };
 
 const sizeClasses: Record<BadgeSize, string> = {
@@ -56,7 +53,7 @@ export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
     return (
       <span
         ref={ref}
-        className={[variantClasses[variant], sizeClasses[size], className]
+        className={[baseClasses, variantClasses[variant], sizeClasses[size], className]
           .filter(Boolean)
           .join(' ')}
         {...rest}

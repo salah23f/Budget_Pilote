@@ -76,23 +76,37 @@ const ACTIVE_STATUSES = new Set([
   'proposal_pending',
 ]);
 
-function statusColor(status: string): string {
-  switch (status) {
-    case 'monitoring':
-      return 'bg-emerald-500/15 text-emerald-300 border-emerald-400/30';
-    case 'proposal_pending':
-      return 'bg-amber-500/15 text-amber-300 border-amber-400/30';
-    case 'awaiting_payment':
-      return 'bg-sky-500/15 text-sky-300 border-sky-400/30';
-    case 'booked':
-      return 'bg-violet-500/15 text-violet-300 border-violet-400/30';
-    case 'cancelled':
-    case 'expired':
-      return 'bg-white/5 text-white/40 border-white/10';
-    default:
-      return 'bg-white/5 text-white/60 border-white/10';
-  }
-}
+/* Status → semantic tone (3 tones max + muted) — mirrors MissionCard */
+type StatusTone = 'neutral' | 'success' | 'warning' | 'muted';
+
+const STATUS_TONE: Record<string, StatusTone> = {
+  monitoring: 'neutral',
+  proposal_pending: 'success',
+  awaiting_payment: 'warning',
+  booked: 'success',
+  completed: 'muted',
+  cancelled: 'muted',
+  expired: 'muted',
+  draft: 'muted',
+};
+
+const TONE_CLASSES: Record<StatusTone, { pill: string; dot: string }> = {
+  neutral: { pill: 'bg-ink-600 text-pen-2', dot: 'bg-pen-3 pulse-live' },
+  success: { pill: 'bg-success-soft text-success', dot: 'bg-success' },
+  warning: { pill: 'bg-warning-soft text-warning', dot: 'bg-warning' },
+  muted: { pill: 'bg-ink-600 text-pen-3', dot: 'bg-line-3' },
+};
+
+const STATUS_LABEL: Record<string, string> = {
+  monitoring: 'Watching',
+  proposal_pending: 'Fare found',
+  awaiting_payment: 'Action required',
+  booked: 'Booked',
+  completed: 'Completed',
+  cancelled: 'Cancelled',
+  expired: 'Expired',
+  draft: 'Draft',
+};
 
 function formatUsd(n: number | undefined | null): string {
   if (n == null || !Number.isFinite(n)) return '—';
@@ -114,6 +128,18 @@ function timeAgo(iso: string | undefined): string {
   const h = Math.floor(m / 60);
   if (h < 24) return `${h}h ago`;
   return new Date(iso).toLocaleDateString();
+}
+
+/* Display-only: how long until an ISO timestamp (proposal deadlines) */
+function timeUntil(iso: string | undefined): string {
+  if (!iso) return '';
+  const diff = new Date(iso).getTime() - Date.now();
+  if (diff <= 0) return 'soon';
+  const m = Math.floor(diff / 60000);
+  if (m < 60) return `${m} min`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h} h`;
+  return `${Math.floor(h / 24)} d`;
 }
 
 export default function MissionCockpitPage() {
@@ -260,11 +286,11 @@ export default function MissionCockpitPage() {
   // --- Render ----------------------------------------------------
   if (loading) {
     return (
-      <div className="max-w-5xl mx-auto p-6">
+      <div className="max-w-5xl mx-auto p-4 md:p-6">
         <div className="animate-pulse space-y-4">
-          <div className="h-10 w-1/2 bg-white/5 rounded" />
-          <div className="h-40 bg-white/5 rounded-xl" />
-          <div className="h-60 bg-white/5 rounded-xl" />
+          <div className="h-10 w-1/2 bg-ink-600 rounded-md" />
+          <div className="h-40 bg-ink-600 rounded-lg" />
+          <div className="h-60 bg-ink-600 rounded-lg" />
         </div>
       </div>
     );
@@ -274,9 +300,9 @@ export default function MissionCockpitPage() {
     return (
       <div className="max-w-3xl mx-auto p-6">
         <Card>
-          <p className="text-red-300">{error || 'Mission not found'}</p>
+          <p className="text-body text-danger">{error || 'Mission not found'}</p>
           <div className="mt-4">
-            <Link href="/missions" className="text-sm text-amber-300 underline">
+            <Link href="/missions" className="text-sm text-accent hover:underline">
               ← Back to missions
             </Link>
           </div>
@@ -305,118 +331,128 @@ export default function MissionCockpitPage() {
       )
     : 0;
 
+  const tone = STATUS_TONE[mission.status] ?? 'muted';
+  const toneCls = TONE_CLASSES[tone];
+  const budgetDelta =
+    mission.bestSeenPrice != null
+      ? mission.maxBudgetUsd - mission.bestSeenPrice
+      : null;
+
   return (
     <div className="max-w-5xl mx-auto p-4 md:p-6 space-y-6">
       {/* Header */}
-      <header className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-        <div>
-          <div className="flex items-center gap-3 flex-wrap">
-            <h1 className="text-2xl md:text-3xl font-semibold text-white">
-              {mission.originCity || mission.origin}
-              <span className="text-white/30 mx-2">→</span>
-              {mission.destinationCity || mission.destination}
-            </h1>
-            <span
-              className={`px-2.5 py-1 rounded-full text-xs font-medium border ${statusColor(
-                mission.status
-              )}`}
-            >
-              {mission.status.replace(/_/g, ' ')}
-            </span>
-            <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-white/5 text-white/60 border border-white/10">
-              {mission.paymentRail === 'wallet' ? '🔗 Wallet · USDC' : '💳 Card · Stripe'}
-            </span>
-          </div>
-          <p className="text-sm text-white/50 mt-1">
-            {mission.departDate}
-            {mission.returnDate ? ` → ${mission.returnDate}` : ' · one-way'} ·{' '}
-            {mission.passengers} pax · {mission.cabinClass}
-          </p>
+      <header className="flex flex-col gap-3">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span
+            className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-medium tracking-wide ${toneCls.pill}`}
+          >
+            <span className={`h-1.5 w-1.5 rounded-full ${toneCls.dot}`} />
+            {STATUS_LABEL[mission.status] ?? mission.status.replace(/_/g, ' ')}
+          </span>
+          <span className="inline-flex items-center rounded-full bg-ink-600 px-2.5 py-0.5 text-[11px] text-pen-3">
+            {mission.paymentRail === 'wallet' ? 'Wallet · USDC' : 'Card · Stripe'}
+          </span>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3">
+          <div>
+            <h1 className="editorial text-[28px] md:text-[32px] leading-tight text-pen-1">
+              {mission.destinationCity || mission.destination}
+              <span className="text-pen-3 text-body-lg font-sans ml-2">
+                from {mission.originCity || mission.origin}
+              </span>
+            </h1>
+            <p className="text-caption text-pen-3 mt-1">
+              {mission.departDate}
+              {mission.returnDate ? ` → ${mission.returnDate}` : ' · one-way'} ·{' '}
+              {mission.passengers} traveler{mission.passengers > 1 ? 's' : ''} ·{' '}
+              {mission.cabinClass} · budget {formatUsd(mission.maxBudgetUsd)}
+            </p>
+          </div>
           {ACTIVE_STATUSES.has(mission.status) && (
-            <>
+            <div className="flex gap-2">
               <Button
-                variant="ghost"
+                variant="secondary"
+                size="sm"
                 onClick={handleCheckNow}
                 disabled={!!busy}
               >
-                {busy === 'check' ? 'Checking…' : '🔍 Check now'}
+                {busy === 'check' ? 'Checking…' : 'Check now'}
               </Button>
-              <Button
-                variant="ghost"
-                onClick={handleCancel}
-                disabled={!!busy}
-              >
-                Cancel mission
-              </Button>
-            </>
+            </div>
           )}
         </div>
       </header>
 
-      {/* Payment / hold panel */}
+      {/* Price hero + funds panel */}
       <Card>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div>
-            <p className="text-[11px] uppercase tracking-wider text-white/40">
-              {mission.paymentRail === 'wallet' ? 'Escrowed' : 'Held on card'}
-            </p>
-            <p className="text-3xl font-semibold text-white mt-1">
-              {formatUsd(heldUsd)}
-            </p>
-            <p className="text-xs text-white/40 mt-1">
-              of {formatUsd(mission.maxBudgetUsd)} max budget
-            </p>
-          </div>
-          <div>
-            <p className="text-[11px] uppercase tracking-wider text-white/40">
-              Auto-buy below
-            </p>
-            <p className="text-3xl font-semibold text-white mt-1">
-              {mission.autoBuyThresholdUsd
-                ? formatUsd(mission.autoBuyThresholdUsd)
-                : '—'}
-            </p>
-            <p className="text-xs text-white/40 mt-1">
-              {mission.autoBuyThresholdUsd
-                ? 'agent buys instantly'
-                : 'always ask me first'}
-            </p>
-          </div>
-          <div>
-            <p className="text-[11px] uppercase tracking-wider text-white/40">
-              Best seen
-            </p>
-            <p className="text-3xl font-semibold text-white mt-1">
-              {mission.bestSeenPrice ? formatUsd(mission.bestSeenPrice) : '—'}
-            </p>
-            <p className="text-xs text-white/40 mt-1">
-              {mission.lastCheckedAt
-                ? `checked ${timeAgo(mission.lastCheckedAt)}`
-                : 'not yet checked'}
-            </p>
-          </div>
+        <p className="text-[11px] uppercase tracking-wider text-pen-3 font-medium">
+          Best fare seen
+        </p>
+        <div className="flex items-baseline gap-3 flex-wrap mt-1.5">
+          <span className="num text-[30px] font-semibold text-pen-1 leading-none">
+            {mission.bestSeenPrice ? formatUsd(mission.bestSeenPrice) : '—'}
+          </span>
+          {budgetDelta != null && (
+            <span
+              className={`num text-body font-medium ${
+                budgetDelta >= 0 ? 'text-success' : 'text-warning'
+              }`}
+            >
+              {`${budgetDelta >= 0 ? '−' : '+'}$${Math.round(
+                Math.abs(budgetDelta)
+              ).toLocaleString('en-US')} ${
+                budgetDelta >= 0 ? 'under budget' : 'over budget'
+              }`}
+            </span>
+          )}
         </div>
 
         {/* Budget gauge */}
         {mission.bestSeenPrice && (
-          <div className="mt-6">
-            <div className="h-2 rounded-full bg-white/5 overflow-hidden">
+          <div className="mt-5">
+            <div className="h-1.5 rounded-full bg-ink-600 overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-amber-400 to-emerald-400 transition-all duration-500"
+                className="h-full rounded-full bg-accent transition-all duration-500"
                 style={{ width: `${progressPct}%` }}
               />
             </div>
-            <div className="flex justify-between text-[10px] text-white/30 mt-1.5">
+            <div className="num flex justify-between text-[10px] text-pen-3 mt-1.5">
               <span>$0</span>
               {mission.autoBuyThresholdUsd && (
-                <span>auto @ {formatUsd(mission.autoBuyThresholdUsd)}</span>
+                <span>auto-buy @ {formatUsd(mission.autoBuyThresholdUsd)}</span>
               )}
               <span>max {formatUsd(mission.maxBudgetUsd)}</span>
             </div>
           </div>
         )}
+
+        {/* Secondary stats — one quiet line, not competing cards */}
+        <div className="mt-5 pt-4 border-t border-line-1 flex flex-wrap gap-x-6 gap-y-1.5 text-caption text-pen-3">
+          <span>
+            {mission.paymentRail === 'wallet' ? 'Escrowed' : 'Held on card'}{' '}
+            <span className="num font-medium text-pen-2">{formatUsd(heldUsd)}</span>
+          </span>
+          {capturedUsd > 0 && (
+            <span>
+              Spent{' '}
+              <span className="num font-medium text-pen-2">
+                {formatUsd(capturedUsd)}
+              </span>
+            </span>
+          )}
+          <span>
+            {mission.autoBuyThresholdUsd ? (
+              <>
+                Auto-buy below{' '}
+                <span className="num font-medium text-pen-2">
+                  {formatUsd(mission.autoBuyThresholdUsd)}
+                </span>
+              </>
+            ) : (
+              'We always ask before booking'
+            )}
+          </span>
+        </div>
       </Card>
 
       {/* Statistical prediction panel — the brain of the agent */}
@@ -437,19 +473,18 @@ export default function MissionCockpitPage() {
 
       {/* Awaiting payment CTA */}
       {mission.status === 'awaiting_payment' && (
-        <Card>
+        <Card className="border-warning/25">
           <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
             <div className="flex-1">
-              <p className="text-white font-medium">
+              <p className="text-body font-medium text-pen-1">
                 {mission.paymentRail === 'wallet'
                   ? 'Approve USDC and deposit into the escrow to start monitoring.'
                   : 'Add your card to place the authorization hold.'}
               </p>
-              <p className="text-sm text-white/50 mt-1">
-                Your funds stay with you until the agent finds a matching
-                flight.{' '}
+              <p className="text-body text-pen-2 mt-1">
+                Your funds stay with you until we find a matching flight.{' '}
                 {mission.paymentRail === 'stripe'
-                  ? 'Stripe holds the authorization — never charged until we find your flight.'
+                  ? 'Stripe holds the authorization — nothing is charged until we find your flight.'
                   : 'USDC sits in a non-custodial smart contract — withdraw anytime.'}
               </p>
             </div>
@@ -466,34 +501,42 @@ export default function MissionCockpitPage() {
 
       {/* History */}
       <div>
-        <h2 className="text-sm font-semibold text-white/70 mb-3">
-          Activity log
+        <h2 className="text-[11px] uppercase tracking-wider text-pen-3 font-medium mb-3">
+          Activity
         </h2>
         <div className="space-y-2">
           {data?.proposals.length === 0 && (
-            <p className="text-sm text-white/30">
-              No agent actions yet. The monitor runs every few hours, or click
-              "Check now" above to trigger a scan.
+            <p className="text-body text-pen-3">
+              Nothing logged yet. We check every few hours — or use "Check
+              now" above to run a scan.
             </p>
           )}
           {data?.proposals.map((p) => (
             <div
               key={p.id}
-              className="flex items-center justify-between p-3 rounded-lg bg-white/[0.02] border border-white/5 text-sm"
+              className="flex items-center justify-between gap-3 p-3 rounded-md bg-ink-800 border border-line-1 text-body"
             >
               <div>
-                <p className="text-white/80">
+                <p
+                  className={
+                    p.status === 'auto_bought' || p.status === 'confirmed'
+                      ? 'text-success font-medium'
+                      : p.status === 'pending'
+                      ? 'text-pen-1 font-medium'
+                      : 'text-pen-3'
+                  }
+                >
                   {p.status === 'auto_bought'
-                    ? '⚡ Auto-bought'
+                    ? 'Auto-booked'
                     : p.status === 'confirmed'
-                    ? '✅ Confirmed'
+                    ? 'Confirmed'
                     : p.status === 'declined'
-                    ? '✖ Declined'
+                    ? 'Declined'
                     : p.status === 'expired'
-                    ? '⏳ Expired'
-                    : '📨 Proposal sent'}
+                    ? 'Expired'
+                    : 'Proposal sent'}
                 </p>
-                <p className="text-xs text-white/40">
+                <p className="num text-caption text-pen-3 mt-0.5">
                   {p.offerSnapshot.airline} · {formatUsd(p.offerSnapshot.priceUsd)}{' '}
                   · {timeAgo(p.createdAt)}
                 </p>
@@ -503,7 +546,7 @@ export default function MissionCockpitPage() {
                   href={`https://basescan.org/tx/${p.captureTxHash}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[11px] text-amber-300 underline font-mono"
+                  className="text-[11px] text-accent hover:underline font-mono"
                 >
                   {p.captureTxHash.slice(0, 10)}…
                 </a>
@@ -513,13 +556,33 @@ export default function MissionCockpitPage() {
         </div>
       </div>
 
+      {/* Heartbeat + footer (danger zone stays quiet) */}
       <div>
-        <Link
-          href="/missions"
-          className="text-sm text-white/40 hover:text-white transition-colors"
-        >
-          ← All missions
-        </Link>
+        <p className="text-caption text-pen-3">
+          {mission.lastCheckedAt
+            ? `Checked ${timeAgo(mission.lastCheckedAt)}`
+            : 'Not checked yet'}
+          {prediction?.coverage
+            ? ` · ${prediction.coverage.samples} fares analyzed`
+            : ''}
+        </p>
+        <div className="flex items-center justify-between gap-3 border-t border-line-1 mt-3 pt-4">
+          <Link
+            href="/missions"
+            className="text-body text-pen-3 hover:text-pen-1 transition-colors"
+          >
+            ← All missions
+          </Link>
+          {ACTIVE_STATUSES.has(mission.status) && (
+            <button
+              onClick={handleCancel}
+              disabled={!!busy}
+              className="text-caption text-danger/80 hover:text-danger hover:underline disabled:opacity-50"
+            >
+              {busy === 'cancel' ? 'Cancelling…' : 'Cancel mission'}
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -543,16 +606,23 @@ function ProposalCard({
 }) {
   const o = proposal.offerSnapshot;
   return (
-    <Card className="border-amber-400/30 bg-amber-500/[0.02]">
-      <div className="flex items-start gap-3">
-        <div className="h-2 w-2 rounded-full bg-amber-400 animate-pulse mt-2" />
-        <div className="flex-1">
-          <p className="text-xs uppercase tracking-wider text-amber-300 font-semibold">
-            Agent found a match
+    <Card className="border-success/25 bg-ink-800 shadow-elev-2">
+      <div className="flex items-center justify-between gap-2 flex-wrap">
+        <p className="inline-flex items-center gap-1.5 rounded-full bg-success-soft px-2.5 py-0.5 text-[11px] font-medium tracking-wide text-success">
+          <span className="h-1.5 w-1.5 rounded-full bg-success" />
+          We found a match
+        </p>
+        {proposal.expiresAt && (
+          <p className="num text-caption text-pen-3">
+            {timeUntil(proposal.expiresAt) === 'soon'
+              ? 'Expires soon'
+              : `Expires in ${timeUntil(proposal.expiresAt)}`}
           </p>
-          <p className="text-lg text-white mt-1">{proposal.reason}</p>
-        </div>
+        )}
       </div>
+      <p className="text-body-lg text-pen-1 mt-2 leading-relaxed">
+        {proposal.reason}
+      </p>
 
       <div className="mt-4 grid grid-cols-1 md:grid-cols-[1fr_auto] gap-4 items-center">
         <div className="flex items-center gap-3">
@@ -561,16 +631,16 @@ function ProposalCard({
             <img
               src={o.logoUrl}
               alt={o.airline}
-              className="h-10 w-10 rounded-lg bg-white/5"
+              className="h-10 w-10 rounded-md bg-ink-600"
             />
           ) : (
-            <div className="h-10 w-10 rounded-lg bg-white/5 flex items-center justify-center text-xs text-white/60">
+            <div className="h-10 w-10 rounded-md bg-ink-600 flex items-center justify-center text-caption text-pen-2">
               {o.airlineCode || '?'}
             </div>
           )}
           <div>
-            <p className="text-white font-medium">{o.airline}</p>
-            <p className="text-xs text-white/40">
+            <p className="text-body font-medium text-pen-1">{o.airline}</p>
+            <p className="num text-caption text-pen-3">
               {o.originIata} → {o.destinationIata} ·{' '}
               {o.stops === 0 ? 'Non-stop' : `${o.stops} stop${o.stops > 1 ? 's' : ''}`}{' '}
               · {Math.floor(o.durationMinutes / 60)}h{' '}
@@ -578,19 +648,19 @@ function ProposalCard({
             </p>
           </div>
         </div>
-        <div className="text-right">
-          <p className="text-3xl font-bold text-white">
+        <div className="md:text-right">
+          <p className="num text-[28px] font-semibold text-pen-1">
             ${o.priceUsd}
           </p>
         </div>
       </div>
 
-      <div className="mt-5 flex gap-2">
+      <div className="mt-5 flex flex-col sm:flex-row gap-2">
         <Button onClick={onConfirm} disabled={!!busy}>
-          {busy === 'confirm' ? 'Charging…' : 'Confirm & Book'}
+          {busy === 'confirm' ? 'Booking…' : 'Book this fare'}
         </Button>
         <Button variant="ghost" onClick={onDecline} disabled={!!busy}>
-          Not this one
+          Decline
         </Button>
       </div>
     </Card>
@@ -609,21 +679,20 @@ function PredictionPanel({ snapshot }: { snapshot: PredictionSnapshot }) {
   if (!prediction || coverage.samples < 5) {
     return (
       <Card>
-        <div className="flex items-start gap-3">
-          <div className="h-2 w-2 rounded-full bg-sky-400 animate-pulse mt-2" />
+        <div className="flex items-start gap-2.5">
+          <span className="h-1.5 w-1.5 rounded-full bg-pen-3 pulse-live mt-[7px]" />
           <div className="flex-1">
-            <p className="text-xs uppercase tracking-wider text-sky-300 font-semibold">
-              Agent intelligence · learning
+            <p className="text-[11px] uppercase tracking-wider text-pen-3 font-medium">
+              Price intelligence · learning
             </p>
-            <p className="text-sm text-white mt-1">
-              Flyeas is building a statistical baseline for this route. I have{' '}
-              <span className="text-white font-semibold">
+            <p className="text-body text-pen-2 mt-1 leading-relaxed">
+              We're building a price baseline for this route —{' '}
+              <span className="num font-medium text-pen-1">
                 {coverage.samples}
               </span>{' '}
-              observation{coverage.samples === 1 ? '' : 's'} so far — I'll start
-              making confident predictions once I've seen around 10 price
-              points. In the meantime I'm watching the market and recording
-              every scan.
+              observation{coverage.samples === 1 ? '' : 's'} so far. Confident
+              calls start around 10 price points; until then we keep watching
+              and record every scan.
             </p>
           </div>
         </div>
@@ -631,12 +700,12 @@ function PredictionPanel({ snapshot }: { snapshot: PredictionSnapshot }) {
     );
   }
 
-  const actionColor =
+  const action =
     prediction.action === 'BUY_NOW'
-      ? { border: 'border-emerald-400/30', bg: 'bg-emerald-500/[0.04]', text: 'text-emerald-300', label: 'STRONG BUY' }
+      ? { text: 'text-success', label: 'Buy now' }
       : prediction.action === 'WAIT'
-      ? { border: 'border-sky-400/30', bg: 'bg-sky-500/[0.04]', text: 'text-sky-300', label: 'WAIT' }
-      : { border: 'border-amber-400/30', bg: 'bg-amber-500/[0.03]', text: 'text-amber-300', label: 'MONITOR' };
+      ? { text: 'text-pen-1', label: 'Wait' }
+      : { text: 'text-pen-1', label: 'Keep watching' };
 
   const confidencePct = Math.round(prediction.confidence * 100);
   const pricesForSparkline = sparkline.map((p) => p.priceUsd);
@@ -645,58 +714,27 @@ function PredictionPanel({ snapshot }: { snapshot: PredictionSnapshot }) {
   const sparklineRange = Math.max(1, sparklineMax - sparklineMin);
 
   return (
-    <Card className={`${actionColor.border} ${actionColor.bg}`}>
-      {/* Top: action badge + confidence */}
-      <div className="flex items-start justify-between gap-4 flex-wrap">
-        <div>
-          <p className="text-[11px] uppercase tracking-wider text-white/40 font-semibold">
-            Agent intelligence
-          </p>
-          <div className="flex items-center gap-2 mt-1">
-            <span
-              className={`text-lg font-bold tracking-tight ${actionColor.text}`}
-            >
-              {actionColor.label}
-            </span>
-            <span className="text-[11px] text-white/40">
-              · {coverage.samples} samples · {coverage.label}
-            </span>
-          </div>
-        </div>
-        <div className="text-right">
-          <p className="text-[11px] uppercase tracking-wider text-white/40 font-semibold">
-            Confidence
-          </p>
-          <div className="flex items-baseline gap-1 mt-1">
-            <span className="text-2xl font-bold text-white">{confidencePct}</span>
-            <span className="text-xs text-white/40">%</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Confidence meter */}
-      <div className="mt-3">
-        <div className="h-1.5 rounded-full bg-white/5 overflow-hidden">
-          <div
-            className={`h-full transition-all duration-700 ${
-              prediction.action === 'BUY_NOW'
-                ? 'bg-emerald-400'
-                : prediction.action === 'WAIT'
-                ? 'bg-sky-400'
-                : 'bg-amber-400'
-            }`}
-            style={{ width: `${confidencePct}%` }}
-          />
-        </div>
+    <Card>
+      {/* Top: one readable recommendation */}
+      <p className="text-[11px] uppercase tracking-wider text-pen-3 font-medium">
+        Our read on this fare
+      </p>
+      <div className="flex items-baseline gap-2 flex-wrap mt-1">
+        <span className={`text-body-lg font-semibold ${action.text}`}>
+          {action.label}
+        </span>
+        <span className="num text-caption text-pen-3">
+          {confidencePct}% confidence · {coverage.samples} samples · {coverage.label}
+        </span>
       </div>
 
       {/* Reason — the natural-language explanation */}
-      <p className="text-sm text-white/80 mt-4 leading-relaxed">
+      <p className="text-body text-pen-2 mt-3 leading-relaxed">
         {prediction.reason}
       </p>
 
-      {/* Stats grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-5 pt-4 border-t border-white/5">
+      {/* Stats grid — quiet */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-5 pt-4 border-t border-line-1">
         <Stat label="Z-score" value={formatZ(prediction.zScore)} sub={zScoreInterpretation(prediction.zScore)} />
         <Stat
           label="Percentile"
@@ -717,12 +755,12 @@ function PredictionPanel({ snapshot }: { snapshot: PredictionSnapshot }) {
 
       {/* 30-day sparkline */}
       {sparkline.length >= 3 && (
-        <div className="mt-5 pt-4 border-t border-white/5">
+        <div className="mt-5 pt-4 border-t border-line-1">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-[11px] uppercase tracking-wider text-white/40 font-semibold">
+            <p className="text-[11px] uppercase tracking-wider text-pen-3 font-medium">
               30-day price memory
             </p>
-            <p className="text-[10px] text-white/30 font-mono">
+            <p className="num text-[10px] text-pen-3">
               ${Math.round(sparklineMin)} – ${Math.round(sparklineMax)}
             </p>
           </div>
@@ -738,8 +776,8 @@ function PredictionPanel({ snapshot }: { snapshot: PredictionSnapshot }) {
                     height: `${Math.max(6, height)}%`,
                     background:
                       i === sparkline.length - 1
-                        ? 'rgba(245, 158, 11, 0.8)'
-                        : 'rgba(255, 255, 255, 0.18)',
+                        ? 'var(--accent)'
+                        : 'var(--line-2)',
                   }}
                   title={`${point.date}: $${point.priceUsd}`}
                 />
@@ -751,11 +789,11 @@ function PredictionPanel({ snapshot }: { snapshot: PredictionSnapshot }) {
 
       {/* Baseline reveal (investor-grade transparency) */}
       {baseline && (
-        <details className="mt-4 pt-3 border-t border-white/5">
-          <summary className="text-[11px] uppercase tracking-wider text-white/40 font-semibold cursor-pointer hover:text-white/60">
+        <details className="mt-4 pt-3 border-t border-line-1">
+          <summary className="text-[11px] uppercase tracking-wider text-pen-3 font-medium cursor-pointer hover:text-pen-2">
             Raw statistics ▾
           </summary>
-          <div className="grid grid-cols-3 md:grid-cols-6 gap-3 mt-3 text-xs">
+          <div className="grid grid-cols-3 md:grid-cols-6 gap-3 mt-3 text-caption">
             <MiniStat label="mean" value={`$${Math.round(baseline.mean)}`} />
             <MiniStat label="median" value={`$${Math.round(baseline.median)}`} />
             <MiniStat label="σ" value={`$${Math.round(baseline.stdev)}`} />
@@ -763,7 +801,7 @@ function PredictionPanel({ snapshot }: { snapshot: PredictionSnapshot }) {
             <MiniStat label="p50" value={`$${Math.round(baseline.p50)}`} />
             <MiniStat label="p90" value={`$${Math.round(baseline.p90)}`} />
           </div>
-          <p className="text-[10px] text-white/30 mt-3 font-mono">
+          <p className="num text-[10px] text-pen-3 mt-3">
             {baseline.n} samples · trend R² {baseline.trendR2.toFixed(2)} · {daysUntilDeparture}d until departure
           </p>
         </details>
@@ -783,13 +821,13 @@ function Stat({
 }) {
   return (
     <div>
-      <p className="text-[10px] uppercase tracking-wider text-white/40 font-semibold">
+      <p className="text-[10px] uppercase tracking-wider text-pen-3 font-medium">
         {label}
       </p>
-      <p className="text-base font-semibold text-white mt-0.5 font-mono">
+      <p className="num text-body-lg font-semibold text-pen-1 mt-0.5">
         {value}
       </p>
-      {sub && <p className="text-[10px] text-white/40 mt-0.5">{sub}</p>}
+      {sub && <p className="text-[10px] text-pen-3 mt-0.5">{sub}</p>}
     </div>
   );
 }
@@ -797,8 +835,8 @@ function Stat({
 function MiniStat({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <p className="text-[9px] uppercase text-white/30 font-mono">{label}</p>
-      <p className="text-xs text-white/70 font-mono">{value}</p>
+      <p className="text-[10px] uppercase tracking-wide text-pen-3">{label}</p>
+      <p className="num text-caption text-pen-2">{value}</p>
     </div>
   );
 }
@@ -840,21 +878,29 @@ function BookedCard({
       : mission.maxBudgetUsd - captured;
 
   return (
-    <Card className="border-emerald-400/30 bg-emerald-500/[0.03]">
+    <Card className="border-success/25">
       <div className="flex items-start gap-3">
-        <div className="h-9 w-9 rounded-full bg-emerald-400/15 flex items-center justify-center text-emerald-300 text-lg">
-          ✓
+        <div className="h-9 w-9 rounded-full bg-success-soft flex items-center justify-center text-success">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path
+              d="M3 8.5L6.5 12L13 4.5"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
         </div>
         <div className="flex-1">
-          <p className="text-xs uppercase tracking-wider text-emerald-300 font-semibold">
-            {proposal.status === 'auto_bought' ? 'Auto-bought' : 'Booked'}
+          <p className="text-[11px] uppercase tracking-wider text-success font-semibold">
+            {proposal.status === 'auto_bought' ? 'Auto-booked' : 'Booked'}
           </p>
-          <p className="text-lg text-white">
+          <p className="num text-body-lg text-pen-1">
             {o.airline} · {formatUsd(captured)}
           </p>
           {refunded > 0 && (
-            <p className="text-sm text-emerald-300 mt-1">
-              $ {formatUsd(refunded)} released back to your{' '}
+            <p className="num text-body text-success mt-1">
+              {formatUsd(refunded)} released back to your{' '}
               {mission.paymentRail === 'wallet' ? 'wallet' : 'card'}
             </p>
           )}
@@ -866,11 +912,11 @@ function BookedCard({
             href={proposal.bookingDeepLink}
             target="_blank"
             rel="noopener noreferrer"
-            className="block w-full text-center bg-white text-black py-2.5 rounded-lg font-medium hover:bg-white/90 transition-colors"
+            className="premium-button block w-full text-center py-2.5 rounded-md text-sm"
           >
             Complete booking on Kiwi →
           </a>
-          <p className="text-[11px] text-white/30 text-center mt-2">
+          <p className="text-[11px] text-pen-3 text-center mt-2">
             Deep-link pre-fills this exact flight. Kiwi is the IATA-accredited
             merchant that issues the ticket.
           </p>

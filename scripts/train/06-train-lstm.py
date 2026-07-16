@@ -83,7 +83,11 @@ def main():
         print("No training features found. Run 01-split.py and 02-features.py first.")
         return
 
+    TARGET_ROWS_LSTM = 1_000_000
     df = pd.read_parquet(train_path)
+    if len(df) > TARGET_ROWS_LSTM:
+        print(f"Sampling LSTM: {len(df):,} -> {TARGET_ROWS_LSTM:,} rows")
+        df = df.sample(n=TARGET_ROWS_LSTM, random_state=42).sort_values("fetched_at").reset_index(drop=True)
     print(f"Loaded {len(df)} training rows")
 
     # Select numeric features

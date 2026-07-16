@@ -32,28 +32,44 @@ export default function AccountPage() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-6 md:px-8 md:py-8 space-y-8">
-      <h1 className="editorial text-h1 text-pen-1">Account</h1>
+      <h1 className="editorial text-h1 text-pen-1">Profile</h1>
 
       {/* ─── Identity block (read-only, edit inline) ─── */}
       <IdentityBlock />
+
+      {/* ─── Profile modules — preferences, history, referral ─── */}
+      <div className="grid sm:grid-cols-3 gap-3">
+        <Link href="/settings" className="rounded-lg border border-line-1 bg-ink-800 p-4 hover:border-line-2 transition group">
+          <p className="text-body font-medium text-pen-1">Travel preferences</p>
+          <p className="text-caption text-pen-3 mt-1">Currency, cabin, language, alerts</p>
+        </Link>
+        <Link href="/missions" className="rounded-lg border border-line-1 bg-ink-800 p-4 hover:border-line-2 transition group">
+          <p className="text-body font-medium text-pen-1">Trip history</p>
+          <p className="text-caption text-pen-3 mt-1">Every mission, settled and active</p>
+        </Link>
+        <Link href="/referral" className="rounded-lg border border-line-1 bg-ink-800 p-4 hover:border-line-2 transition group">
+          <p className="text-body font-medium text-pen-1">Invite friends</p>
+          <p className="text-caption text-pen-3 mt-1">You each get $10 when they book</p>
+        </Link>
+      </div>
 
       {/* Current plan */}
       <Card padding="lg" className="glass-premium">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-lg font-bold text-white">{currentPlan.name} Plan</h2>
+              <h2 className="text-lg font-bold text-pen-1">{currentPlan.name} Plan</h2>
               {trialActive && trialDays > 0 && (
                 <Badge variant="highlight" size="sm">Trial · {trialDays} days left</Badge>
               )}
             </div>
-            <p className="text-sm text-white/40 mt-1">
+            <p className="text-sm text-pen-2 mt-1">
               {currentPlan.price === 0 ? 'Free forever' : `$${currentPlan.price}/month`}
             </p>
             {appliedCoupon && (
               <div className="flex items-center gap-2 mt-2">
-                <Badge variant="success" size="sm">🎟️ {appliedCoupon.code} — {appliedCoupon.discountPercent}% off</Badge>
-                <button onClick={removeCoupon} className="text-[10px] text-white/25 hover:text-red-400 transition">Remove</button>
+                <Badge variant="success" size="sm">{appliedCoupon.code} — {appliedCoupon.discountPercent}% off</Badge>
+                <button onClick={removeCoupon} className="text-[10px] text-pen-3 hover:text-danger transition">Remove</button>
               </div>
             )}
           </div>
@@ -84,20 +100,20 @@ export default function AccountPage() {
             >
               <div className="space-y-4">
                 <div>
-                  <h3 className="text-base font-bold text-white">{p.name}</h3>
+                  <h3 className="text-base font-bold text-pen-1">{p.name}</h3>
                   <div className="flex items-baseline gap-1.5 mt-1">
                     {discount > 0 && p.price > 0 && (
-                      <span className="text-sm text-white/25 line-through">${p.price}</span>
+                      <span className="text-sm text-pen-3 line-through">${p.price}</span>
                     )}
-                    <span className="text-2xl font-bold text-white">
+                    <span className="text-2xl font-bold text-pen-1">
                       ${discount > 0 && p.price > 0 ? discountedPrice.toFixed(2) : p.price}
                     </span>
-                    {p.price > 0 && <span className="text-xs text-white/30">/mo</span>}
+                    {p.price > 0 && <span className="text-xs text-pen-3">/mo</span>}
                   </div>
                 </div>
                 <ul className="space-y-1.5">
                   {p.features.map((f) => (
-                    <li key={f} className="text-xs text-white/50 flex items-start gap-2">
+                    <li key={f} className="text-xs text-pen-2 flex items-start gap-2">
                       <span className="text-emerald-400 mt-0.5">✓</span> {f}
                     </li>
                   ))}
@@ -122,7 +138,7 @@ export default function AccountPage() {
 
       {/* Coupon code */}
       <Card padding="md">
-        <h3 className="text-sm font-semibold text-white mb-3">🎟️ Promo Code</h3>
+        <h3 className="text-sm font-semibold text-pen-1 mb-3">Promo Code</h3>
         <div className="flex gap-2">
           <input
             type="text"
@@ -142,21 +158,21 @@ export default function AccountPage() {
 
       {/* Payment history */}
       <Card padding="md">
-        <h3 className="text-sm font-semibold text-white mb-3">💳 Payment History</h3>
+        <h3 className="text-sm font-semibold text-pen-1 mb-3">💳 Payment History</h3>
         {payments.length === 0 ? (
-          <p className="text-xs text-white/30 text-center py-6">No payments yet</p>
+          <p className="text-xs text-pen-3 text-center py-6">No payments yet</p>
         ) : (
           <div className="space-y-2">
             {[...payments].reverse().map((p) => (
               <div key={p.id} className="flex items-center justify-between rounded-xl p-3" style={{ background: 'rgba(255,255,255,0.02)' }}>
                 <div>
-                  <p className="text-xs font-medium text-white">{p.plan} Plan</p>
-                  <p className="text-[10px] text-white/25">
+                  <p className="text-xs font-medium text-pen-1">{p.plan} Plan</p>
+                  <p className="text-[10px] text-pen-3">
                     {new Date(p.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-semibold text-white">${p.amount}</span>
+                  <span className="text-sm font-semibold text-pen-1">${p.amount}</span>
                   <Badge variant={p.status === 'succeeded' ? 'success' : 'warning'} size="sm">{p.status}</Badge>
                 </div>
               </div>

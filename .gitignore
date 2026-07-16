@@ -17,3 +17,10 @@ __pycache__/
 *.onnx
 *.parquet
 *.pyc
+
+# Generated ML artifacts, scratch dirs & logs (do not commit)
+.tmp-*/
+logs/
+reports/*_local.json
+bma_weights.json
+copula_weights.json

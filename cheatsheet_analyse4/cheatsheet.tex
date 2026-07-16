@@ -1,0 +1,391 @@
+\documentclass[a4paper,8pt]{extarticle}
+\usepackage[margin=0.5cm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{multicol}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{microtype}
+\providecommand{\smaller}{\footnotesize}
+
+% ---- tight spacing ----
+\setlength{\parindent}{0pt}
+\setlength{\columnsep}{7pt}
+\setlength{\columnseprule}{0.2pt}
+\setlength{\abovedisplayskip}{4pt}
+\setlength{\belowdisplayskip}{4pt}
+\setlength{\abovedisplayshortskip}{2pt}
+\setlength{\belowdisplayshortskip}{2pt}
+\linespread{1.13}
+\pagestyle{empty}
+
+% ---- colors ----
+\definecolor{cA}{HTML}{B71C1C} % complex - red
+\definecolor{cB}{HTML}{1B5E20} % laplace - green
+\definecolor{cC}{HTML}{0D47A1} % fourier/pde - blue
+\definecolor{cD}{HTML}{4A148C} % theorems - purple
+\definecolor{cWarn}{HTML}{C62828}
+\definecolor{exgray}{HTML}{EFEFEF}
+\definecolor{tipbg}{HTML}{FFF3E0}
+\definecolor{thmbg}{HTML}{EAF1FB}
+
+% ---- header bar ----
+\newcommand{\topic}[2]{%
+  \vspace{4.5pt}%
+  {\colorbox{#1}{\parbox{\dimexpr\columnwidth-2\fboxsep}{\color{white}\bfseries\footnotesize #2}}}\par\vspace{2.5pt}}
+\newcommand{\subt}[1]{\smallskip{\bfseries\itshape #1}\par}
+\newcommand{\when}[1]{{\color{cA}\footnotesize\textbf{\textsf{See:}}} #1\par}
+
+% ---- recipe ----
+\newlist{recipe}{enumerate}{1}
+\setlist[recipe]{leftmargin=1.3em,itemsep=2pt,topsep=2pt,parsep=0pt,label=\textbf{\arabic*.}}
+
+% ---- boxes ----
+\newtcolorbox{ex}{colback=exgray,colframe=exgray,boxrule=0pt,arc=1.5pt,
+  left=3pt,right=3pt,top=2pt,bottom=2pt,boxsep=0pt,before skip=2.5pt,after skip=2.5pt}
+\newtcolorbox{tip}{colback=tipbg,colframe=cWarn!55,boxrule=0.5pt,arc=1.5pt,
+  left=3pt,right=3pt,top=2pt,bottom=2pt,boxsep=0pt,before skip=2.5pt,after skip=2.5pt}
+\newtcolorbox{thm}{colback=thmbg,colframe=cD!55,boxrule=0.5pt,arc=1.5pt,
+  left=3pt,right=3pt,top=2pt,bottom=2pt,boxsep=0pt,before skip=2.5pt,after skip=2.5pt}
+
+\newcommand{\warn}{\textcolor{cWarn}{\textbf{\textwarning\,}}}
+\newcommand{\textwarning}{$\triangle$}
+\newcommand{\exo}{\textbf{\textcolor{cA}{Ex.}}\ }
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Res}{\operatorname{Res}}
+\newcommand{\Lap}{\mathcal{L}}
+\newcommand{\Fou}{\mathcal{F}}
+\renewcommand{\Re}{\operatorname{Re}}
+\renewcommand{\Im}{\operatorname{Im}}
+\newcommand{\Arg}{\operatorname{Arg}}
+\newcommand{\half}{\tfrac12}
+\newcommand{\ds}{\displaystyle}
+\newcommand{\To}{\!\to\!}
+
+\begin{document}
+
+% ===================== TITLE =====================
+{\centering
+\colorbox{black}{\parbox{\dimexpr\textwidth-2\fboxsep}{\color{white}\centering\bfseries\large
+ANALYSIS IV — CHEAT SHEET \;\small\mdseries(EPFL) \;·\; Complex analysis · Laplace · Fourier · PDEs}}\par}
+\vspace{2pt}
+
+\begin{multicols}{3}
+\smaller
+
+% ---------- 0. TOOLBOX ----------
+\topic{black}{0. $\mathbb{C}$ TOOLBOX + EXAM STRATEGY}
+$z=x+iy=re^{i\theta}$, $r=|z|=\sqrt{x^2+y^2}$, $\theta=\arg z$, $x=r\cos\theta$, $y=r\sin\theta$.
+\[ e^{i\theta}=\cos\theta+i\sin\theta,\ \ \overline z=x-iy,\ \ |z|^2=z\bar z,\ \ \tfrac1z=\tfrac{\bar z}{|z|^2}.\]
+\textbf{De Moivre:} $(\cos\theta+i\sin\theta)^n=\cos n\theta+i\sin n\theta$.\\
+\textbf{Principal arg} $\Arg z\in(-\pi,\pi]$: $\arctan\frac yx$ if $x{>}0$; $\pm\pi{+}\arctan\frac yx$ if $x{<}0$ ($+$ if $y{\geq}0$).\\
+\textbf{Key values:} $e^{i\pi/2}{=}i$, $e^{i\pi}{=}{-}1$, $e^{-i\pi/2}{=}{-}i$, $e^{2ik\pi}{=}1$.\\
+\textbf{$n$-th roots} of $w=\rho e^{i\varphi}$: $z_k=\rho^{1/n}e^{i(\varphi+2k\pi)/n}$, $k{=}0..n{-}1$.\\
+\textbf{Identities:} $\sin^2{+}\cos^2{=}1$, $\cosh^2{-}\sinh^2{=}1$, $\sin2\theta{=}2\sin\theta\cos\theta$, $\cos2\theta{=}1{-}2\sin^2\theta$, $\cos(iz){=}\cosh z$, $\sin(iz){=}i\sinh z$, $|e^z|{=}e^{\Re z}$.
+\begin{tip}
+\warn\textbf{Strategy (negative marking!)} Wrong MCQ $=-\tfrac13$ (or $-1$); wrong True/False $=-1$. \textbf{Answer only if sure}; total guess $\to$ leave blank ($0$). Open questions: \emph{justify every step} (points follow steps).\\
+\textbf{Index:} $\oint/\int_\gamma\To$\S5 \;|\; $\int_0^{2\pi}\To$\S6 \;|\; ODE+IC$\To$\S7 \;|\; PDE on $[0,L]\To$\S10a \;|\; PDE on $\R\To$\S10b. Laplace/Fourier tables are \emph{given} at the exam.
+\end{tip}
+
+% ---------- 1. ELEMENTARY FNS + HOLOMORPHY ----------
+\topic{cA}{1. ELEMENTARY FNS + HOLOMORPHY (CR)}
+$e^z=e^x(\cos y+i\sin y)$, $|e^z|=e^x$, period $2\pi i$.
+\[ \cos z=\tfrac{e^{iz}+e^{-iz}}2,\qquad \sin z=\tfrac{e^{iz}-e^{-iz}}{2i},\]
+\[ \cosh z=\tfrac{e^z+e^{-z}}2,\qquad \sinh z=\tfrac{e^z-e^{-z}}2.\]
+$\operatorname{Log}z=\ln|z|+i\Arg z$ (cut on $\R_{\le0}$); $z^a=e^{a\operatorname{Log}z}$.\\
+\textbf{Cauchy--Riemann:} $f=u+iv$ holomorphic $\iff u,v\in C^1$ \emph{and}
+\[ \boxed{u_x=v_y,\quad u_y=-v_x},\quad f'(z)=u_x+iv_x=u_x-iu_y.\]
+\textbf{Harmonic:} $u$ holo.\ part $\Rightarrow \Delta u=u_{xx}+u_{yy}=0$.
+\begin{recipe}
+\item \textbf{Test:} both CR equations must hold everywhere.
+\item \textbf{Harmonic conjugate $v$ from $u$:} integrate $v=\int u_x\,dy+g(x)$, then impose $v_x=-u_y$ to get $g'(x)$ ($v$ unique up to a real constant).
+\item \textbf{$f'$:} compute $u_x-iu_y$, then set $y=0,x=z$ to read $f$ in $z$.
+\end{recipe}
+\begin{ex}
+\exo \emph{(24/Q24)} $u=e^{x^2-y^2}\cos2xy\Rightarrow f'=2z\,e^{z^2}$, $f=e^{z^2}$.\\
+\exo \emph{(25)} $u=x^3{-}3xy^2{+}1\Rightarrow v=3x^2y{-}y^3{+}C$.\\
+\exo $f=x{+}ay{+}i(bx{+}cy)$ holo.\ $\iff c{=}1,\ a{=}{-}b$.
+\end{ex}
+\begin{tip}\warn $\Re z,\Im z,\bar z,|z|$ are \textbf{never} holomorphic. $1/z$: holo.\ on $\C\setminus\{0\}$, not on all $\C$. Every entire fn (and its derivative) satisfies CR everywhere.\end{tip}
+\begin{tip}\textbf{True/False quick wins:} $\oint$ of an entire fn over a closed curve $=0$ \textbf{(T)}; $e^{1/z}$ has an order-1 pole at $0$ \textbf{(F: essential)}; $1/z$ holo.\ on all $\C$ \textbf{(F)}; deriv.\ of $z\cos z$ satisfies CR \textbf{(T)}; $\Re(z)$ holomorphic \textbf{(F)}.\end{tip}
+
+% ---------- 2. SINGULARITIES ----------
+\topic{cA}{2. SINGULARITIES: TYPE \& ORDER}
+\when{``poles?'', ``order'', ``2nd-order pole?'', essential.}
+\begin{recipe}
+\item \textbf{Factor} $N$ and $D$ ($z^2{-}1{=}(z{-}1)(z{+}1)$, $z^2{+}1{=}(z{-}i)(z{+}i)$, $z^3{-}z{=}z(z{-}1)(z{+}1)$).
+\item \textbf{Cancel} common factors: each cancelled $(z{-}a)\Rightarrow$ \textbf{removable} (NOT a pole) — \emph{trap \#1}.
+\item Order of pole at $a$ = (zero order of $D$) $-$ (zero order of $N$), if $>0$. Else removable ($=0$) or regular ($<0$).
+\item $\sin g{=}0\iff g{=}k\pi$; $\cos g{=}0\iff g{=}\tfrac\pi2{+}k\pi$ (simple zeros).
+\item \textbf{Essential:} $e^{1/z},e^{1/z^2},\sin\frac1z$ ($\infty$ negative powers) — never a pole.
+\end{recipe}
+\begin{ex}
+\exo $\frac{z^2-4}{(z-2)(z+3)^2}=\frac{z+2}{(z+3)^2}$: $z{=}2$ removable, $z{=}{-}3$ \textbf{order 2}.\\
+\exo $\frac{z^2+z}{(z^2-1)^2}=\frac{z}{(z-1)^2(z+1)}$: order 2 at $1$, order 1 at $-1$.\\
+\exo $\frac{z^2-1}{\sin(z+1)}$: poles $z={-}1{+}k\pi$, $k\in\Z\setminus\{0\}$ ($k{=}0$ removable).\\
+\exo $e^{1/z}$ at $0$: essential $\Rightarrow$ ``order-1 pole'' = \textbf{FALSE}.
+\end{ex}
+\begin{thm}\textbf{Classify $z_0$:} \emph{removable} $\Leftrightarrow\lim f$ finite (no neg.\ powers); \emph{pole order $m$} $\Leftrightarrow|f|\To\infty$ \& $(z{-}z_0)^mf$ holo.\ $\ne0$ (finitely many neg.\ powers); \emph{essential} $\Leftrightarrow\lim$ DNE ($\infty$ neg.\ powers; image dense, Casorati--Weierstrass).\end{thm}
+
+% ---------- 3. TAYLOR & LAURENT ----------
+\topic{cA}{3. TAYLOR \& LAURENT / SINGULAR PART}
+\textbf{Taylor} ($f$ holo.\ in disk): $f=\sum_{n\ge0}\frac{f^{(n)}(z_0)}{n!}(z{-}z_0)^n$; radius $=$ distance to nearest singularity.\\
+\textbf{Laurent} (annulus $r{<}|z{-}z_0|{<}R$ between singularities): $f=\sum_{n=-\infty}^{\infty}c_n(z{-}z_0)^n$, unique.\\
+\textbf{Singular (principal) part} of $f=\frac{g(z)}{(z-z_0)^k}$ ($g$ holo., $g(z_0)\ne0$): expand $g=\sum a_m(z{-}z_0)^m$, keep powers $<0$:
+\[ \sum_{m=0}^{k-1}\frac{a_m}{(z-z_0)^{k-m}}\quad(\text{need }a_0,\dots,a_{k-1}).\]
+\textbf{Standard Maclaurin series} (need them by heart):
+\[ e^z{=}\!\sum_{n\ge0}\tfrac{z^n}{n!},\quad \tfrac1{1-z}{=}\!\sum_{n\ge0}z^n,\quad \tfrac1{1+z}{=}\!\sum(-1)^nz^n,\]
+\[ \sin z{=}\!\sum\tfrac{(-1)^nz^{2n+1}}{(2n+1)!},\quad \cos z{=}\!\sum\tfrac{(-1)^nz^{2n}}{(2n)!},\]
+\[ \sinh z{=}\!\sum\tfrac{z^{2n+1}}{(2n+1)!},\quad \cosh z{=}\!\sum\tfrac{z^{2n}}{(2n)!},\]
+\[ \tfrac1{(1-z)^2}{=}\!\sum(n{+}1)z^n,\quad \operatorname{Log}(1{+}z){=}\!\sum_{n\ge1}\tfrac{(-1)^{n+1}}{n}z^n.\]
+$\cos,\cosh$ even; $\sin,\sinh$ odd. Geometric/Log valid $|z|{<}1$.\\
+\textbf{Parity:} $f$ even $\Rightarrow$ only even powers $\Rightarrow c_{\text{odd}}{=}0$; $f$ odd $\Rightarrow c_{\text{even}}{=}0$.
+\begin{ex}
+\exo $\frac{z+1}{z^3(z^2+1)}$ at $0$: $g{=}1{+}z{-}z^2{+}\dots\Rightarrow\frac1{z^3}{+}\frac1{z^2}{-}\frac1z$.\\
+\exo $\frac{e^{z-i}}{z^2+1}$ at $i$: simple pole, $\frac{-i}{2(z-i)}$.\\
+\exo $c_{2n}{=}0$ (odd): $z^2\sinh z$. \;$c_{2n+1}{=}0$ (even): $e^{1/z^2}\cosh z$.
+\end{ex}
+\begin{tip}\warn ``Singular part'' = \textbf{negative} powers only. ``$c_{2n}{=}0$'' $\Rightarrow$ \textbf{odd} function (counter-intuitive).\end{tip}
+
+% ---------- 4. RESIDUES ----------
+\topic{cA}{4. RESIDUES}
+$\Res_{z_0}f=c_{-1}$ (coeff.\ of $\frac1{z-z_0}$).
+\[ \text{simple: }\Res_{z_0}f=\lim_{z\to z_0}(z{-}z_0)f=\tfrac{p(z_0)}{q'(z_0)}.\]
+\[ \text{order }m:\ \Res_{z_0}f=\tfrac{1}{(m-1)!}\lim_{z\to z_0}\tfrac{d^{m-1}}{dz^{m-1}}\big[(z{-}z_0)^mf\big].\]
+($m{=}2$: one derivative, $\frac1{(m-1)!}{=}1$.) \textbf{Essential:} read $c_{-1}$ from Laurent.
+\begin{ex}
+\exo $\frac{z^3}{(z-1)^2(z-2)}$ at $1$: $\frac{d}{dz}\frac{z^3}{z-2}\big|_1=-4$.\\
+\exo $\frac{e^z}{(z-1)^2(z-2)}$ at $1$: $\frac{d}{dz}\frac{e^z}{z-2}\big|_1=-2e$.\\
+\exo Residue $0$ at $0$: $e^{1/z^2}$ (only $z^{-2k}$). But $\frac1z,\frac{\sin z}{z^2},e^{1/z}$ have $c_{-1}{=}1$.
+\end{ex}
+\begin{tip}\warn Residue is a \emph{number} ($-4$); integral $=2\pi i\cdot(\text{sum})$.\end{tip}
+
+% ---------- 5. CONTOUR INTEGRATION ----------
+\topic{cA}{5. CONTOUR INTEGRATION}
+\begin{thm}
+\textbf{Cauchy thm:} $f$ holo.\ on simply-conn.\ $\Rightarrow\oint_\gamma f{=}0$, path-independent.\\
+\textbf{Cauchy integral formula:} $z_0$ inside $\gamma$ (CCW), $f$ holo.:
+\[ f(z_0)=\tfrac1{2\pi i}\oint_\gamma\tfrac{f(z)}{z-z_0}dz,\]
+\[ f^{(n)}(z_0)=\tfrac{n!}{2\pi i}\oint_\gamma\tfrac{f(z)}{(z-z_0)^{n+1}}dz.\]
+\textbf{Residue thm:} $\ds\oint_\gamma f=2\pi i\!\!\sum_{z_k\,\text{inside}}\!\!\Res_{z_k}f$.\\
+\textbf{ML bound:} $\big|\int_\gamma f\big|\le \big(\max_\gamma|f|\big)\cdot\text{length}(\gamma)$.\\
+\textbf{Liouville:} bounded \& entire $\Rightarrow$ constant. \textbf{Fund.\ thm.\ algebra:} nonconstant poly has a root in $\C$. \textbf{Max modulus:} nonconstant holo.\ $\Rightarrow|f|$ has no interior max.
+\end{thm}
+\textbf{(A) Open path} $z_0\To z_1$, $f$ holo.: $\int_\gamma f=F(z_1){-}F(z_0)$ ($F'{=}f$). $\int_\gamma\frac1z=\operatorname{Log}z_1{-}\operatorname{Log}z_0$ (if it avoids $\R_{<0}$).\\
+\textbf{(B) Closed:} residue thm (keep only \emph{interior} singularities; $f$ entire $\Rightarrow0$).\\
+\textbf{(C) ``Possible values''} over arbitrary closed $\gamma$:
+\[ \big\{2\pi i\!\sum_{k\in S}\Res_{z_k}f:\ S\subseteq\{\text{sing.}\}\big\},\ \text{incl.}\ \varnothing\To0.\]
+\textbf{(D) Two paths}, same ends: $\int_{\gamma_1}\!\ne\!\int_{\gamma_2}\!\iff$ a singularity with \emph{nonzero residue} lies between them.
+\begin{ex}
+\exo $\oint_{|z|=1}\frac{z}{z-a}{=}2\pi i\,a$ if $|a|{<}1$; $={\pi i}\Rightarrow a{=}\half$.\\
+\exo $\oint_{|z|=2}\frac{e^{\pi z/2}}{z^2+1}$: $\Res_{\pm i}{=}\half\Rightarrow 2\pi i$.\\
+\exo $\int z^2$, $1\To i$: $\frac{-1-i}{3}$. \;$\int\frac1z$, $i\To1$: $-\frac{i\pi}{2}$.\\
+\exo \emph{(Q25)} $\frac{\sin z^2}{z^3(z-2i)}$: values $\{0,{-}\pi,\frac{\pi\sin4}4,{-}\pi{+}\frac{\pi\sin4}4\}$.\\
+\exo \emph{(Q1)} $\frac{\cos z}{z(z-\pi/2)^2}$: values $\{0,\frac{8i}\pi,{-}4i,\frac{8i}\pi{-}4i\}$.
+\end{ex}
+
+% ---------- 6. REAL INTEGRALS ----------
+\topic{cA}{6. REAL INTEGRALS VIA RESIDUES}
+\textbf{(A) $\int_0^{2\pi}R(\cos t,\sin t)\,dt$:} $z{=}e^{it}$ ($|z|{=}1$): $\cos t{=}\frac{z^2+1}{2z}$, $\sin t{=}\frac{z^2-1}{2iz}$, $dt{=}\frac{dz}{iz}$.
+\[ \int_0^{2\pi}\!\!R\,dt=2\pi i\!\!\sum_{|z_k|<1}\!\!\Res_{z_k}\!\big[R\,\tfrac1{iz}\big].\]
+Keep poles with $|z|{<}1$; result must be \textbf{real}.
+\begin{ex}
+\exo $\int_0^{2\pi}(2{+}\cos t)^2dt=\frac1{4i}\oint\frac{(z^2+4z+1)^2}{z^3}$; res at $0$ (ord.\ 3) $=$ coeff.\ $z^2={18}\Rightarrow\mathbf{9\pi}$.\\
+\exo $\int_0^{2\pi}\frac{5/4-\sin t}{5/4+\cos t}dt$: poles $0,{-}\half$; $\Res_0{=}{-}1$, $\Res_{-1/2}{=}1{-}\frac{5i}3$; $\Rightarrow\mathbf{\frac{10\pi}3}$.
+\end{ex}
+\textbf{(B) $\int_{-\infty}^{\infty}$} — close a big semicircle in the \emph{upper} half-plane.\\
+Rational $R$ with $\deg D\ge\deg N{+}2$:
+\[ \int_{-\infty}^{\infty}\!R\,dx=2\pi i\!\!\sum_{\Im z_k>0}\!\!\Res_{z_k}R.\]
+\textbf{Jordan} ($a{>}0$): $\ds\int_{-\infty}^{\infty}\!f(x)e^{iax}dx=2\pi i\!\!\sum_{\Im z_k>0}\!\!\Res_{z_k}\!\big[f e^{iaz}\big]$; take $\Re/\Im$ for $\cos ax/\sin ax$.
+\begin{ex}\exo $\int_{-\infty}^{\infty}\frac{dx}{x^2+1}=2\pi i\,\Res_{i}=2\pi i\cdot\frac1{2i}=\pi$.\end{ex}
+
+% ---------- 7. LAPLACE ----------
+\topic{cB}{7. LAPLACE TRANSFORM}
+$\Lap[f](z)=\int_0^\infty f(t)e^{-zt}dt$, holo.\ for $\Re z>\gamma_0$ (abscissa).
+\subt{Table (\,$\Lap[f]=F$\,):}
+$1\To\frac1z$; \;$t^n\To\frac{n!}{z^{n+1}}$; \;$e^{at}\To\frac1{z-a}$; \;$t e^{at}\To\frac1{(z-a)^2}$; \;$\sin\omega t\To\frac{\omega}{z^2+\omega^2}$; \;$\cos\omega t\To\frac{z}{z^2+\omega^2}$; \;$\sinh\omega t\To\frac{\omega}{z^2-\omega^2}$; \;$\cosh\omega t\To\frac{z}{z^2-\omega^2}$; \;$e^{at}\sin\omega t\To\frac{\omega}{(z-a)^2+\omega^2}$; \;$e^{at}\cos\omega t\To\frac{z-a}{(z-a)^2+\omega^2}$; \;$t\cos\omega t\To\frac{z^2-\omega^2}{(z^2+\omega^2)^2}$.
+\subt{Properties:}
+\[ \Lap[y']{=}zY{-}y(0),\quad \Lap[y'']{=}z^2Y{-}zy(0){-}y'(0),\]
+\[ \Lap[t^nf]{=}({-}1)^nF^{(n)},\quad \Lap[e^{at}f]{=}F(z{-}a),\]
+\[ \Lap[\textstyle\int_0^t\! f]{=}\tfrac{F}z,\quad \Lap^{-1}[F\,G]{=}(f{*}g)(t){=}\textstyle\int_0^t\! f(t{-}s)g(s)ds.\]
+\subt{Partial fractions (to invert):}
+$\frac{P(z)}{Q(z)}$ with $Q{=}\prod(z{-}r_k)^{m_k}$: write $\sum_k\sum_{j=1}^{m_k}\frac{A_{k,j}}{(z-r_k)^j}$. Simple root: $A_k{=}\frac{P(r_k)}{Q'(r_k)}$ (cover-up). Irreducible $z^2{+}pz{+}q$: keep $\frac{Bz+C}{z^2+pz+q}$, complete the square.
+\subt{ODE recipe:}
+\begin{recipe}
+\item Apply $\Lap$ (insert IC), isolate $Y=\frac{\text{IC}+\Lap[\text{rhs}]}{z^2+bz+a}$.
+\item Invert: partial fractions, or \textbf{complete the square} $z^2{+}2pz{+}a{=}(z{+}p)^2{+}\omega^2$, $\omega^2{=}a{-}p^2$.
+\item $\Lap^{-1}\frac{\omega}{(z+p)^2+\omega^2}{=}e^{-pt}\sin\omega t$; $\frac{z+p}{(\cdot)}{=}e^{-pt}\cos\omega t$; $\frac1{(z+p)^2}{=}t e^{-pt}$.
+\item Check $y(0)$ \emph{and} $y'(0)$.
+\end{recipe}
+\begin{ex}
+\exo $y''{+}2y'{+}y{=}t$, $y(0){=}0,y'(0){=}3\Rightarrow y{=}t{-}2{+}2e^{-t}{+}4te^{-t}$.\\
+\exo $\Lap[t\cosh4t]{=}\frac{z^2+16}{(z^2-16)^2}$; \;$\Lap^{-1}\frac{z}{(z+1)^2}{=}(1{-}t)e^{-t}$.
+\end{ex}
+\begin{tip}\warn $\cos\!:z^2{+}\omega^2$ but $\cosh\!:z^2{-}\omega^2$. Numerator of $\sin/\sinh$ is $\omega$, of $\cos/\cosh$ is $z$.\end{tip}
+
+% ---------- 8. FOURIER SERIES ----------
+\topic{cC}{8. FOURIER SERIES (period $T$, $\omega_0{=}\tfrac{2\pi}T$)}
+\[ f(x){=}\tfrac{a_0}2{+}\!\sum_{n\ge1}\!\big[a_n\cos n\omega_0 x{+}b_n\sin n\omega_0 x\big]\]
+\[ {=}\sum_{n=-\infty}^{\infty}c_n e^{in\omega_0 x}\quad(\text{complex form}).\]
+\[ a_n{=}\tfrac2T\!\int_T\! f\cos n\omega_0x\,dx,\quad b_n{=}\tfrac2T\!\int_T\! f\sin n\omega_0x\,dx,\]
+\[ c_n{=}\tfrac1T\!\int_T\! f\, e^{-in\omega_0x}dx.\]
+$c_0{=}\frac{a_0}2$, $c_n{=}\frac{a_n-ib_n}2$ ($n{>}0$). \textbf{$f$ even}$\Rightarrow b_n{=}0$ (cosines); \textbf{odd}$\Rightarrow a_n{=}0$ (sines).\\
+\textbf{Half-range on $[0,L]$} (used in PDEs): sine $f{=}\sum b_n\sin\frac{n\pi x}L$, $b_n{=}\frac2L\int_0^L f\sin\frac{n\pi x}L dx$; cosine $f{=}\frac{a_0}2{+}\sum a_n\cos\frac{n\pi x}L$, $a_n{=}\frac2L\int_0^L f\cos\frac{n\pi x}L dx$.\\
+\textbf{Parseval:} $\frac1T\int_T|f|^2{=}\sum|c_n|^2{=}\frac{a_0^2}4{+}\frac12\sum(a_n^2{+}b_n^2)$.\\
+\textbf{At a jump} the series $\to\frac{f(x^+)+f(x^-)}2$.
+\begin{ex}\exo Constant $1$ on $(0,1)$: $b_n{=}\frac{2(1-(-1)^n)}{n\pi}$ ($\frac4{n\pi}$ if $n$ odd, else $0$).\end{ex}
+
+% ---------- 9. FOURIER TRANSFORM ----------
+\topic{cC}{9. FOURIER TRANSFORM}
+\[ \hat f(\alpha){=}\Fou[f]{=}\tfrac1{\sqrt{2\pi}}\!\int_{-\infty}^{\infty}\! f(x)e^{-i\alpha x}dx,\]
+\[ f(x){=}\tfrac1{\sqrt{2\pi}}\!\int_{-\infty}^{\infty}\!\hat f(\alpha)e^{i\alpha x}d\alpha\quad(\text{inverse}).\]
+\subt{Properties:}
+\[ \Fou[f^{(n)}]{=}(i\alpha)^n\hat f,\quad \Fou[x^nf]{=}i^n\hat f^{(n)},\]
+\[ \Fou[f(x{-}a)]{=}e^{-i\alpha a}\hat f,\quad \Fou[e^{iax}f]{=}\hat f(\alpha{-}a),\]
+\[ \Fou[f(\lambda x)]{=}\tfrac1{|\lambda|}\hat f(\tfrac\alpha\lambda),\quad \Fou[f{*}g]{=}\sqrt{2\pi}\,\hat f\hat g.\]
+\textbf{Plancherel:} $\int|f|^2{=}\int|\hat f|^2$. \;\textbf{Gaussian:} $e^{-x^2/2}{\To}e^{-\alpha^2/2}$; $e^{-ax^2}{\To}\frac1{\sqrt{2a}}e^{-\alpha^2/4a}$.\\
+\textbf{Pairs:} $\frac1{x^2+\omega^2}{\To}\sqrt{\frac\pi2}\frac{e^{-\omega|\alpha|}}\omega$; \;$\mathbf 1_{|x|<b}{\To}\sqrt{\frac2\pi}\frac{\sin b\alpha}\alpha$; \;$e^{-a|x|}{\To}\sqrt{\frac2\pi}\frac a{a^2+\alpha^2}$; \;$e^{-\omega x}\mathbf 1_{x>0}{\To}\frac1{\sqrt{2\pi}(\omega+i\alpha)}$ ($\omega{>}0$); \;$\mathbf 1_{b<x<c}{\To}\frac{e^{-ib\alpha}-e^{-ic\alpha}}{\sqrt{2\pi}\,i\alpha}$.
+\begin{tip}\warn $(i\alpha)^2{=}{-}\alpha^2$, $(i\alpha)^4{=}{+}\alpha^4$ ($i^0{,}i^1{,}i^2{,}i^3{=}{+}{,}{+}{,}{-}{,}{-}$). $f$ real \& even $\Rightarrow\hat f$ real.\end{tip}
+
+% ---------- 10. PDEs ----------
+\topic{cC}{10. PDEs — WHICH TRANSFORM?}
+\textbf{Rule by spatial domain:} $x\in[0,L]$ Dirichlet $\To$ Fourier \emph{sine} series (\S10a); $x\in\R\To$ Fourier transform (\S10b); $x\in[0,\infty)\To$ Laplace in $x$.\\
+\begin{thm}\textbf{Separation of variables:} try $u{=}X(x)T(t)$; spatial part solves $X''{+}\lambda X{=}0$ with the BC. Dirichlet $X(0){=}X(L){=}0\Rightarrow\lambda_n{=}(\tfrac{n\pi}L)^2$, $X_n{=}\sin\tfrac{n\pi x}L$; Neumann $X'(0){=}X'(L){=}0\Rightarrow X_n{=}\cos\tfrac{n\pi x}L$. Superpose, match IC by Fourier coeff.\end{thm}
+\textbf{(10a) Bounded $[0,L]$, Dirichlet:} $u{=}\sum b_n(t)\sin\frac{n\pi x}L$; $u_{xx}{\To}{-}(\frac{n\pi}L)^2b_n$, $u_{xxxx}{\To}{+}(\frac{n\pi}L)^4b_n$. Get ODE in $b_n$; set $b_n(0),b_n'(0)$ by projecting IC ($\frac2L\int_0^L\!\cdot\sin$). If IC $=\sin(k\pi x/L)$: only $n{=}k$.
+\begin{ex}\exo \emph{(Schröd.)} $iu_t{=}u_{xx}{-}u$: $b_n'{=}i((n\pi)^2{+}1)b_n$ ($\frac1i{=}{-}i$).\end{ex}
+\textbf{(10b) Unbounded $\R$:} apply $\Fou$ in $x$, $t$ = parameter; PDE $\to$ ODE in $\hat u(\alpha,t)$:
+\[ \hat u_t{+}a(t)\hat u{=}0\ \Rightarrow\ \hat u{=}\hat g\,e^{-\int_0^t a(s)ds},\]
+\[ \hat u_{tt}{+}\omega^2\hat u{=}0\ \Rightarrow\ \hat u{=}\hat u_0\cos\omega t{+}\tfrac{\hat v_0}\omega\sin\omega t.\]
+($+\,$sign $\to\cos/\sin$, $-\,$sign $\to\cosh/\sinh$.)
+\begin{thm}
+\textbf{Wave on $\R$} $u_{tt}{=}c^2u_{xx}$ (d'Alembert):
+\[ u{=}\tfrac{u_0(x{+}ct){+}u_0(x{-}ct)}2{+}\tfrac1{2c}\!\int_{x-ct}^{x+ct}\!\!u_1(s)ds.\]
+\textbf{Heat on $\R$} $u_t{=}u_{xx}$: $u{=}\!\int G(x{-}y,t)u_0(y)dy$, $G(x,t){=}\tfrac1{\sqrt{4\pi t}}e^{-x^2/4t}$.
+\end{thm}
+\begin{ex}
+\exo \emph{(24)} $u_t{+}(2t{+}1)u_{xxxx}{=}0$: $\hat u{=}\hat g\,e^{-\alpha^4(t^2+t)}$.\\
+\exo \emph{(25)} $u_{tt}{=}u_{xx}{-}u$, $\omega{=}\sqrt{\alpha^2{+}1}$:\\ $\hat u{=}\hat u_0\cos(\omega t){+}\frac{\hat v_0}{\omega}\sin(\omega t)$.
+\end{ex}
+\begin{tip}\warn $u_{xxxx}{\To}{+}(\frac{n\pi}L)^4$ (no minus). $u_{tt}{+}2u_t\Rightarrow e^{-t}$; $u_{tt}{-}2u_t\Rightarrow e^{+t}$. $t$-coeff.\ on $u_{xx}\Rightarrow t^2$ in exp.\end{tip}
+
+% ===================== WORKED OPEN QUESTIONS =====================
+\topic{black}{WORKED SOLUTIONS — OPEN QUESTIONS (big points)}
+{\itshape These mirror the recurring open questions: copy the \textbf{structure}, change the numbers. Justify each step.}\par\smallskip
+
+\textbf{\textcolor{cA}{$\blacktriangleright$ A. $f'(z)$ via Cauchy--Riemann ($\approx$8 pts)}}\par
+\emph{24/Q24.} $u=e^{x^2-y^2}\cos2xy$.
+\begin{recipe}
+\item $u_x=e^{x^2-y^2}(2x\cos2xy-2y\sin2xy)$, $u_y=e^{x^2-y^2}(-2y\cos2xy-2x\sin2xy)$.
+\item $f'=u_x-iu_y=2(x{+}iy)e^{x^2-y^2}(\cos2xy+i\sin2xy)=2z\,e^{(x+iy)^2}$.
+\end{recipe}
+$\boxed{f'(z)=2z\,e^{z^2}}$ (so $f=e^{z^2}$).
+\smallskip
+
+\textbf{\textcolor{cA}{$\blacktriangleright$ B. Possible values of $\oint_\gamma f$ ($\approx$9--10 pts)}}\par
+Find singularities, each residue, then $\{2\pi i\sum_S\Res:\,S\subseteq\text{sing.}\}$, $\varnothing\To0$.\\
+\emph{(Q25)} $f{=}\frac{\sin z^2}{z^3(z-2i)}$: $\frac{\sin z^2}{z^3}{=}\frac1z{-}\frac{z^3}6{+}\dots$\\
+$\Rightarrow\Res_0{=}{-}\frac1{2i}{=}\frac i2$;\ \ $\Res_{2i}{=}\frac{\sin(-4)}{-8i}{=}{-}\frac{i\sin4}8$.\\
+$\Rightarrow\boxed{\{0,\,{-}\pi,\,\tfrac{\pi\sin4}4,\,{-}\pi{+}\tfrac{\pi\sin4}4\}}$.\\[2pt]
+\emph{(Q1)} $f{=}\frac{\cos z}{z(z-\pi/2)^2}$: $\Res_0{=}\frac4{\pi^2}$;\\ $\Res_{\pi/2}{=}\frac{d}{dz}\frac{\cos z}z\big|_{\pi/2}{=}{-}\frac2\pi$.\\
+$\Rightarrow\boxed{\{0,\,\tfrac{8i}\pi,\,{-}4i,\,\tfrac{8i}\pi{-}4i\}}$.
+\smallskip
+
+\textbf{\textcolor{cA}{$\blacktriangleright$ C. $\int_0^{2\pi}R(\cos t,\sin t)\,dt$ ($\approx$10--12 pts)}}\par
+\emph{(Q26)} $(2{+}\cos t)^2$: $I{=}\frac1{4i}\oint\frac{(z^2+4z+1)^2}{z^3}$; res $=$ coeff.\ $z^2{=}18\Rightarrow\boxed{9\pi}$.\\
+\emph{(Q3)} $\frac{5/4-\sin t}{5/4+\cos t}\To f{=}\frac{4z^2-10iz-4}{2z(2z+1)(z+2)}$; poles $0,{-}\half$; $\Res_0{=}{-}1$, $\Res_{-1/2}{=}1{-}\frac{5i}3$; sum ${-}\frac{5i}3\Rightarrow\boxed{\frac{10\pi}3}$.
+\smallskip
+
+\textbf{\textcolor{cB}{$\blacktriangleright$ D. ODE via Laplace ($\approx$11--12 pts)}}\par
+\emph{(Q27)} $y''{+}2y'{+}y{=}t$, $y(0){=}0,y'(0){=}3$: $(z{+}1)^2Y{=}3{+}\frac1{z^2}$; $\frac1{z^2(z+1)^2}{=}{-}\frac2z{+}\frac1{z^2}{+}\frac2{z+1}{+}\frac1{(z+1)^2}$ $\Rightarrow\boxed{y{=}t{-}2{+}2e^{-t}{+}4te^{-t}}$.\\
+\emph{(Q2a)} $y''{+}2y'{+}ay{=}0$, $a{>}1$, $y'(0){=}y_1$: $\boxed{y{=}\frac{y_1}{\sqrt{a-1}}e^{-t}\sin(\sqrt{a-1}\,t)}$.
+\smallskip
+
+\textbf{\textcolor{cC}{$\blacktriangleright$ E. Bounded PDE $\to$ Fourier sine ($\approx$12--16 pts)}}\par
+$u{=}\sum b_n\sin(n\pi x)$; $u_{xx}{\To}{-}(n\pi)^2b_n$, $u_{xxxx}{\To}{+}(n\pi)^4b_n$.\\
+\emph{(Q28)} $u_{tt}{-}2u_t{=}u_{xx}$, $u(x,0){=}0$, $u_t(x,0){=}1$: $b_n''{-}2b_n'{+}(n\pi)^2b_n{=}0$; $b_n(0){=}0$, $b_n'(0){=}c_n{=}\frac{4}{n\pi}$ ($n$ odd); $r{=}1{\pm}i\omega_n$, $\omega_n{=}\sqrt{(n\pi)^2{-}1}$.\\
+$\boxed{u{=}\!\!\sum_{n\,\text{odd}}\!\!\frac4{n\pi\omega_n}e^t\sin(\omega_n t)\sin(n\pi x)}$.\\[2pt]
+\emph{(Q2b)} $u_{tt}{+}2u_t{=}{-}u_{xxxx}{-}2u$, $u_t(x,0){=}\sin2\pi x$: only $n{=}2$, $b_2''{+}2b_2'{+}(16\pi^4{+}2)b_2{=}0$, $\omega{=}\sqrt{16\pi^4{+}1}$ $\Rightarrow\boxed{u{=}\frac{e^{-t}}\omega\sin(\omega t)\sin2\pi x}$.
+
+% ===================== STEP-BY-STEP METHODS =====================
+\topic{cD}{STEP-BY-STEP METHODS (open questions)}
+{\itshape Follow the steps mechanically — they fit every variant seen on the past exams.}\par\smallskip
+\textbf{\textcolor{cD}{$\triangleright$ Recover $f(z)$ from $\Re f{=}u$ (or $\Im f{=}v$):}}
+\begin{recipe}
+\item Check $u$ harmonic ($u_{xx}{+}u_{yy}{=}0$) — else no holomorphic $f$.
+\item $v_y{=}u_x\Rightarrow v{=}\!\int\! u_x\,dy+g(x)$.
+\item $v_x{=}{-}u_y\Rightarrow$ solve $g'(x)$, then integrate for $g$.
+\item $f{=}u{+}iv$; set $y{=}0$ and replace $x\to z$. Check $f'{=}u_x{-}iu_y$.
+\end{recipe}
+\textbf{\textcolor{cD}{$\triangleright$ Possible values of $\oint_\gamma f$:}}
+\begin{recipe}
+\item List all singularities $S$; compute $\Res$ at each.
+\item Values $=\{2\pi i\!\sum_{s\in T}\!\Res_s:\,T\subseteq S\}$; empty $T\Rightarrow 0$.
+\item If $\gamma$ may wind $k$ times, weight each residue by its winding number.
+\end{recipe}
+\textbf{\textcolor{cD}{$\triangleright$ Classify a singularity $z_0$ + its order:}}
+\begin{recipe}
+\item Factor, cancel common $(z{-}z_0)$ \emph{first} (else a false pole).
+\item Removable if $\lim$ finite; pole of order $m{=}\mathrm{ord}_{z_0}D-\mathrm{ord}_{z_0}N$.
+\item Essential if $\infty$ negative Laurent powers ($e^{1/z}$, $\sin\tfrac1z$, …).
+\end{recipe}
+\textbf{\textcolor{cD}{$\triangleright$ $\int_0^{2\pi}R(\cos t,\sin t)\,dt$:}}
+\begin{recipe}
+\item $z{=}e^{it}$: $\cos t{=}\frac{z^2+1}{2z}$, $\sin t{=}\frac{z^2-1}{2iz}$, $dt{=}\frac{dz}{iz}$.
+\item Reduce to $\oint_{|z|=1}$ of a rational function; keep only poles $|z|{<}1$.
+\item $I{=}2\pi i\sum\Res$; the answer must come out \emph{real}.
+\end{recipe}
+\textbf{\textcolor{cD}{$\triangleright$ ODE via Laplace:}}
+\begin{recipe}
+\item Apply $\Lap$: $\Lap[y']{=}zY{-}y(0)$, $\Lap[y'']{=}z^2Y{-}zy(0){-}y'(0)$.
+\item Solve algebraically for $Y(z)$.
+\item Partial fractions (complete the square for complex roots).
+\item Invert term-by-term with the table.
+\end{recipe}
+\textbf{\textcolor{cD}{$\triangleright$ Bounded PDE on $[0,L]\to$ Fourier sine:}}
+\begin{recipe}
+\item $u{=}\sum b_n(t)\sin\frac{n\pi x}L$ (Dirichlet; use $\cos$ for Neumann).
+\item Substitute $u_{xx}{\to}{-}(\frac{n\pi}L)^2b_n$, $u_{xxxx}{\to}{+}(\frac{n\pi}L)^4b_n$: an ODE in $t$ for each $b_n$.
+\item $b_n(0),b_n'(0)$ by projecting the $t{=}0$ data: $b_n(0){=}\frac2L\!\int_0^L\!u(x,0)\sin\frac{n\pi x}L\,dx$.
+\item A single $\sin(k\pi x)$ datum excites only mode $n{=}k$.
+\end{recipe}
+\textbf{\textcolor{cD}{$\triangleright$ $\int_{-\infty}^{\infty}$ rational / $f(x)e^{iax}$:}}
+\begin{recipe}
+\item Need $\deg D\ge\deg N{+}2$ (rational) or $a{>}0$ (Jordan); close a big semicircle in the \emph{upper} half-plane.
+\item $\int_{-\infty}^{\infty}\!R=2\pi i\!\sum_{\Im z_k>0}\!\Res$, or $\int_{-\infty}^{\infty}\!f e^{iax}=2\pi i\!\sum_{\Im z_k>0}\!\Res[f e^{iaz}]$.
+\item For $\cos ax,\sin ax$ take $\Re,\Im$ of the Jordan result.
+\end{recipe}
+\textbf{\textcolor{cD}{$\triangleright$ PDE on $\mathbb{R}\to$ Fourier transform:}}
+\begin{recipe}
+\item FT in $x$ ($t$ as parameter): $\partial_x\to i\alpha$, $\partial_x^2\to-\alpha^2$.
+\item Solve the resulting ODE in $t$ for $\hat u(\alpha,t)$ with the transformed IC.
+\item Invert: match a known pair / Gaussian to recover $u(x,t)$.
+\end{recipe}
+
+% ===================== ANSWER KEY =====================
+\topic{black}{PAST-EXAM ANSWER KEY (pattern bank)}
+{\itshape Exact answers from the two exams you sent — the new exam reshuffles the same patterns.}\par\smallskip
+\textbf{\textcolor{cA}{2024:}} SCQ1 $c{=}1,a{=}{-}b$;\ SCQ2 $z{=}1,{-}2i$;\ SCQ3 $z{=}{-}1{+}k\pi\,(k{\ne}0)$;\ SCQ4 $z^2\sinh z$;\ SCQ5 $\frac{-i}{2(z-i)}$;\ SCQ6 $\frac1{z^3}{+}\frac1{z^2}{-}\frac1z$;\ SCQ7 $\int_{\Gamma_1}{=}\int_{\Gamma_2}$;\ SCQ9 $\frac1{z-1/2}$;\ SCQ10 $\frac{-1-i}3$;\ SCQ11 $2\pi i$;\ SCQ12 $-4$;\ SCQ13 $\frac{2z-1}{z^4-2z^3+z^2}$;\ SCQ14 $4\pi i$;\ SCQ15 $\frac z{z^2+4}$;\ SCQ16 $1{-}e^{-t}$;\ SCQ17 $F''(z)$;\ SCQ18 $\frac i{2\pi}\!\int_\gamma\! g$;\ SCQ19 $\hat g\,e^{-\alpha^4(t^2+t)}$;\ \textbf{T/F} 01\,T, 04\,F, 06\,F, 08\,T, 09\,F.\par\smallskip
+\textbf{\textcolor{cA}{2025:}} SCQ10 $3x^2y{-}y^3{+}2$;\ SCQ11 $a{=}\frac12$;\ SCQ12 $\frac{e^z}{(z-1/2)^2+1/4}$;\ SCQ13 $-\frac{\pi i}2$;\ SCQ14 $e^{1/z^2}\!\cosh z$;\ SCQ15 $\frac1{z^3}{+}\frac1{z^2}{-}\frac1{2z}$;\ SCQ16 $\frac1{(z-1)^2(z^2-2z+2)}$;\ SCQ17 $-2e$;\ SCQ18 $e^{1/z^2}$;\ SCQ19$'$ $\frac{z^2+16}{(z^2-16)^2}$;\ SCQ20 $(1{-}t)e^{-t}$;\ SCQ21 $-2$;\ SCQ22 $\int_0^t\! f(t{-}s)g(s)ds$;\ SCQ05 $-3$;\ SCQ07 1st\,\&\,2nd;\ SCQ09 $0,1,{-}1$;\ Schröd. $b_n'{=}i(\pi^2n^2{+}1)b_n$;\ Wave-FT $\hat u_0\cos(\sqrt{\alpha^2{+}1}\,t){+}\frac{\hat v_0}{\sqrt{\alpha^2+1}}\sin(\sqrt{\alpha^2{+}1}\,t)$;\ PDE $\sum e^{-\pi^2n^2t^2-t}g_n\sin(n\pi x)$.
+
+% ===================== CHECKLIST =====================
+\topic{cWarn}{EXAM-DAY CHECKLIST (avoid the classic traps)}
+\begin{recipe}
+\item \textbf{Poles:} cancel common factors \emph{first} (a cancelled factor $\Rightarrow$ removable, not a pole).
+\item \textbf{Residue ord.\ $m$:} multiply by $(z{-}z_0)^m$, differentiate $m{-}1$ times, divide by $(m{-}1)!$.
+\item \textbf{Contour:} count only singularities \emph{strictly inside}; ``possible values'' always include $0$.
+\item \textbf{Laplace:} never drop $-zy(0){-}y'(0)$ in $\Lap[y'']$; complete the square for complex roots.
+\item \textbf{PDE:} Dirichlet $\to\sin$; $u_{xxxx}\to{+}(\frac{n\pi}L)^4$; a single $\sin(k\pi x)$ excites only $n{=}k$.
+\item \textbf{Fourier:} $(i\alpha)^2{=}{-}\alpha^2$, $(i\alpha)^4{=}{+}\alpha^4$; heat/transport solution exponent is \emph{negative}.
+\item \textbf{Sanity:} a real integral must give a \emph{real} number; recheck signs and $\tfrac1i{=}{-}i$.
+\item \textbf{Marking:} unsure $\Rightarrow$ leave blank (wrong $=-\tfrac13$ or $-1$).
+\end{recipe}
+
+\end{multicols}
+\end{document}
