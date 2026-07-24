@@ -70,15 +70,12 @@ jobs:
           fi
 
           if [ "$missing" -gt 0 ]; then
-            cat <<EOF
-            ::error::Watcher is not fully configured.
-              See docs/V7A_WATCHER_WORKFLOW.md for the exact steps.
-              Required repository secrets (Settings → Secrets and variables → Actions):
-                - FLYEAS_BASE_URL       (e.g. https://faregenie.vercel.app)
-                - FLYEAS_CRON_SECRET    (same as Vercel env CRON_SECRET)
-              Optional repository variable:
-                - FLYEAS_FAIL_IF_UNCONFIGURED=false  (to exit 0 without error while setting up)
-EOF
+            echo "::error::Watcher is not fully configured. See docs/V7A_WATCHER_WORKFLOW.md"
+            echo "Required repository secrets (Settings -> Secrets and variables -> Actions):"
+            echo "  - FLYEAS_BASE_URL      (e.g. https://faregenie.vercel.app)"
+            echo "  - FLYEAS_CRON_SECRET   (same as Vercel env CRON_SECRET)"
+            echo "Optional repository variable:"
+            echo "  - FLYEAS_FAIL_IF_UNCONFIGURED=false  (exit 0 while setting up)"
             if [ "${FAIL_IF_UNCONFIGURED,,}" = "false" ]; then
               echo "ready=false" >> "$GITHUB_OUTPUT"
               echo "::notice::FLYEAS_FAIL_IF_UNCONFIGURED=false — exiting cleanly."
