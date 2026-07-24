@@ -24,3 +24,7 @@ logs/
 reports/*_local.json
 bma_weights.json
 copula_weights.json
+
+# Build artifacts (never commit)
+*.tsbuildinfo
+.claude/scheduled_tasks*.lock
