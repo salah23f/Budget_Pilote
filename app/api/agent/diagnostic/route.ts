@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { isInternalRequest } from '@/lib/auth/guard';
 import { getBackendKind, listMissions } from '@/lib/store/missions-db';
 
 /**
@@ -60,11 +61,12 @@ async function runDiagnostic() {
   };
 }
 
+// Fail-closed. This endpoint reports which env vars are configured and how
+// many missions exist, so leaving it open when CRON_SECRET is unset would
+// hand an attacker a free reconnaissance report. Set CRON_SECRET in
+// .env.local to use it during local development.
 function checkAuth(req: NextRequest): boolean {
-  const expected = process.env.CRON_SECRET;
-  if (!expected) return true; // pas de secret → pas d'auth (dev local)
-  const auth = req.headers.get('authorization');
-  return auth === `Bearer ${expected}`;
+  return isInternalRequest(req.headers.get('authorization'));
 }
 
 async function handle(req: NextRequest, method: 'GET' | 'POST') {

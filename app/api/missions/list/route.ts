@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { requireUser } from '@/lib/auth/guard';
 import { listMissions } from '@/lib/store/missions-db';
 import type { Mission } from '@/lib/types';
 
@@ -35,8 +36,11 @@ function toListMission(m: Mission) {
 
 export async function GET() {
   const started = Date.now();
+  const auth = await requireUser();
+  if (!auth.ok) return auth.response;
   try {
-    const missions = await listMissions();
+    // Scoped to the caller — never return another user's missions.
+    const missions = await listMissions(auth.user.id);
     missions.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
     console.log('[missions/list] ok', { count: missions.length, ms: Date.now() - started });
     return NextResponse.json({ success: true, missions: missions.map(toListMission) });

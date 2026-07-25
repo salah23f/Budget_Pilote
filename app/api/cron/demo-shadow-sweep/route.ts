@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { isInternalRequest } from '@/lib/auth/guard';
 import { watchMission } from '@/lib/agent/watcher';
 import { pickRotatingRoutes, type DemoRoute } from '@/lib/agent/demo-routes';
 import type { Mission } from '@/lib/types';
@@ -121,9 +122,8 @@ export async function GET(req: NextRequest) {
   const started = Date.now();
 
   // Auth — Vercel cron envoie automatiquement Authorization: Bearer <CRON_SECRET>
-  const expected = process.env.CRON_SECRET;
   const auth = req.headers.get('authorization');
-  if (expected && auth !== `Bearer ${expected}`) {
+  if (!isInternalRequest(auth)) {
     console.warn('[demo-shadow-sweep] 401 unauthorized', {
       has_auth: Boolean(auth),
     });

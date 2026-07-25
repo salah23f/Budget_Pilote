@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireMissionOwner } from '@/lib/auth/guard';
 import {
   getMission,
   updateMission,
@@ -20,6 +21,9 @@ export async function POST(
   context: { params: { id: string } }
 ) {
   const missionId = context.params.id;
+  // Caller must own this mission — 404 (not 403) hides existence.
+  const owned = await requireMissionOwner(missionId);
+  if (!owned.ok) return owned.response;
   try {
     const { proposalId } = (await req.json().catch(() => ({}))) as {
       proposalId?: string;

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { isInternalRequest } from '@/lib/auth/guard';
 import { listMissions } from '@/lib/store/missions-db';
 import type { Mission } from '@/lib/types';
 
@@ -21,12 +22,11 @@ export const maxDuration = 300;
  * a proposal, or keep watching.
  */
 export async function GET(req: Request) {
-  // Authorize the cron request
+  // Fail-closed: an unset CRON_SECRET denies the call instead of
+  // silently leaving this endpoint open to the internet.
+  // Kept in a const: forwarded to propose so it recognises an internal call.
   const authHeader = req.headers.get('authorization');
-  if (
-    process.env.CRON_SECRET &&
-    authHeader !== `Bearer ${process.env.CRON_SECRET}`
-  ) {
+  if (!isInternalRequest(authHeader)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

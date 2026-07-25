@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireMissionOwner } from '@/lib/auth/guard';
 import { missionCreatedEmail } from '@/lib/email-templates';
 
 export const dynamic = 'force-dynamic';
@@ -14,6 +15,11 @@ export async function POST(
   req: NextRequest,
   context: { params: { id: string } }
 ) {
+  // Without this the endpoint is an open relay: any caller could make
+  // Flyeas send branded mail to any address.
+  const owned = await requireMissionOwner(context.params.id);
+  if (!owned.ok) return owned.response;
+
   try {
     const { email, userName, mission } = await req.json();
 

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { isInternalRequest, requireMissionOwner } from '@/lib/auth/guard';
 import {
   getMission,
   updateMission,
@@ -59,12 +60,16 @@ export async function POST(
   // CRON_SECRET) are allowed to MOVE MONEY. A browser-initiated "Check now"
   // may refresh the price and open a proposal, but must never silently
   // capture a card / release escrow — so the auto-buy path below
-  // additionally requires this internal secret. Once per-user auth is wired,
-  // extend this to also allow the authenticated mission owner.
+  // additionally requires this internal secret.
   const authHeader = req.headers.get('authorization');
-  const isInternalCall =
-    !!process.env.CRON_SECRET &&
-    authHeader === `Bearer ${process.env.CRON_SECRET}`;
+  const isInternalCall = isInternalRequest(authHeader);
+
+  // Anyone who is not an internal caller must be the signed-in owner of this
+  // mission — otherwise a stranger could drive proposals on someone else's.
+  if (!isInternalCall) {
+    const owned = await requireMissionOwner(missionId);
+    if (!owned.ok) return owned.response;
+  }
 
   try {
     const mission = await getMission(missionId);
