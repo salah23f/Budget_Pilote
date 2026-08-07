@@ -217,6 +217,7 @@ function MissionFlow() {
           cabinBagRequired: form.bag,
           stopsPreference: form.direct ? 'direct' : 'any',
           ecoPreference: form.eco ? 'eco' : 'balanced',
+          pricePriority: form.cheapest ? 'cheapest' : 'balanced',
           paymentRail: 'stripe',
         }),
       });

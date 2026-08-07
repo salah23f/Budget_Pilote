@@ -10,6 +10,8 @@ import { DashboardSkeleton } from '@/components/skeletons';
 import { MissionCard } from '@/components/missions/mission-card';
 import { ResumeBanner } from '@/components/watch/resume-banner';
 import { CountryFlag } from '@/components/ui/country-flag';
+import { PhotoGallery } from '@/components/ui/photo-gallery';
+import { getPhotos } from '@/lib/destinations-media';
 import { ArrowRight, Plus, Tag } from 'lucide-react';
 
 /**
@@ -173,18 +175,29 @@ function EmptyMissions({ t }: { t: (k: string) => string }) {
 }
 
 function FeaturedCard({ feat }: { feat: (typeof FEATURED_CITIES)[number] }) {
+  const photos = getPhotos(feat.city);
   return (
     <article className="rounded-lg border border-line-1 overflow-hidden grid md:grid-cols-5 shadow-elev-1">
-      {/* Editorial panel — typographic, no external image dependency */}
+      {/* Photo panel — real, locally-served, commercially-licensed photography */}
       <div className="relative md:col-span-3 aspect-[16/9] md:aspect-auto md:min-h-[300px] bg-ink-600 overflow-hidden flex items-center justify-center">
-        <span
-          aria-hidden
-          className="editorial select-none text-pen-3 leading-none text-[120px] md:text-[180px] tracking-tight"
-          style={{ opacity: 0.3 }}
-        >
-          {feat.city.slice(0, 2)}
-        </span>
-        <div className="absolute bottom-4 left-4">
+        {photos.length > 0 ? (
+          <PhotoGallery
+            photos={photos}
+            priority
+            sizes="(max-width: 768px) 100vw, 60vw"
+            label={`Photos of ${feat.city}`}
+            className="absolute inset-0"
+          />
+        ) : (
+          <span
+            aria-hidden
+            className="editorial select-none text-pen-3 leading-none text-[120px] md:text-[180px] tracking-tight"
+            style={{ opacity: 0.3 }}
+          >
+            {feat.city.slice(0, 2)}
+          </span>
+        )}
+        <div className="absolute bottom-4 left-4 z-10 pointer-events-none">
           <span className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 bg-ink-950/80 border border-line-1">
             <CountryFlag iso2={feat.iso2} size={18} />
             <span className="text-caption text-pen-1 font-medium">{feat.country}</span>

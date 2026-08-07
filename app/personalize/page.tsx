@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { useStreakStore } from '@/lib/store/streak-store';
 import { useReferralStore } from '@/lib/store/referral-store';
 import { useUserStore } from '@/lib/store/user-store';
+import { TRAVEL_STYLE_PHOTOS } from '@/lib/destinations-media';
+import { WorldDestinationMap, type MapDestination } from '@/components/world-destination-map';
 import {
   Backpack,
   Briefcase,
@@ -41,7 +43,7 @@ const TRAVEL_STYLES: Array<{
     subtitle: 'Budget-first, adventure everywhere',
     icon: Backpack,
     gradient: 'linear-gradient(135deg, #10b981, #059669)',
-    photo: 'https://source.unsplash.com/400x300/?backpacker,hiking,nature',
+    photo: '/travel-styles/backpacker.jpg',
     description: "We'll prioritize the cheapest flights, hostels & hidden gems",
   },
   {
@@ -50,7 +52,7 @@ const TRAVEL_STYLES: Array<{
     subtitle: 'Fast, reliable, no-nonsense',
     icon: Briefcase,
     gradient: 'linear-gradient(135deg, #60a5fa, #2563eb)',
-    photo: 'https://source.unsplash.com/400x300/?business,lounge,airport',
+    photo: '/travel-styles/business.jpg',
     description: "We'll prioritize direct flights, quality hotels & flexibility",
   },
   {
@@ -59,7 +61,7 @@ const TRAVEL_STYLES: Array<{
     subtitle: 'Safe, fun, the whole tribe',
     icon: Users,
     gradient: 'linear-gradient(135deg, #a78bfa, #8b5cf6)',
-    photo: 'https://source.unsplash.com/400x300/?family,beach,vacation',
+    photo: '/travel-styles/family.jpg',
     description: "We'll prioritize family-friendly hotels, reasonable connections & kid-ready activities",
   },
   {
@@ -68,27 +70,28 @@ const TRAVEL_STYLES: Array<{
     subtitle: 'First class, five stars, nothing less',
     icon: Crown,
     gradient: 'linear-gradient(135deg, #D4A24C, #DFAE5B)',
-    photo: 'https://source.unsplash.com/400x300/?luxury,resort,pool',
+    photo: '/travel-styles/luxury.jpg',
     description: "We'll prioritize business class, 5-star hotels & private transfers",
   },
 ];
 
-const DREAM_DESTINATIONS = [
-  { city: 'Paris', country: 'France', x: 49, y: 34, emoji: '🇫🇷' },
-  { city: 'Tokyo', country: 'Japan', x: 83, y: 43, emoji: '🇯🇵' },
-  { city: 'New York', country: 'USA', x: 27, y: 40, emoji: '🇺🇸' },
-  { city: 'Bali', country: 'Indonesia', x: 79, y: 66, emoji: '🇮🇩' },
-  { city: 'Dubai', country: 'UAE', x: 62, y: 47, emoji: '🇦🇪' },
-  { city: 'Barcelona', country: 'Spain', x: 48, y: 39, emoji: '🇪🇸' },
-  { city: 'Rome', country: 'Italy', x: 52, y: 40, emoji: '🇮🇹' },
-  { city: 'Istanbul', country: 'Turkey', x: 56, y: 40, emoji: '🇹🇷' },
-  { city: 'Marrakech', country: 'Morocco', x: 45, y: 45, emoji: '🇲🇦' },
-  { city: 'Cape Town', country: 'South Africa', x: 54, y: 74, emoji: '🇿🇦' },
-  { city: 'Rio', country: 'Brazil', x: 34, y: 69, emoji: '🇧🇷' },
-  { city: 'Singapore', country: 'Singapore', x: 77, y: 60, emoji: '🇸🇬' },
-  { city: 'Seoul', country: 'South Korea', x: 81, y: 43, emoji: '🇰🇷' },
-  { city: 'Sydney', country: 'Australia', x: 86, y: 72, emoji: '🇦🇺' },
-  { city: 'Mumbai', country: 'India', x: 68, y: 52, emoji: '🇮🇳' },
+/** Real WGS84 coordinates — the map projects these, so they must be accurate. */
+const DREAM_DESTINATIONS: Array<MapDestination & { emoji: string }> = [
+  { city: 'Paris', country: 'France', lat: 48.857, lon: 2.352, emoji: '🇫🇷' },
+  { city: 'Tokyo', country: 'Japan', lat: 35.69, lon: 139.692, emoji: '🇯🇵' },
+  { city: 'New York', country: 'USA', lat: 40.713, lon: -74.006, emoji: '🇺🇸' },
+  { city: 'Bali', country: 'Indonesia', lat: -8.65, lon: 115.216, emoji: '🇮🇩' },
+  { city: 'Dubai', country: 'UAE', lat: 25.205, lon: 55.271, emoji: '🇦🇪' },
+  { city: 'Barcelona', country: 'Spain', lat: 41.385, lon: 2.173, emoji: '🇪🇸' },
+  { city: 'Rome', country: 'Italy', lat: 41.903, lon: 12.496, emoji: '🇮🇹' },
+  { city: 'Istanbul', country: 'Turkey', lat: 41.008, lon: 28.978, emoji: '🇹🇷' },
+  { city: 'Marrakech', country: 'Morocco', lat: 31.63, lon: -7.981, emoji: '🇲🇦' },
+  { city: 'Cape Town', country: 'South Africa', lat: -33.925, lon: 18.424, emoji: '🇿🇦' },
+  { city: 'Rio', country: 'Brazil', lat: -22.907, lon: -43.173, emoji: '🇧🇷' },
+  { city: 'Singapore', country: 'Singapore', lat: 1.352, lon: 103.82, emoji: '🇸🇬' },
+  { city: 'Seoul', country: 'South Korea', lat: 37.567, lon: 126.978, emoji: '🇰🇷' },
+  { city: 'Sydney', country: 'Australia', lat: -33.869, lon: 151.209, emoji: '🇦🇺' },
+  { city: 'Mumbai', country: 'India', lat: 19.076, lon: 72.878, emoji: '🇮🇳' },
 ];
 
 const STORAGE_KEY = 'flyeas_personalization';
@@ -317,13 +320,17 @@ function StepTravelStyle({
               <div
                 className="aspect-[4/3] relative"
                 style={{
-                  backgroundImage: `url(${(t as any).photo})`,
+                  backgroundImage: `url(${t.photo})`,
                   backgroundSize: 'cover',
                   backgroundPosition: 'center',
                   backgroundColor: 'var(--ink-700)',
                 }}
               >
                 <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.7), transparent 60%)' }} />
+                {/* Photo credit — required by the CC BY-SA terms on some of these */}
+                <span className="absolute top-1 left-1 rounded px-1 py-px bg-ink-950/70 text-pen-2 text-[8px] leading-none pointer-events-none max-w-[80%] truncate">
+                  {TRAVEL_STYLE_PHOTOS[t.id]?.credit}
+                </span>
                 {isSelected && (
                   <div
                     className="absolute top-3 right-3 flex h-6 w-6 items-center justify-center rounded-full"
@@ -379,45 +386,12 @@ function StepDestinations({
       </div>
 
       {/* Map with clickable pins */}
-      <div
-        className="rounded-2xl p-5 mb-6 relative"
-        style={{
-          background: 'rgba(255,255,255,0.02)',
-          border: '1px solid rgba(255,255,255,0.06)',
-        }}
-      >
-        <svg viewBox="0 0 100 80" className="w-full h-auto" aria-hidden="true">
-          <defs>
-            <radialGradient id="pinSelected" cx="0.5" cy="0.5" r="0.5">
-              <stop offset="0%" stopColor="#D4A24C" stopOpacity="0.6" />
-              <stop offset="100%" stopColor="#D4A24C" stopOpacity="0" />
-            </radialGradient>
-          </defs>
-
-          {/* Sparse continent dots */}
-          {continentDots().map((d, i) => (
-            <circle key={i} cx={d.x} cy={d.y} r="0.35" fill="rgba(255,255,255,0.08)" />
-          ))}
-
-          {/* Destination pins */}
-          {DREAM_DESTINATIONS.map((d) => {
-            const isSelected = selected.includes(d.city);
-            return (
-              <g key={d.city} style={{ cursor: 'pointer' }} onClick={() => onToggle(d.city)}>
-                {isSelected && <circle cx={d.x} cy={d.y} r="3" fill="url(#pinSelected)" />}
-                <circle
-                  cx={d.x}
-                  cy={d.y}
-                  r={isSelected ? 1.5 : 1}
-                  fill={isSelected ? '#D4A24C' : 'rgba(255,255,255,0.5)'}
-                  stroke={isSelected ? 'white' : 'transparent'}
-                  strokeWidth="0.3"
-                />
-              </g>
-            );
-          })}
-        </svg>
-      </div>
+      <WorldDestinationMap
+        destinations={DREAM_DESTINATIONS}
+        selected={selected}
+        onToggle={onToggle}
+        className="mb-6"
+      />
 
       {/* City grid — clickable chips */}
       <div className="flex flex-wrap justify-center gap-2">
@@ -625,26 +599,4 @@ function CelebrationOverlay() {
       </div>
     </div>
   );
-}
-
-function continentDots(): Array<{ x: number; y: number }> {
-  const dots: Array<{ x: number; y: number }> = [];
-  const regions = [
-    { x: 10, y: 35, w: 18, h: 20 },
-    { x: 27, y: 60, w: 10, h: 20 },
-    { x: 44, y: 28, w: 15, h: 15 },
-    { x: 48, y: 45, w: 15, h: 25 },
-    { x: 60, y: 28, w: 30, h: 25 },
-    { x: 80, y: 65, w: 12, h: 10 },
-  ];
-  for (const r of regions) {
-    for (let i = r.x; i < r.x + r.w; i += 1.5) {
-      for (let j = r.y; j < r.y + r.h; j += 1.5) {
-        if (Math.sin(i * 0.3) + Math.cos(j * 0.4) > -0.3) {
-          dots.push({ x: i, y: j });
-        }
-      }
-    }
-  }
-  return dots;
 }

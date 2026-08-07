@@ -171,6 +171,7 @@ async function handleCreate(
     cabinBagRequired: body.cabinBagRequired !== false,
     stopsPreference: body.stopsPreference || 'any',
     preferredAirlines: body.preferredAirlines || [],
+    pricePriority: body.pricePriority === 'cheapest' ? 'cheapest' : 'balanced',
     ecoPreference: body.ecoPreference || 'balanced',
     monitoringEnabled: true,
     alertEmailEnabled: body.alertEmailEnabled !== false,

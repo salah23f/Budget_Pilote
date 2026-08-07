@@ -111,6 +111,8 @@ export interface Mission {
   stopsPreference: StopsPreference;
   preferredAirlines: string[];
   ecoPreference: string;
+  /** What the traveller picked at the "what matters" step. Drives scoring weights. */
+  pricePriority?: 'cheapest' | 'balanced';
   monitoringEnabled: boolean;
   alertEmailEnabled: boolean;
   status: MissionStatus;

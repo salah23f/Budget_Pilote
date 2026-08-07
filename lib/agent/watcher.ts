@@ -34,6 +34,7 @@ import { predictV7, type EnsembleDecision } from './v7';
 import { predictV7aFirst, type EnrichedPrediction } from './v7a';
 import { logV7aShadowFromPrediction } from '../v7a/shadow-logging-runtime-wiring';
 import type { Mission, Offer } from '../types';
+import { scoreOffers, weightsForMission, type ScoredOffer } from '../scoring';
 
 /**
  * V7a shadow logging — envoi non bloquant vers /api/agent/shadow-log.
@@ -98,8 +99,17 @@ export interface WatchResult {
   checkedAt: string;
   /** Route identifier used for history storage */
   routeKey: string;
-  /** Cheapest offer observed */
+  /**
+   * Cheapest offer observed. This feeds the price sample and the predictor
+   * baseline, so it stays the true minimum — never the recommendation.
+   */
   cheapest: Offer | null;
+  /**
+   * The offer we actually propose to the traveller: highest composite score
+   * among the offers within budget, weighted by what they said matters
+   * (price, nonstop, eco). Falls back to `cheapest` when nothing scores.
+   */
+  recommended: ScoredOffer | null;
   /** Number of offers returned by the provider (before filtering) */
   offerCount: number;
   /** Offers after applying mission filters */
@@ -140,6 +150,7 @@ export async function watchMission(mission: Mission): Promise<WatchResult> {
         checkedAt,
         routeKey: key,
         cheapest: null,
+        recommended: null,
         offerCount: 0,
         filteredCount: 0,
         prediction: null,
@@ -170,6 +181,7 @@ export async function watchMission(mission: Mission): Promise<WatchResult> {
         checkedAt,
         routeKey: key,
         cheapest: null,
+        recommended: null,
         offerCount: offers.length,
         filteredCount: 0,
         prediction: null,
@@ -394,10 +406,40 @@ export async function watchMission(mission: Mission): Promise<WatchResult> {
       }
     }
 
+    // --- Pick what we actually recommend ------------------------
+    // Only offers the traveller can afford are eligible, then the composite
+    // score decides — weighted by what they said matters. A nonstop that
+    // costs a little more can now win over a two-stop marathon.
+    const affordable = filtered.filter(
+      (o) => o.priceUsd <= mission.maxBudgetUsd
+    );
+    let recommended: ScoredOffer | null = null;
+    if (affordable.length > 0) {
+      const affordablePrices = affordable.map((o) => o.priceUsd);
+      const trend =
+        prediction && prediction.trend !== 'unknown'
+          ? prediction.trend
+          : ('stable' as const);
+      const scored = scoreOffers(
+        affordable,
+        {
+          avgPrice: prediction?.baseline?.mean ?? cheapest.priceUsd,
+          minPrice: Math.min(...affordablePrices),
+          maxPrice: Math.max(...affordablePrices),
+          pricePercentile: prediction?.percentile ?? 50,
+          trend,
+          daysUntilDeparture,
+        },
+        weightsForMission(mission)
+      );
+      recommended = scored[0] ?? null;
+    }
+
     return {
       checkedAt,
       routeKey: key,
       cheapest,
+      recommended,
       offerCount: offers.length,
       filteredCount: filtered.length,
       prediction,
@@ -414,6 +456,7 @@ export async function watchMission(mission: Mission): Promise<WatchResult> {
       checkedAt,
       routeKey: key,
       cheapest: null,
+        recommended: null,
       offerCount: 0,
       filteredCount: 0,
       prediction: null,
