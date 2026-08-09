@@ -128,25 +128,25 @@ export default function CommandPalette() {
       <div
         className="fixed left-1/2 top-[20%] z-[61] w-[90vw] max-w-[520px] -translate-x-1/2 rounded-2xl overflow-hidden"
         style={{
-          background: 'rgba(9,9,11,0.98)',
+          background: 'var(--ink-800)',
           backdropFilter: 'blur(24px)',
           WebkitBackdropFilter: 'blur(24px)',
-          border: '1px solid rgba(255,255,255,0.08)',
-          boxShadow: '0 25px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(232,163,23,0.05)',
+          border: '1px solid var(--ink-800)',
+          boxShadow: '0 25px 60px rgba(0,0,0,0.6), 0 0 0 1px var(--accent-soft)',
         }}
       >
         {/* Search input */}
-        <div className="flex items-center gap-3 px-5 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-          <Search className="w-5 h-5 text-white/30 shrink-0" strokeWidth={1.8} />
+        <div className="flex items-center gap-3 px-5 py-4" style={{ borderBottom: '1px solid var(--ink-800)' }}>
+          <Search className="w-5 h-5 text-pen-3 shrink-0" strokeWidth={1.8} />
           <input
             ref={inputRef}
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={t('cmd.placeholder')}
-            className="flex-1 bg-transparent text-sm text-white placeholder:text-white/25 outline-none"
+            className="flex-1 bg-transparent text-sm text-pen-1 placeholder:text-pen-3 outline-none"
           />
-          <kbd className="flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium text-white/25 bg-white/[0.04] border border-white/[0.06]">
+          <kbd className="flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium text-pen-3 bg-white/[0.04] border border-white/[0.06]">
             ESC
           </kbd>
         </div>
@@ -154,12 +154,12 @@ export default function CommandPalette() {
         {/* Results */}
         <div className="max-h-[360px] overflow-y-auto py-2">
           {flatList.length === 0 && (
-            <p className="px-5 py-6 text-center text-sm text-white/30">{t('cmd.noResults')}</p>
+            <p className="px-5 py-6 text-center text-sm text-pen-3">{t('cmd.noResults')}</p>
           )}
 
           {grouped.pages.length > 0 && (
             <div>
-              <p className="px-5 pt-2 pb-1 text-[10px] font-semibold text-white/20 uppercase tracking-[0.1em]">
+              <p className="px-5 pt-2 pb-1 text-[10px] font-semibold text-pen-3 uppercase tracking-[0.1em]">
                 {t('cmd.pages')}
               </p>
               {grouped.pages.map((item, idx) => {
@@ -175,9 +175,9 @@ export default function CommandPalette() {
                       isSelected ? 'bg-white/[0.06]' : 'hover:bg-white/[0.03]'
                     }`}
                   >
-                    <Icon className={`w-4 h-4 shrink-0 ${isSelected ? 'text-accent' : 'text-white/30'}`} strokeWidth={1.8} />
-                    <span className={`text-sm flex-1 ${isSelected ? 'text-white' : 'text-white/60'}`}>{item.label}</span>
-                    {isSelected && <ArrowRight className="w-3.5 h-3.5 text-white/20" strokeWidth={1.8} />}
+                    <Icon className={`w-4 h-4 shrink-0 ${isSelected ? 'text-accent' : 'text-pen-3'}`} strokeWidth={1.8} />
+                    <span className={`text-sm flex-1 ${isSelected ? 'text-pen-1' : 'text-pen-2'}`}>{item.label}</span>
+                    {isSelected && <ArrowRight className="w-3.5 h-3.5 text-pen-3" strokeWidth={1.8} />}
                   </button>
                 );
               })}
@@ -186,7 +186,7 @@ export default function CommandPalette() {
 
           {grouped.actions.length > 0 && (
             <div>
-              <p className="px-5 pt-3 pb-1 text-[10px] font-semibold text-white/20 uppercase tracking-[0.1em]">
+              <p className="px-5 pt-3 pb-1 text-[10px] font-semibold text-pen-3 uppercase tracking-[0.1em]">
                 {t('cmd.actions')}
               </p>
               {grouped.actions.map((item, idx) => {
@@ -202,9 +202,9 @@ export default function CommandPalette() {
                       isSelected ? 'bg-white/[0.06]' : 'hover:bg-white/[0.03]'
                     }`}
                   >
-                    <Icon className={`w-4 h-4 shrink-0 ${isSelected ? 'text-accent' : 'text-white/30'}`} strokeWidth={1.8} />
-                    <span className={`text-sm flex-1 ${isSelected ? 'text-white' : 'text-white/60'}`}>{item.label}</span>
-                    {isSelected && <ArrowRight className="w-3.5 h-3.5 text-white/20" strokeWidth={1.8} />}
+                    <Icon className={`w-4 h-4 shrink-0 ${isSelected ? 'text-accent' : 'text-pen-3'}`} strokeWidth={1.8} />
+                    <span className={`text-sm flex-1 ${isSelected ? 'text-pen-1' : 'text-pen-2'}`}>{item.label}</span>
+                    {isSelected && <ArrowRight className="w-3.5 h-3.5 text-pen-3" strokeWidth={1.8} />}
                   </button>
                 );
               })}
@@ -213,18 +213,18 @@ export default function CommandPalette() {
         </div>
 
         {/* Footer */}
-        <div className="flex items-center gap-4 px-5 py-3 text-[10px] text-white/20" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+        <div className="flex items-center gap-4 px-5 py-3 text-[10px] text-pen-3" style={{ borderTop: '1px solid var(--ink-800)' }}>
           <span className="flex items-center gap-1">
-            <kbd className="px-1 py-0.5 rounded bg-white/[0.04] border border-white/[0.06] text-white/30">&uarr;</kbd>
-            <kbd className="px-1 py-0.5 rounded bg-white/[0.04] border border-white/[0.06] text-white/30">&darr;</kbd>
+            <kbd className="px-1 py-0.5 rounded bg-white/[0.04] border border-white/[0.06] text-pen-3">&uarr;</kbd>
+            <kbd className="px-1 py-0.5 rounded bg-white/[0.04] border border-white/[0.06] text-pen-3">&darr;</kbd>
             navigate
           </span>
           <span className="flex items-center gap-1">
-            <kbd className="px-1 py-0.5 rounded bg-white/[0.04] border border-white/[0.06] text-white/30">&crarr;</kbd>
+            <kbd className="px-1 py-0.5 rounded bg-white/[0.04] border border-white/[0.06] text-pen-3">&crarr;</kbd>
             open
           </span>
           <span className="flex items-center gap-1">
-            <kbd className="px-1 py-0.5 rounded bg-white/[0.04] border border-white/[0.06] text-white/30">esc</kbd>
+            <kbd className="px-1 py-0.5 rounded bg-white/[0.04] border border-white/[0.06] text-pen-3">esc</kbd>
             close
           </span>
         </div>

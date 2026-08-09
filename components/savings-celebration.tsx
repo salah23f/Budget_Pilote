@@ -67,19 +67,19 @@ export function SavingsCelebration() {
       <div
         className="relative rounded-3xl p-8 text-center max-w-sm mx-4"
         style={{
-          background: 'linear-gradient(135deg, rgba(245,158,11,0.15), rgba(16,185,129,0.1))',
-          border: '1px solid rgba(245,158,11,0.3)',
-          boxShadow: '0 20px 60px rgba(245,158,11,0.2)',
+          background: 'linear-gradient(135deg, var(--accent-soft), rgba(16,185,129,0.1))',
+          border: '1px solid var(--accent-soft)',
+          boxShadow: '0 20px 60px var(--accent-soft)',
           animation: 'scaleIn 0.4s ease-out',
         }}
       >
         <div className="text-6xl mb-4" style={{ animation: 'bounce 0.6s ease-out' }}>
           {celebration.emoji}
         </div>
-        <h2 className="text-2xl font-bold text-white mb-2">
+        <h2 className="text-2xl font-bold text-pen-1 mb-2">
           {celebration.title}
         </h2>
-        <p className="text-sm text-white/60">{celebration.sub}</p>
+        <p className="text-sm text-pen-2">{celebration.sub}</p>
 
         {/* Confetti particles */}
         <div className="absolute inset-0 overflow-hidden rounded-3xl pointer-events-none">
@@ -88,7 +88,7 @@ export function SavingsCelebration() {
               key={i}
               className="absolute w-1.5 h-1.5 rounded-full"
               style={{
-                background: ['#D4A24C', '#EF4444', '#10B981', '#8B5CF6', '#3B82F6'][i % 5],
+                background: ['var(--accent)', 'var(--danger)', '#10B981', '#8B5CF6', '#3B82F6'][i % 5],
                 left: `${10 + Math.random() * 80}%`,
                 top: `-5%`,
                 animation: `confettiFall ${1.5 + Math.random() * 2}s ease-out ${Math.random() * 0.5}s forwards`,

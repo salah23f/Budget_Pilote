@@ -169,11 +169,11 @@ export function FlightComparisonModal({
             // eslint-disable-next-line @next/next/no-img-element
             <img src={f.logoUrl} alt={f.airline} className="w-6 h-6 rounded object-contain" onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
           ) : (
-            <span className="w-6 h-6 rounded bg-white/10 flex items-center justify-center text-[9px] font-bold text-amber-300">
+            <span className="w-6 h-6 rounded bg-ink-600 flex items-center justify-center text-[9px] font-bold text-amber-300">
               {f.airline.split(' ').map(w => w[0]).join('')}
             </span>
           )}
-          <span className="text-sm font-medium text-white">{f.airline}</span>
+          <span className="text-sm font-medium text-pen-1">{f.airline}</span>
         </div>
       ),
       bestId: null,
@@ -204,7 +204,7 @@ export function FlightComparisonModal({
       label: 'Baggage',
       icon: <BaggageIcon />,
       render: (f) => (
-        <span className={`text-sm font-medium ${f.baggageIncluded ? 'text-emerald-300' : 'text-white/50'}`}>
+        <span className={`text-sm font-medium ${f.baggageIncluded ? 'text-emerald-300' : 'text-pen-2'}`}>
           {f.baggageIncluded ? 'Included' : 'Cabin only'}
         </span>
       ),
@@ -221,16 +221,16 @@ export function FlightComparisonModal({
       icon: <StarIcon />,
       render: (f) => (
         <div className="flex items-center gap-2">
-          <div className="w-12 h-1.5 rounded-full bg-white/10 overflow-hidden">
+          <div className="w-12 h-1.5 rounded-full bg-ink-600 overflow-hidden">
             <div
               className="h-full rounded-full"
               style={{
                 width: `${f.score}%`,
                 background: f.score >= 85
-                  ? 'linear-gradient(90deg, #D4A24C, #10b981)'
+                  ? 'linear-gradient(90deg, var(--accent), #10b981)'
                   : f.score >= 70
-                    ? 'linear-gradient(90deg, #F97316, #D4A24C)'
-                    : 'linear-gradient(90deg, #f59e0b, #ef4444)',
+                    ? 'linear-gradient(90deg, var(--accent), var(--accent))'
+                    : 'linear-gradient(90deg, var(--accent), #ef4444)',
               }}
             />
           </div>
@@ -246,7 +246,7 @@ export function FlightComparisonModal({
         <span className={`text-sm font-semibold ${
           f.dealQuality.toLowerCase() === 'excellent' ? 'text-emerald-300'
           : f.dealQuality.toLowerCase() === 'good' ? 'text-amber-300'
-          : 'text-white/60'
+          : 'text-pen-2'
         }`}>
           {f.dealQuality}
         </span>
@@ -258,16 +258,16 @@ export function FlightComparisonModal({
   return (
     <Modal isOpen onClose={onClose} title={`Compare Flights: ${origin.toUpperCase()} → ${destination.toUpperCase()}`} size="xl">
       <div className="-mx-6 -my-4">
-        <p className="px-6 pt-2 pb-4 text-xs text-white/40">{departDate}</p>
+        <p className="px-6 pt-2 pb-4 text-xs text-pen-3">{departDate}</p>
         <div className="overflow-x-auto">
           <table className="w-full border-collapse text-left">
             <thead>
               <tr>
-                <th className="sticky left-0 z-10 px-4 py-3 text-xs font-medium text-white/40 uppercase tracking-wider" style={{ background: 'rgba(28,25,23,0.95)', minWidth: 120 }}>
+                <th className="sticky left-0 z-10 px-4 py-3 text-xs font-medium text-pen-3 uppercase tracking-wider" style={{ background: 'rgba(28,25,23,0.95)', minWidth: 120 }}>
                   Attribute
                 </th>
                 {flights.map((f) => (
-                  <th key={f.id} className="px-4 py-3 text-center text-xs font-medium text-white/40 uppercase tracking-wider" style={{ minWidth: 140 }}>
+                  <th key={f.id} className="px-4 py-3 text-center text-xs font-medium text-pen-3 uppercase tracking-wider" style={{ minWidth: 140 }}>
                     {f.airline}
                   </th>
                 ))}
@@ -277,7 +277,7 @@ export function FlightComparisonModal({
               {rows.map((row) => (
                 <tr key={row.label} className="border-t border-white/[0.05]">
                   <td className="sticky left-0 z-10 px-4 py-3" style={{ background: 'rgba(28,25,23,0.95)' }}>
-                    <div className="flex items-center gap-2 text-white/60">
+                    <div className="flex items-center gap-2 text-pen-2">
                       {row.icon}
                       <span className="text-xs font-medium">{row.label}</span>
                     </div>
@@ -290,7 +290,7 @@ export function FlightComparisonModal({
                         className={`px-4 py-3 text-center ${
                           isHighlighted
                             ? 'text-emerald-300'
-                            : 'text-white/80'
+                            : 'text-pen-1/80'
                         }`}
                         style={isHighlighted ? { background: 'rgba(16,185,129,0.06)' } : undefined}
                       >

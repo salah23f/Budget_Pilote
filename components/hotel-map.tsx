@@ -49,7 +49,7 @@ function ensureMarkerStyles() {
   style.textContent = `
     .hotel-price-marker {
       background: #1C1917;
-      border: 2px solid rgba(245,158,11,0.5);
+      border: 2px solid var(--accent-soft);
       border-radius: 12px;
       padding: 3px 8px;
       font-size: 11px;
@@ -63,12 +63,12 @@ function ensureMarkerStyles() {
     }
     .hotel-price-marker:hover {
       transform: scale(1.15);
-      border-color: #D4A24C;
+      border-color: var(--accent);
       z-index: 1000 !important;
     }
     .hotel-price-marker.selected {
-      background: linear-gradient(135deg, #D4A24C, #F97316);
-      border-color: #D4A24C;
+      background: var(--accent);
+      border-color: var(--accent);
       color: white;
       transform: scale(1.2);
       z-index: 1000 !important;
@@ -169,7 +169,7 @@ export function HotelMap({ hotels, selectedId, onSelect, className = '' }: Hotel
         `<div style="font-family:Inter,system-ui;min-width:160px">
           <strong style="font-size:13px">${hotel.name}</strong><br/>
           <span style="color:#888;font-size:11px">${'★'.repeat(hotel.stars)} · ${hotel.rating.toFixed(1)}</span><br/>
-          <span style="font-size:15px;font-weight:700;color:#D4A24C">$${hotel.pricePerNight}</span>
+          <span style="font-size:15px;font-weight:700;color:var(--accent)">$${hotel.pricePerNight}</span>
           <span style="color:#888;font-size:11px"> / night</span>
         </div>`,
         { closeButton: false, className: 'hotel-popup' }
@@ -200,14 +200,14 @@ export function HotelMap({ hotels, selectedId, onSelect, className = '' }: Hotel
       />
       {!loaded && (
         <div className="absolute inset-0 flex items-center justify-center bg-[#1a1a1a]">
-          <div className="flex items-center gap-2 text-white/40 text-sm">
+          <div className="flex items-center gap-2 text-pen-3 text-sm">
             <div className="w-4 h-4 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
             Loading map...
           </div>
         </div>
       )}
       {/* Legend */}
-      <div className="absolute bottom-3 left-3 glass rounded-lg px-3 py-1.5 text-[10px] text-white/50">
+      <div className="absolute bottom-3 left-3 glass rounded-lg px-3 py-1.5 text-[10px] text-pen-2">
         {hotels.filter((h) => h.lat && h.lng).length} hotels on map
       </div>
     </div>

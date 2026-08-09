@@ -92,15 +92,15 @@ export function CurrencyConverter({
           type="number"
           value={amount}
           onChange={(e) => setAmount(Number(e.target.value) || 0)}
-          className="w-20 bg-transparent text-sm font-semibold text-white outline-none"
+          className="w-20 bg-transparent text-sm font-semibold text-pen-1 outline-none"
         />
-        <span className="text-xs text-white/30">{from}</span>
-        <button onClick={swap} className="text-white/30 hover:text-amber-400 transition">⇄</button>
+        <span className="text-xs text-pen-3">{from}</span>
+        <button onClick={swap} className="text-pen-3 hover:text-amber-400 transition">⇄</button>
         <span className="text-lg">{toInfo.flag}</span>
         <span className="text-sm font-bold text-amber-400">
           {toInfo.symbol}{converted.toFixed(2)}
         </span>
-        <span className="text-xs text-white/30">{to}</span>
+        <span className="text-xs text-pen-3">{to}</span>
       </div>
     );
   }
@@ -108,30 +108,30 @@ export function CurrencyConverter({
   return (
     <div className={`glass rounded-2xl p-5 space-y-4 ${className}`}>
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D4A24C" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M15 9.5c-.8-1-2-1.5-3-1.5s-2.5.7-2.5 2c0 2.5 5 1.5 5 4 0 1.3-1.2 2-2.5 2s-2.2-.5-3-1.5"/></svg>
+        <h3 className="text-sm font-semibold text-pen-1 flex items-center gap-2">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M15 9.5c-.8-1-2-1.5-3-1.5s-2.5.7-2.5 2c0 2.5 5 1.5 5 4 0 1.3-1.2 2-2.5 2s-2.2-.5-3-1.5"/></svg>
           Currency Converter
         </h3>
-        <span className="text-[10px] text-white/25">Approximate rates</span>
+        <span className="text-[10px] text-pen-3">Approximate rates</span>
       </div>
 
       <div className="flex items-center gap-3">
         {/* From */}
         <div className="flex-1 space-y-1.5">
-          <label className="text-[10px] text-white/35 font-medium">FROM</label>
-          <div className="flex items-center gap-2 rounded-xl p-3" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+          <label className="text-[10px] text-pen-1/35 font-medium">FROM</label>
+          <div className="flex items-center gap-2 rounded-xl p-3" style={{ background: 'var(--ink-800)', border: '1px solid var(--ink-800)' }}>
             <span className="text-lg">{fromInfo.flag}</span>
             <input
               type="number"
               value={amount}
               onChange={(e) => setAmount(Number(e.target.value) || 0)}
-              className="flex-1 bg-transparent text-lg font-bold text-white outline-none min-w-0"
+              className="flex-1 bg-transparent text-lg font-bold text-pen-1 outline-none min-w-0"
               min={0}
             />
             <select
               value={from}
               onChange={(e) => setFrom(e.target.value)}
-              className="bg-transparent text-xs font-semibold text-white/60 outline-none cursor-pointer"
+              className="bg-transparent text-xs font-semibold text-pen-2 outline-none cursor-pointer"
             >
               {currencies.map((c) => (
                 <option key={c} value={c} style={{ background: '#1C1917' }}>
@@ -145,7 +145,7 @@ export function CurrencyConverter({
         {/* Swap button */}
         <button
           onClick={swap}
-          className="mt-6 w-10 h-10 rounded-xl glass flex items-center justify-center text-white/40 hover:text-amber-400 hover:bg-amber-500/5 transition btn-press"
+          className="mt-6 w-10 h-10 rounded-xl glass flex items-center justify-center text-pen-3 hover:text-amber-400 hover:bg-amber-500/5 transition btn-press"
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M7 16l-4-4 4-4" /><path d="M17 8l4 4-4 4" />
@@ -155,8 +155,8 @@ export function CurrencyConverter({
 
         {/* To */}
         <div className="flex-1 space-y-1.5">
-          <label className="text-[10px] text-white/35 font-medium">TO</label>
-          <div className="flex items-center gap-2 rounded-xl p-3" style={{ background: 'rgba(245,158,11,0.05)', border: '1px solid rgba(245,158,11,0.15)' }}>
+          <label className="text-[10px] text-pen-1/35 font-medium">TO</label>
+          <div className="flex items-center gap-2 rounded-xl p-3" style={{ background: 'var(--accent-soft)', border: '1px solid var(--accent-soft)' }}>
             <span className="text-lg">{toInfo.flag}</span>
             <span className="flex-1 text-lg font-bold text-amber-400">
               {converted < 0.01 ? converted.toFixed(4) : converted < 100 ? converted.toFixed(2) : Math.round(converted).toLocaleString()}
@@ -164,7 +164,7 @@ export function CurrencyConverter({
             <select
               value={to}
               onChange={(e) => setTo(e.target.value)}
-              className="bg-transparent text-xs font-semibold text-white/60 outline-none cursor-pointer"
+              className="bg-transparent text-xs font-semibold text-pen-2 outline-none cursor-pointer"
             >
               {currencies.map((c) => (
                 <option key={c} value={c} style={{ background: '#1C1917' }}>
@@ -177,7 +177,7 @@ export function CurrencyConverter({
       </div>
 
       {/* Rate display */}
-      <p className="text-[11px] text-white/30 text-center">
+      <p className="text-[11px] text-pen-3 text-center">
         1 {from} = {rate < 0.01 ? rate.toFixed(4) : rate.toFixed(4)} {to}
       </p>
     </div>

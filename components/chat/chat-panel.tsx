@@ -73,7 +73,7 @@ function renderInline(t: string): React.ReactNode {
   return parts.map((p, i) => {
     if (p.startsWith('**') && p.endsWith('**')) {
       return (
-        <strong key={i} className="font-semibold text-white">
+        <strong key={i} className="font-semibold text-pen-1">
           {p.slice(2, -2)}
         </strong>
       );
@@ -139,8 +139,8 @@ function saveHistory(messages: Message[]) {
 /* ── Result Card Component ── */
 
 function ResultCardView({ card, featured }: { card: ResultCard; featured?: boolean }) {
-  const borderColor = featured ? 'rgba(245,158,11,0.35)' : 'rgba(255,255,255,0.08)';
-  const bg = featured ? 'rgba(245,158,11,0.07)' : 'rgba(255,255,255,0.03)';
+  const borderColor = featured ? 'var(--accent-soft)' : 'var(--ink-800)';
+  const bg = featured ? 'var(--accent-soft)' : 'var(--ink-800)';
 
   if (card.kind === 'flight') {
     return (
@@ -148,32 +148,32 @@ function ResultCardView({ card, featured }: { card: ResultCard; featured?: boole
         <div className="flex items-center justify-between gap-2">
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1.5">
-              <span className="text-[12px] font-semibold text-white truncate">{card.airline}</span>
+              <span className="text-[12px] font-semibold text-pen-1 truncate">{card.airline}</span>
               {featured && (
                 <span className="text-[8px] px-1 py-0.5 rounded bg-[color-mix(in_srgb,var(--flyeas-accent)_25%,transparent)] text-[var(--flyeas-accent)] font-bold uppercase tracking-wider">
                   Best
                 </span>
               )}
               {card.flightNumber && (
-                <span className="text-[10px] text-white/35 font-mono">{card.flightNumber}</span>
+                <span className="text-[10px] text-pen-1/35 font-mono">{card.flightNumber}</span>
               )}
             </div>
-            <div className="flex items-center gap-1.5 mt-0.5 text-[10px] text-white/55">
-              <span className="font-semibold text-white/80">{card.from}</span>
-              {card.departure && <span className="text-white/30">{formatClock(card.departure)}</span>}
-              <span className="text-white/20">{'\u2192'}</span>
-              <span className="font-semibold text-white/80">{card.to}</span>
-              {card.arrival && <span className="text-white/30">{formatClock(card.arrival)}</span>}
+            <div className="flex items-center gap-1.5 mt-0.5 text-[10px] text-pen-1/55">
+              <span className="font-semibold text-pen-1/80">{card.from}</span>
+              {card.departure && <span className="text-pen-3">{formatClock(card.departure)}</span>}
+              <span className="text-pen-3">{'\u2192'}</span>
+              <span className="font-semibold text-pen-1/80">{card.to}</span>
+              {card.arrival && <span className="text-pen-3">{formatClock(card.arrival)}</span>}
             </div>
-            <div className="flex items-center gap-1.5 mt-0.5 text-[10px] text-white/40">
+            <div className="flex items-center gap-1.5 mt-0.5 text-[10px] text-pen-3">
               <span>{formatDur(card.durationMinutes)}</span>
               <span>{'\u00B7'}</span>
               <span>{card.stops === 0 ? 'Nonstop' : `${card.stops} stop`}</span>
             </div>
           </div>
           <div className="text-right flex-shrink-0">
-            <p className="text-base font-bold text-white leading-none">${card.priceUsd}</p>
-            <p className="text-[9px] text-white/35 mt-0.5">per person</p>
+            <p className="text-base font-bold text-pen-1 leading-none">${card.priceUsd}</p>
+            <p className="text-[9px] text-pen-1/35 mt-0.5">per person</p>
           </div>
         </div>
       </div>
@@ -185,7 +185,7 @@ function ResultCardView({ card, featured }: { card: ResultCard; featured?: boole
       <div className="flex items-center justify-between gap-2">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5">
-            <span className="text-[12px] font-semibold text-white truncate">{card.name}</span>
+            <span className="text-[12px] font-semibold text-pen-1 truncate">{card.name}</span>
             {featured && (
               <span className="text-[8px] px-1 py-0.5 rounded bg-[color-mix(in_srgb,var(--flyeas-accent)_25%,transparent)] text-[var(--flyeas-accent)] font-bold uppercase tracking-wider">
                 Top
@@ -197,19 +197,19 @@ function ResultCardView({ card, featured }: { card: ResultCard; featured?: boole
             {card.guestRating ? (
               <span className="text-emerald-300 font-semibold">
                 {card.guestRating}/10
-                {card.reviewCount ? <span className="text-white/40 font-normal ml-0.5">({card.reviewCount})</span> : null}
+                {card.reviewCount ? <span className="text-pen-3 font-normal ml-0.5">({card.reviewCount})</span> : null}
               </span>
             ) : null}
           </div>
           {card.address && (
-            <p className="text-[10px] text-white/35 mt-0.5 truncate">{card.address}</p>
+            <p className="text-[10px] text-pen-1/35 mt-0.5 truncate">{card.address}</p>
           )}
         </div>
         <div className="text-right flex-shrink-0">
-          <p className="text-base font-bold text-white leading-none">
+          <p className="text-base font-bold text-pen-1 leading-none">
             ${card.pricePerNight || card.totalPrice}
           </p>
-          <p className="text-[9px] text-white/35 mt-0.5">{card.pricePerNight ? 'per night' : 'total'}</p>
+          <p className="text-[9px] text-pen-1/35 mt-0.5">{card.pricePerNight ? 'per night' : 'total'}</p>
         </div>
       </div>
     </div>
@@ -225,7 +225,7 @@ function PlaneIcon({ size = 16 }: { size?: number }) {
       height={size}
       viewBox="0 0 24 24"
       fill="none"
-      stroke="#D4A24C"
+      stroke="var(--accent)"
       strokeWidth="1.8"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -253,8 +253,8 @@ function TypingIndicator() {
         <div
           className="flex items-center gap-2 rounded-2xl rounded-bl-md px-4 py-3"
           style={{
-            background: 'rgba(255,255,255,0.03)',
-            border: '1px solid rgba(255,255,255,0.06)',
+            background: 'var(--ink-800)',
+            border: '1px solid var(--ink-800)',
           }}
         >
           <div className="flex gap-1 items-center">
@@ -262,7 +262,7 @@ function TypingIndicator() {
             <div className="w-2 h-2 rounded-full bg-white/30 animate-bounce" style={{ animationDelay: '150ms' }} />
             <div className="w-2 h-2 rounded-full bg-white/30 animate-bounce" style={{ animationDelay: '300ms' }} />
           </div>
-          <span className="text-[11px] text-white/30 ml-1">Searching...</span>
+          <span className="text-[11px] text-pen-3 ml-1">Searching...</span>
         </div>
       </div>
     </div>
@@ -441,12 +441,12 @@ export default function ChatPanel() {
           }}
           aria-label="Open AI assistant"
         >
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#D4A24C" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
             <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
           </svg>
           <span
-            className="absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-[#09090B]"
-            style={{ background: '#22c55e' }}
+            className="absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-ink-950"
+            style={{ background: 'var(--success)' }}
           />
         </button>
       )}
@@ -464,10 +464,10 @@ export default function ChatPanel() {
         <div
           className="fixed z-50 flex flex-col inset-0 md:inset-auto md:bottom-6 md:right-6 md:w-[400px] md:h-[600px] md:max-h-[calc(100vh-3rem)] md:rounded-2xl overflow-hidden"
           style={{
-            background: 'rgba(9,9,11,0.98)',
+            background: 'var(--ink-800)',
             backdropFilter: 'blur(24px)',
             WebkitBackdropFilter: 'blur(24px)',
-            border: '1px solid rgba(255,255,255,0.06)',
+            border: '1px solid var(--ink-800)',
             boxShadow: '0 25px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(212,162,76,0.05)',
             animation: 'flyeas-slide-up 0.35s cubic-bezier(0.16,1,0.3,1)',
           }}
@@ -475,7 +475,7 @@ export default function ChatPanel() {
           {/* Header */}
           <div
             className="flex items-center justify-between px-5 py-4 flex-shrink-0"
-            style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}
+            style={{ borderBottom: '1px solid var(--ink-800)' }}
           >
             <div className="flex items-center gap-3">
               <div
@@ -488,21 +488,21 @@ export default function ChatPanel() {
                 <PlaneIcon size={20} />
               </div>
               <div>
-                <h2 className="text-sm font-semibold text-white">{t('chat.title')}</h2>
+                <h2 className="text-sm font-semibold text-pen-1">{t('chat.title')}</h2>
                 <div className="flex items-center gap-1.5">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                  <span className="text-[11px] text-white/40">{t('chat.subtitle')}</span>
+                  <span className="text-[11px] text-pen-3">{t('chat.subtitle')}</span>
                 </div>
               </div>
             </div>
             <div className="flex items-center gap-1">
               <button
                 onClick={clearChat}
-                className="flex h-8 w-8 items-center justify-center rounded-lg hover:bg-white/5 transition"
+                className="flex h-8 w-8 items-center justify-center rounded-lg hover:bg-ink-600 transition"
                 aria-label={t('chat.clearChat')}
                 title={t('chat.clearChat')}
               >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--pen-3)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M3 6h18" />
                   <path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2" />
                   <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" />
@@ -512,10 +512,10 @@ export default function ChatPanel() {
               </button>
               <button
                 onClick={() => setOpen(false)}
-                className="flex h-8 w-8 items-center justify-center rounded-lg hover:bg-white/5 transition"
+                className="flex h-8 w-8 items-center justify-center rounded-lg hover:bg-ink-600 transition"
                 aria-label={t('chat.close')}
               >
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" strokeLinecap="round">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--pen-2)" strokeWidth="1.5" strokeLinecap="round">
                   <path d="M4 4l8 8M12 4l-8 8" />
                 </svg>
               </button>
@@ -540,10 +540,10 @@ export default function ChatPanel() {
                       </div>
                     ) : (
                       <div
-                        className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full text-[10px] font-bold text-white/70"
+                        className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full text-[10px] font-bold text-pen-2"
                         style={{
-                          background: 'rgba(255,255,255,0.08)',
-                          border: '1px solid rgba(255,255,255,0.12)',
+                          background: 'var(--ink-800)',
+                          border: '1px solid var(--line-2)',
                         }}
                       >
                         U
@@ -562,9 +562,9 @@ export default function ChatPanel() {
                               color: 'white',
                             }
                           : {
-                              background: 'rgba(255,255,255,0.03)',
-                              border: '1px solid rgba(255,255,255,0.06)',
-                              color: 'rgba(255,255,255,0.85)',
+                              background: 'var(--ink-800)',
+                              border: '1px solid var(--ink-800)',
+                              color: 'var(--pen-2)',
                             }
                       }
                     >
@@ -573,7 +573,7 @@ export default function ChatPanel() {
                         <div
                           className="mt-1.5 text-[10px]"
                           style={{
-                            color: 'rgba(255,255,255,0.25)',
+                            color: 'var(--pen-3)',
                             textAlign: msg.role === 'user' ? 'right' : 'left',
                           }}
                         >
@@ -605,7 +605,7 @@ export default function ChatPanel() {
                           border: '1px solid rgba(212,162,76,0.15)',
                           backdropFilter: 'blur(8px)',
                           WebkitBackdropFilter: 'blur(8px)',
-                          color: '#D4A24C',
+                          color: 'var(--accent)',
                         }}
                       >
                         {a}
@@ -631,11 +631,11 @@ export default function ChatPanel() {
                   disabled={loading}
                   className="rounded-full px-3 py-1.5 text-xs font-medium transition hover:bg-white/[0.06] disabled:opacity-40"
                   style={{
-                    background: 'rgba(255,255,255,0.03)',
-                    border: '1px solid rgba(255,255,255,0.08)',
+                    background: 'var(--ink-800)',
+                    border: '1px solid var(--ink-800)',
                     backdropFilter: 'blur(8px)',
                     WebkitBackdropFilter: 'blur(8px)',
-                    color: 'rgba(255,255,255,0.55)',
+                    color: 'var(--pen-2)',
                   }}
                 >
                   {action}
@@ -649,8 +649,8 @@ export default function ChatPanel() {
             <div
               className="flex items-end gap-2 rounded-2xl px-3 py-2 transition-all focus-within:border-[rgba(212,162,76,0.3)]"
               style={{
-                background: 'rgba(255,255,255,0.04)',
-                border: '1px solid rgba(255,255,255,0.08)',
+                background: 'var(--ink-800)',
+                border: '1px solid var(--ink-800)',
                 backdropFilter: 'blur(8px)',
                 WebkitBackdropFilter: 'blur(8px)',
               }}
@@ -664,7 +664,7 @@ export default function ChatPanel() {
                 rows={1}
                 autoComplete="off"
                 spellCheck={true}
-                className="flex-1 bg-transparent text-sm text-white placeholder:text-white/25 outline-none resize-none py-1.5 leading-5 max-h-[140px]"
+                className="flex-1 bg-transparent text-sm text-pen-1 placeholder:text-pen-3 outline-none resize-none py-1.5 leading-5 max-h-[140px]"
                 style={{ fontFamily: 'inherit' }}
               />
               <button
@@ -675,8 +675,8 @@ export default function ChatPanel() {
                 style={{
                   background:
                     input.trim() && !loading
-                      ? 'linear-gradient(135deg, #D4A24C, #F97316)'
-                      : 'rgba(255,255,255,0.04)',
+                      ? 'var(--accent)'
+                      : 'var(--ink-800)',
                   border: '1px solid transparent',
                 }}
                 aria-label="Send message"
@@ -689,7 +689,7 @@ export default function ChatPanel() {
                     height="16"
                     viewBox="0 0 24 24"
                     fill="none"
-                    stroke={input.trim() ? 'white' : 'rgba(255,255,255,0.4)'}
+                    stroke={input.trim() ? 'white' : 'var(--pen-3)'}
                     strokeWidth="2.2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -699,7 +699,7 @@ export default function ChatPanel() {
                 )}
               </button>
             </div>
-            <p className="text-[10px] text-white/20 text-center mt-2 hidden md:block">
+            <p className="text-[10px] text-pen-3 text-center mt-2 hidden md:block">
               Enter to send · Shift+Enter for new line
             </p>
           </div>

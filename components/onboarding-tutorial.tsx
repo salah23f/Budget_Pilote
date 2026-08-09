@@ -14,7 +14,7 @@ const slides = [
     ),
     title: 'Find the cheapest flights',
     desc: 'Compare 400+ airlines in real-time. Our AI finds deals you won\'t see anywhere else.',
-    color: '#D4A24C',
+    color: 'var(--accent)',
   },
   {
     icon: (
@@ -26,7 +26,7 @@ const slides = [
     ),
     title: 'Set price missions',
     desc: 'Tell us your target price. We monitor 24/7 and alert you the instant it drops.',
-    color: '#EF4444',
+    color: 'var(--danger)',
   },
   {
     icon: (
@@ -36,7 +36,7 @@ const slides = [
     ),
     title: 'Save up to 40%',
     desc: 'Track your savings, earn rewards, and share deals with friends.',
-    color: '#10B981',
+    color: 'var(--success)',
   },
 ];
 
@@ -88,8 +88,8 @@ export function OnboardingTutorial() {
               {slide.icon}
             </div>
 
-            <h2 className="text-2xl font-bold text-white mb-3">{slide.title}</h2>
-            <p className="text-white/50 text-[15px] leading-relaxed max-w-xs">{slide.desc}</p>
+            <h2 className="text-2xl font-bold text-pen-1 mb-3">{slide.title}</h2>
+            <p className="text-pen-2 text-[15px] leading-relaxed max-w-xs">{slide.desc}</p>
           </motion.div>
         </AnimatePresence>
 
@@ -104,7 +104,7 @@ export function OnboardingTutorial() {
                 width: i === step ? 24 : 8,
                 height: 8,
                 borderRadius: 4,
-                background: i === step ? slide.color : 'rgba(255,255,255,0.15)',
+                background: i === step ? slide.color : 'var(--line-2)',
               }}
             />
           ))}
@@ -114,13 +114,13 @@ export function OnboardingTutorial() {
         <div className="flex flex-col gap-3">
           <button
             onClick={next}
-            className="w-full py-3.5 rounded-2xl text-sm font-semibold text-white transition-transform active:scale-[0.97]"
+            className="w-full py-3.5 rounded-2xl text-sm font-semibold text-pen-1 transition-transform active:scale-[0.97]"
             style={{ background: `linear-gradient(135deg, ${slide.color}, ${slide.color}cc)`, boxShadow: `0 8px 30px ${slide.color}30` }}
           >
             {step === slides.length - 1 ? 'Get Started' : 'Next'}
           </button>
           {step < slides.length - 1 && (
-            <button onClick={dismiss} className="text-white/30 text-sm hover:text-white/50 transition-colors">
+            <button onClick={dismiss} className="text-pen-3 text-sm hover:text-pen-2 transition-colors">
               Skip
             </button>
           )}

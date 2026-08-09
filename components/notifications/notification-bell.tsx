@@ -80,14 +80,14 @@ function getTypeIcon(type: Notification['type']) {
     case 'mission':
     case 'mission_created':
       return (
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#f59e0b" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="8" cy="8" r="6" />
           <circle cx="8" cy="8" r="2" />
         </svg>
       );
     case 'price_drop':
       return (
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--flyeas-accent, #D4A24C)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--flyeas-accent, var(--accent))" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M12 3L8 10 4 3" />
           <path d="M4 13h8" />
         </svg>
@@ -102,7 +102,7 @@ function getTypeIcon(type: Notification['type']) {
     case 'booking':
     case 'booking_confirmed':
       return (
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#22c55e" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--success)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="8" cy="8" r="6" />
           <path d="M5.5 8l2 2 3.5-4" />
         </svg>
@@ -129,13 +129,13 @@ function getTypeIcon(type: Notification['type']) {
 function getTypeColor(type: Notification['type']) {
   switch (type) {
     case 'price_drop':
-      return 'color-mix(in srgb, var(--flyeas-accent, #D4A24C) 12%, transparent)';
+      return 'color-mix(in srgb, var(--flyeas-accent, var(--accent)) 12%, transparent)';
     case 'booking':
     case 'booking_confirmed':
-      return 'rgba(34,197,94,0.12)';
+      return 'var(--success-soft)';
     case 'mission':
     case 'mission_created':
-      return 'color-mix(in srgb, var(--flyeas-accent, #D4A24C) 12%, transparent)';
+      return 'color-mix(in srgb, var(--flyeas-accent, var(--accent)) 12%, transparent)';
     case 'proposal':
       return 'rgba(96,165,250,0.12)';
     case 'wallet':
@@ -267,7 +267,7 @@ export default function NotificationBell() {
       {/* Bell button */}
       <button
         onClick={() => setOpen(!open)}
-        className="relative flex h-9 w-9 items-center justify-center rounded-lg transition-colors hover:bg-white/5"
+        className="relative flex h-9 w-9 items-center justify-center rounded-lg transition-colors hover:bg-ink-600"
         aria-label="Notifications"
       >
         <svg
@@ -275,7 +275,7 @@ export default function NotificationBell() {
           height="20"
           viewBox="0 0 20 20"
           fill="none"
-          stroke="rgba(255,255,255,0.7)"
+          stroke="var(--pen-2)"
           strokeWidth="1.5"
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -285,9 +285,9 @@ export default function NotificationBell() {
         </svg>
         {unreadCount > 0 && (
           <span
-            className="absolute -top-0.5 -right-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full px-1 text-[10px] font-bold text-white"
+            className="absolute -top-0.5 -right-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full px-1 text-[10px] font-bold text-pen-1"
             style={{
-              background: 'linear-gradient(135deg, #ef4444, #dc2626)',
+              background: 'var(--danger)',
               boxShadow: '0 2px 8px rgba(239,68,68,0.4)',
             }}
           >
@@ -304,7 +304,7 @@ export default function NotificationBell() {
             background: 'rgba(12, 10, 9, 0.97)',
             backdropFilter: 'blur(24px)',
             WebkitBackdropFilter: 'blur(24px)',
-            border: '1px solid rgba(255,255,255,0.08)',
+            border: '1px solid var(--ink-800)',
             boxShadow: '0 16px 48px rgba(0,0,0,0.5)',
             animation: 'fadeIn 0.2s ease',
           }}
@@ -312,14 +312,14 @@ export default function NotificationBell() {
           {/* Header */}
           <div
             className="flex items-center justify-between px-4 py-3"
-            style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}
+            style={{ borderBottom: '1px solid var(--ink-800)' }}
           >
-            <h3 className="text-sm font-semibold text-white">Notifications</h3>
+            <h3 className="text-sm font-semibold text-pen-1">Notifications</h3>
             {unreadCount > 0 && (
               <button
                 onClick={markAllRead}
                 className="text-xs font-medium transition-colors hover:text-amber-300"
-                style={{ color: 'var(--flyeas-accent, #D4A24C)' }}
+                style={{ color: 'var(--flyeas-accent, var(--accent))' }}
               >
                 Mark all as read
               </button>
@@ -341,8 +341,8 @@ export default function NotificationBell() {
                   onClick={() => markRead(n.id)}
                   className="flex w-full items-start gap-3 px-4 py-3 text-left transition-colors hover:bg-white/[0.03]"
                   style={{
-                    borderBottom: '1px solid rgba(255,255,255,0.04)',
-                    background: n.read ? 'transparent' : 'color-mix(in srgb, var(--flyeas-accent, #D4A24C) 3%, transparent)',
+                    borderBottom: '1px solid var(--ink-800)',
+                    background: n.read ? 'transparent' : 'color-mix(in srgb, var(--flyeas-accent, var(--accent)) 3%, transparent)',
                   }}
                 >
                   {/* Type icon */}
@@ -359,7 +359,7 @@ export default function NotificationBell() {
                       <p
                         className="truncate text-sm"
                         style={{
-                          color: n.read ? 'rgba(255,255,255,0.6)' : 'white',
+                          color: n.read ? 'var(--pen-2)' : 'white',
                           fontWeight: n.read ? 400 : 500,
                         }}
                       >
@@ -368,19 +368,19 @@ export default function NotificationBell() {
                       {!n.read && (
                         <span
                           className="h-2 w-2 flex-shrink-0 rounded-full"
-                          style={{ background: 'var(--flyeas-accent, #D4A24C)' }}
+                          style={{ background: 'var(--flyeas-accent, var(--accent))' }}
                         />
                       )}
                     </div>
                     <p
                       className="mt-0.5 truncate text-xs"
-                      style={{ color: 'rgba(255,255,255,0.4)' }}
+                      style={{ color: 'var(--pen-3)' }}
                     >
                       {n.body}
                     </p>
                     <p
                       className="mt-1 text-[10px]"
-                      style={{ color: 'rgba(255,255,255,0.25)' }}
+                      style={{ color: 'var(--pen-3)' }}
                     >
                       {timeAgo(n.timestamp)}
                     </p>
@@ -393,12 +393,12 @@ export default function NotificationBell() {
           {/* Footer */}
           <div
             className="px-4 py-2.5 text-center"
-            style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}
+            style={{ borderTop: '1px solid var(--ink-800)' }}
           >
             <a
               href="/settings"
               className="text-xs font-medium transition-colors hover:text-amber-300"
-              style={{ color: 'rgba(255,255,255,0.4)' }}
+              style={{ color: 'var(--pen-3)' }}
             >
               View all notifications
             </a>
