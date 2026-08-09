@@ -105,9 +105,16 @@ export function PhotoGallery({
 
   const current = photos[index];
 
+  // The slides are absolutely positioned, so the root has no intrinsic
+  // height: it only gets one from `relative` inside a sized parent, or from
+  // the caller positioning it. Emitting `relative` unconditionally fights a
+  // caller-supplied `absolute inset-0` — the root then sits in normal flow
+  // with no content, collapses to zero, and takes every slide with it.
+  const positionedByCaller = /\b(absolute|fixed|sticky)\b/.test(className);
+
   return (
     <div
-      className={`group relative overflow-hidden bg-ink-600 ${className}`}
+      className={`group ${positionedByCaller ? '' : 'relative'} overflow-hidden bg-ink-600 ${className}`}
       role="region"
       aria-roledescription="carousel"
       aria-label={label}

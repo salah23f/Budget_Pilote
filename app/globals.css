@@ -267,6 +267,14 @@ input:focus, select:focus, textarea:focus {
   border-color: var(--line-2) !important;
 }
 
+/* Text laid over imagery: always light, in both themes. Uses its own class
+   so the light-mode compat layer above (which rewrites .text-white to ink)
+   never touches it — a caption on a photo must stay legible on the photo,
+   not follow the page background. */
+.on-media { color: #fff; }
+.on-media-soft { color: rgba(255, 255, 255, 0.82); }
+.on-media-faint { color: rgba(255, 255, 255, 0.6); }
+
 /* Primary button — solid accent, no glow, no shimmer */
 .premium-button {
   background: var(--accent);

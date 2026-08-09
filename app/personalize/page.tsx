@@ -69,7 +69,7 @@ const TRAVEL_STYLES: Array<{
     title: 'Luxury',
     subtitle: 'First class, five stars, nothing less',
     icon: Crown,
-    gradient: 'linear-gradient(135deg, #D4A24C, #DFAE5B)',
+    gradient: 'linear-gradient(135deg, var(--accent), var(--accent-hover))',
     photo: '/travel-styles/luxury.jpg',
     description: "We'll prioritize business class, 5-star hotels & private transfers",
   },
@@ -188,17 +188,17 @@ export default function PersonalizePage() {
     (step === 2 && missionIntent !== null);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#09090B]">
+    <div className="min-h-screen flex flex-col bg-ink-950">
       {/* Celebration overlay */}
       {celebrating && <CelebrationOverlay />}
 
       {/* Progress bar */}
-      <div className="fixed top-0 left-0 right-0 z-40 h-0.5 bg-white/5">
+      <div className="fixed top-0 left-0 right-0 z-40 h-0.5 bg-ink-600">
         <div
           className="h-full transition-all duration-500 ease-out"
           style={{
             width: `${((step + 1) / totalSteps) * 100}%`,
-            background: 'linear-gradient(90deg, #D4A24C, #DFAE5B)',
+            background: 'linear-gradient(90deg, var(--accent), var(--accent-hover))',
           }}
         />
       </div>
@@ -208,13 +208,13 @@ export default function PersonalizePage() {
         <div className="flex items-center gap-2">
           <div
             className="flex h-7 w-7 items-center justify-center rounded-lg"
-            style={{ background: 'linear-gradient(135deg, #D4A24C, #DFAE5B)' }}
+            style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}
           >
-            <Plane className="w-3.5 h-3.5 text-white" strokeWidth={2.2} />
+            <Plane className="w-3.5 h-3.5 text-pen-1" strokeWidth={2.2} />
           </div>
-          <span className="text-sm font-bold text-white">Flyeas</span>
+          <span className="text-sm font-bold text-pen-1">Flyeas</span>
         </div>
-        <div className="flex items-center gap-2 text-[11px] text-white/40">
+        <div className="flex items-center gap-2 text-[11px] text-pen-1/40">
           <span>Step {step + 1} of {totalSteps}</span>
         </div>
       </div>
@@ -251,7 +251,7 @@ export default function PersonalizePage() {
         <button
           onClick={goBack}
           disabled={step === 0}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm text-white/50 hover:text-white/80 hover:bg-white/5 transition disabled:opacity-0 disabled:pointer-events-none"
+          className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm text-pen-1/50 hover:text-pen-1/80 hover:bg-ink-600 transition disabled:opacity-0 disabled:pointer-events-none"
         >
           <ArrowLeft className="w-4 h-4" strokeWidth={1.8} />
           Back
@@ -263,9 +263,9 @@ export default function PersonalizePage() {
           className="flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold transition disabled:opacity-30 disabled:cursor-not-allowed"
           style={{
             background: canProceed
-              ? 'linear-gradient(135deg, #D4A24C, #DFAE5B)'
-              : 'rgba(255,255,255,0.06)',
-            color: canProceed ? 'white' : 'rgba(255,255,255,0.4)',
+              ? 'linear-gradient(135deg, var(--accent), var(--accent-hover))'
+              : 'var(--line-1)',
+            color: canProceed ? 'white' : 'var(--pen-2)',
           }}
         >
           {step === totalSteps - 1 ? "Let's go" : 'Continue'}
@@ -292,13 +292,13 @@ function StepTravelStyle({
   return (
     <div>
       <div className="text-center mb-10">
-        <p className="text-[10px] uppercase tracking-[0.2em] text-[#D4A24C] font-semibold mb-3">
+        <p className="text-[10px] uppercase tracking-[0.2em] text-[var(--accent)] font-semibold mb-3">
           1 of 3 · About you
         </p>
-        <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight leading-tight">
+        <h1 className="text-3xl md:text-4xl font-bold text-pen-1 tracking-tight leading-tight">
           Hey {userName || 'there'}, how do you travel?
         </h1>
-        <p className="text-sm text-white/50 mt-3 max-w-lg mx-auto">
+        <p className="text-sm text-pen-1/50 mt-3 max-w-lg mx-auto">
           Pick the closest match — we&apos;ll tune everything (prices, hotels, recommendations) to your vibe.
         </p>
       </div>
@@ -328,7 +328,7 @@ function StepTravelStyle({
               >
                 <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.7), transparent 60%)' }} />
                 {/* Photo credit — required by the CC BY-SA terms on some of these */}
-                <span className="absolute top-1 left-1 rounded px-1 py-px bg-ink-950/70 text-pen-2 text-[8px] leading-none pointer-events-none max-w-[80%] truncate">
+                <span className="absolute bottom-1 right-1 rounded px-1 py-px bg-black/45 on-media-faint text-[8px] leading-none pointer-events-none max-w-[80%] truncate">
                   {TRAVEL_STYLE_PHOTOS[t.id]?.credit}
                 </span>
                 {isSelected && (
@@ -336,12 +336,12 @@ function StepTravelStyle({
                     className="absolute top-3 right-3 flex h-6 w-6 items-center justify-center rounded-full"
                     style={{ background: 'var(--accent)' }}
                   >
-                    <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />
+                    <Check className="w-3.5 h-3.5 text-accent-ink" strokeWidth={3} />
                   </div>
                 )}
                 <div className="absolute bottom-3 left-3 right-3">
-                  <p className="text-body-lg font-semibold text-white">{t.title}</p>
-                  <p className="text-caption text-white/70 mt-0.5">{t.subtitle}</p>
+                  <p className="text-body-lg font-semibold on-media">{t.title}</p>
+                  <p className="text-caption on-media-soft mt-0.5">{t.subtitle}</p>
                 </div>
               </div>
               {/* Expanded description when selected */}
@@ -374,13 +374,13 @@ function StepDestinations({
   return (
     <div>
       <div className="text-center mb-8">
-        <p className="text-[10px] uppercase tracking-[0.2em] text-[#D4A24C] font-semibold mb-3">
+        <p className="text-[10px] uppercase tracking-[0.2em] text-[var(--accent)] font-semibold mb-3">
           2 of 3 · Your wishlist
         </p>
-        <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight leading-tight">
+        <h1 className="text-3xl md:text-4xl font-bold text-pen-1 tracking-tight leading-tight">
           Where do you dream of going?
         </h1>
-        <p className="text-sm text-white/50 mt-3 max-w-lg mx-auto">
+        <p className="text-sm text-pen-1/50 mt-3 max-w-lg mx-auto">
           Pick as many as you like — we&apos;ll watch prices on every route and ping you when they drop.
         </p>
       </div>
@@ -404,18 +404,18 @@ function StepDestinations({
               className="flex items-center gap-2 px-3.5 py-2 rounded-full text-sm transition-all"
               style={{
                 background: isSelected
-                  ? 'linear-gradient(135deg, rgba(232,163,23,0.15), rgba(249,115,22,0.08))'
-                  : 'rgba(255,255,255,0.03)',
+                  ? 'var(--accent-soft)'
+                  : 'var(--ink-900)',
                 border: isSelected
-                  ? '1px solid rgba(232,163,23,0.4)'
-                  : '1px solid rgba(255,255,255,0.08)',
-                color: isSelected ? 'white' : 'rgba(255,255,255,0.55)',
+                  ? '1px solid rgba(var(--accent-rgb) / 0.4)'
+                  : '1px solid var(--line-2)',
+                color: isSelected ? 'white' : 'var(--pen-2)',
               }}
             >
               <MapPin className="w-3.5 h-3.5" strokeWidth={isSelected ? 2 : 1.5} />
               {d.city}
               {isSelected && (
-                <Check className="w-3.5 h-3.5 text-[#D4A24C]" strokeWidth={2.5} />
+                <Check className="w-3.5 h-3.5 text-[var(--accent)]" strokeWidth={2.5} />
               )}
             </button>
           );
@@ -423,8 +423,8 @@ function StepDestinations({
       </div>
 
       {selected.length > 0 && (
-        <p className="text-xs text-white/50 text-center mt-6">
-          <span className="text-[#D4A24C] font-semibold">{selected.length}</span> destination{selected.length > 1 ? 's' : ''} selected · we&apos;ll start watching prices
+        <p className="text-xs text-pen-1/50 text-center mt-6">
+          <span className="text-[var(--accent)] font-semibold">{selected.length}</span> destination{selected.length > 1 ? 's' : ''} selected · we&apos;ll start watching prices
         </p>
       )}
     </div>
@@ -449,15 +449,15 @@ function StepFirstMission({
   return (
     <div>
       <div className="text-center mb-10">
-        <p className="text-[10px] uppercase tracking-[0.2em] text-[#D4A24C] font-semibold mb-3">
+        <p className="text-[10px] uppercase tracking-[0.2em] text-[var(--accent)] font-semibold mb-3">
           3 of 3 · Your first mission
         </p>
-        <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight leading-tight">
+        <h1 className="text-3xl md:text-4xl font-bold text-pen-1 tracking-tight leading-tight">
           Ready to unleash the AI?
         </h1>
-        <p className="text-sm text-white/50 mt-3 max-w-xl mx-auto">
+        <p className="text-sm text-pen-1/50 mt-3 max-w-xl mx-auto">
           AI missions watch prices 24/7 across 400+ airlines and auto-book the moment your target hits.
-          Set one up for <span className="text-white font-semibold">{topDest}</span> — or skip and explore first.
+          Set one up for <span className="text-pen-1 font-semibold">{topDest}</span> — or skip and explore first.
         </p>
       </div>
 
@@ -469,32 +469,32 @@ function StepFirstMission({
           style={{
             background: intent === 'create'
               ? 'linear-gradient(135deg, rgba(232,163,23,0.12), rgba(249,115,22,0.06))'
-              : 'rgba(255,255,255,0.02)',
+              : 'var(--ink-800)',
             border: intent === 'create'
-              ? '1px solid rgba(232,163,23,0.4)'
-              : '1px solid rgba(255,255,255,0.06)',
+              ? '1px solid rgba(var(--accent-rgb) / 0.4)'
+              : '1px solid var(--line-1)',
           }}
         >
           <div
             className="flex h-11 w-11 items-center justify-center rounded-xl mb-4"
-            style={{ background: 'linear-gradient(135deg, #D4A24C, #DFAE5B)' }}
+            style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}
           >
-            <Sparkles className="w-5 h-5 text-white" strokeWidth={1.8} />
+            <Sparkles className="w-5 h-5 text-pen-1" strokeWidth={1.8} />
           </div>
-          <p className="text-base font-bold text-white">Create my first mission</p>
-          <p className="text-xs text-white/55 mt-1 leading-relaxed">
+          <p className="text-base font-bold text-pen-1">Create my first mission</p>
+          <p className="text-xs text-pen-1/55 mt-1 leading-relaxed">
             Pick a destination, set a target price, and let the AI do the rest.
           </p>
-          <div className="flex items-center gap-1.5 mt-4 text-[11px] text-[#D4A24C] font-medium">
+          <div className="flex items-center gap-1.5 mt-4 text-[11px] text-[var(--accent)] font-medium">
             <Plane className="w-3 h-3" strokeWidth={2} />
             Opens the mission wizard
           </div>
           {intent === 'create' && (
             <div
               className="absolute top-3 right-3 flex h-6 w-6 items-center justify-center rounded-full"
-              style={{ background: 'linear-gradient(135deg, #D4A24C, #DFAE5B)' }}
+              style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}
             >
-              <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />
+              <Check className="w-3.5 h-3.5 text-accent-ink" strokeWidth={3} />
             </div>
           )}
         </button>
@@ -505,41 +505,41 @@ function StepFirstMission({
           className="group relative rounded-2xl p-6 text-left transition-all hover:-translate-y-0.5"
           style={{
             background: intent === 'later'
-              ? 'rgba(255,255,255,0.06)'
-              : 'rgba(255,255,255,0.02)',
+              ? 'var(--line-1)'
+              : 'var(--ink-800)',
             border: intent === 'later'
-              ? '1px solid rgba(255,255,255,0.2)'
-              : '1px solid rgba(255,255,255,0.06)',
+              ? '1px solid var(--pen-3)'
+              : '1px solid var(--line-1)',
           }}
         >
           <div
             className="flex h-11 w-11 items-center justify-center rounded-xl mb-4"
-            style={{ background: 'rgba(255,255,255,0.06)' }}
+            style={{ background: 'var(--line-1)' }}
           >
-            <Heart className="w-5 h-5 text-white/70" strokeWidth={1.8} />
+            <Heart className="w-5 h-5 text-pen-1/70" strokeWidth={1.8} />
           </div>
-          <p className="text-base font-bold text-white">Let me explore first</p>
-          <p className="text-xs text-white/55 mt-1 leading-relaxed">
+          <p className="text-base font-bold text-pen-1">Let me explore first</p>
+          <p className="text-xs text-pen-1/55 mt-1 leading-relaxed">
             Take me to the dashboard. I&apos;ll set up a mission when I&apos;m ready.
           </p>
-          <div className="flex items-center gap-1.5 mt-4 text-[11px] text-white/50 font-medium">
+          <div className="flex items-center gap-1.5 mt-4 text-[11px] text-pen-1/50 font-medium">
             <ArrowRight className="w-3 h-3" strokeWidth={2} />
             Straight to the dashboard
           </div>
           {intent === 'later' && (
             <div
               className="absolute top-3 right-3 flex h-6 w-6 items-center justify-center rounded-full"
-              style={{ background: 'rgba(255,255,255,0.2)' }}
+              style={{ background: 'var(--pen-3)' }}
             >
-              <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />
+              <Check className="w-3.5 h-3.5 text-accent-ink" strokeWidth={3} />
             </div>
           )}
         </button>
       </div>
 
-      <p className="text-center text-[11px] text-white/30 mt-6">
+      <p className="text-center text-[11px] text-pen-1/30 mt-6">
         Either way, you&apos;ll earn{' '}
-        <span className="text-[#D4A24C] font-semibold">+50 bonus points</span> for completing onboarding.
+        <span className="text-[var(--accent)] font-semibold">+50 bonus points</span> for completing onboarding.
       </p>
     </div>
   );
@@ -556,7 +556,7 @@ function CelebrationOverlay() {
       <div
         className="relative scale-in"
         style={{
-          background: 'linear-gradient(135deg, #D4A24C 0%, #DFAE5B 100%)',
+          background: 'linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%)',
           padding: '3rem 4rem',
           borderRadius: '28px',
           boxShadow: '0 40px 100px rgba(232,163,23,0.5)',
@@ -586,15 +586,15 @@ function CelebrationOverlay() {
         <div className="text-center">
           <div
             className="w-16 h-16 rounded-2xl mx-auto mb-3 flex items-center justify-center"
-            style={{ background: 'rgba(255,255,255,0.25)' }}
+            style={{ background: 'var(--pen-3)' }}
           >
-            <Sparkles className="w-8 h-8 text-white" strokeWidth={2} />
+            <Sparkles className="w-8 h-8 text-pen-1" strokeWidth={2} />
           </div>
-          <p className="text-[11px] uppercase tracking-[0.2em] text-white/80 font-semibold">
+          <p className="text-[11px] uppercase tracking-[0.2em] text-pen-1/80 font-semibold">
             Welcome aboard
           </p>
-          <p className="text-3xl font-bold text-white mt-2">+50 points</p>
-          <p className="text-sm text-white/80 mt-1">Your journey starts now</p>
+          <p className="text-3xl font-bold text-pen-1 mt-2">+50 points</p>
+          <p className="text-sm text-pen-1/80 mt-1">Your journey starts now</p>
         </div>
       </div>
     </div>
