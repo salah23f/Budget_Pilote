@@ -10,6 +10,12 @@ import { useLocale } from '@/lib/i18n';
 import {
   LayoutGrid,
   Plane,
+  Building2,
+  Users,
+  Heart,
+  Receipt,
+  Star,
+  Gift,
   Target,
   Plus,
   UserCircle,
@@ -19,20 +25,39 @@ import {
 } from 'lucide-react';
 import { Avatar } from '@/components/ui/avatar';
 
-// Missions-first navigation — the product IS the mission.
-// Hidden surfaces (flights, hotels, trip-builder, group-trip, rewards…)
-// stay routable by URL but are no longer promoted in the nav.
+// Missions-first navigation. The mission is the product, so it sits alone
+// at the top with the primary button above it — everything else is a way
+// to look things up, and lives under its own heading below.
+// Standalone car rental stays out by design: a car is part of a trip here,
+// not something sold on its own.
 const navSections = [
   {
-    label: 'Travel',
+    label: 'Missions',
     items: [
       { labelKey: 'sidebar.home', href: '/dashboard', icon: LayoutGrid },
       { labelKey: 'sidebar.missions', href: '/missions', icon: Target },
     ],
   },
   {
+    label: 'Search',
+    items: [
+      { labelKey: 'sidebar.flights', href: '/flights', icon: Plane },
+      { labelKey: 'sidebar.hotels', href: '/hotels', icon: Building2 },
+    ],
+  },
+  {
+    label: 'Trips',
+    items: [
+      { labelKey: 'sidebar.groupTrip', href: '/group-trip', icon: Users },
+      { labelKey: 'sidebar.favorites', href: '/favorites', icon: Heart },
+      { labelKey: 'sidebar.bookings', href: '/bookings', icon: Receipt },
+    ],
+  },
+  {
     label: 'You',
     items: [
+      { labelKey: 'sidebar.rewards', href: '/rewards', icon: Star },
+      { labelKey: 'sidebar.referral', href: '/referral', icon: Gift },
       { labelKey: 'sidebar.profile', href: '/account', icon: UserCircle },
       { labelKey: 'sidebar.settings', href: '/settings', icon: Settings },
     ],

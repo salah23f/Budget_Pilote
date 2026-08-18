@@ -612,7 +612,7 @@ function DoneScreen({
       <p className="text-body text-pen-2 mt-3 leading-relaxed">{t('flow.done.sub')}</p>
       <div className="mt-8 flex flex-col items-center gap-3">
         <Link
-          href={`/missions/${missionId}/pay`}
+          href={`/missions/${missionId}/cockpit`}
           className="premium-button inline-flex items-center justify-center rounded-md px-7 py-3 text-body font-semibold w-full sm:w-auto"
         >
           {t('flow.done.cta')}

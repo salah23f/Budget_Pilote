@@ -6,7 +6,7 @@ import {
   getProposal,
   updateProposal,
 } from '@/lib/store/missions-db';
-import { captureMissionHold } from '@/lib/payments/stripe';
+import { captureMissionHold, getHold } from '@/lib/payments/stripe';
 import {
   isEscrowConfigured,
   buildUserReleaseCallData,
@@ -44,6 +44,8 @@ export async function POST(
     const body = (await req.json().catch(() => ({}))) as {
       proposalId?: string;
       txHash?: string;
+      /** Set when the traveller paid for this offer through /book. */
+      paymentIntentId?: string;
     };
 
     const proposalId = body?.proposalId;
@@ -89,11 +91,74 @@ export async function POST(
     // Rail-specific confirmation
     // ----------------------------------------------------------------
     if (mission.paymentRail === 'stripe') {
+      // No hold means this is an ordinary mission: nothing was authorised
+      // when it started, and the traveller has just paid for this exact
+      // fare through /book. Verify that payment instead of capturing.
       if (!mission.stripePaymentIntentId) {
-        return NextResponse.json(
-          { success: false, error: 'Mission has no Stripe hold to capture' },
-          { status: 400 }
-        );
+        const paidIntentId = String(body?.paymentIntentId || '');
+        if (!paidIntentId) {
+          return NextResponse.json(
+            { success: false, error: 'Payment is required before confirming this offer.' },
+            { status: 402 }
+          );
+        }
+
+        let pi: Awaited<ReturnType<typeof getHold>>;
+        try {
+          pi = await getHold(paidIntentId);
+        } catch (err: any) {
+          return NextResponse.json(
+            { success: false, error: `Could not verify payment: ${err?.message || 'unknown error'}` },
+            { status: 502 }
+          );
+        }
+
+        // Every one of these must hold, or a caller could confirm a booking
+        // with somebody else's payment, a cheaper one, or one still pending.
+        const expectedCents = Math.round(proposal.offerSnapshot.priceUsd * 100);
+        const mismatch =
+          pi.status !== 'succeeded' ||
+          pi.metadata?.missionId !== missionId ||
+          pi.metadata?.proposalId !== proposalId ||
+          pi.amount_received < expectedCents;
+
+        if (mismatch) {
+          console.warn('[missions/confirm] payment verification failed', {
+            ...logCtx,
+            status: pi.status,
+            received: pi.amount_received,
+            expected: expectedCents,
+          });
+          return NextResponse.json(
+            { success: false, error: 'This payment does not match the offer.' },
+            { status: 402 }
+          );
+        }
+
+        await updateMission(missionId, {
+          status: 'booked',
+          paymentStatus: 'captured',
+          stripePaymentIntentId: pi.id,
+          stripeCapturedAmount: pi.amount_received,
+          budgetDepositedUsd: proposal.offerSnapshot.priceUsd,
+        });
+        const confirmed = await updateProposal(proposalId, {
+          status: 'confirmed',
+          confirmedAt: new Date().toISOString(),
+          captureAmountCents: pi.amount_received,
+          bookingDeepLink: proposal.offerSnapshot.deepLink,
+        });
+        console.log('[missions/confirm] paid at booking', {
+          ...logCtx,
+          ms: Date.now() - started,
+          amountCents: pi.amount_received,
+        });
+        return NextResponse.json({
+          success: true,
+          decision: 'BOOKED',
+          proposal: confirmed,
+          bookingDeepLink: proposal.offerSnapshot.deepLink,
+        });
       }
       try {
         const res = await captureMissionHold({

@@ -19,6 +19,7 @@ import { useEffect, useMemo, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Card } from '@/components/ui/card';
+import { BookNow } from '@/components/missions/book-now';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import type { Mission, MissionProposal } from '@/lib/types';
@@ -461,8 +462,10 @@ export default function MissionCockpitPage() {
       {/* Pending proposal */}
       {pendingProposal && <ProposalCard
         proposal={pendingProposal}
+        mission={mission}
         onConfirm={() => handleConfirm(pendingProposal.id)}
         onDecline={() => handleDecline(pendingProposal.id)}
+        onBooked={fetchData}
         busy={busy}
       />}
 
@@ -593,15 +596,29 @@ export default function MissionCockpitPage() {
 // inside the parent component so they don't re-mount on every render)
 // -------------------------------------------------------------------
 
+/** Copy for the inline booking panel. The cockpit is English-first; the
+ *  panel takes a lookup so it can be dropped into a localised screen. */
+const BOOK_COPY: Record<string, string> = {
+  'proposal.book.cta': 'Book this fare',
+  'proposal.book.sub': "You're paying for this fare only. Nothing was charged before now.",
+  'proposal.book.paying': 'Confirming your booking…',
+  'proposal.book.done': 'Booked. Your confirmation is on its way.',
+  'proposal.book.error': "That payment didn't go through. Nothing was charged.",
+};
+
 function ProposalCard({
   proposal,
+  mission,
   onConfirm,
   onDecline,
+  onBooked,
   busy,
 }: {
   proposal: MissionProposal;
+  mission: Mission;
   onConfirm: () => void;
   onDecline: () => void;
+  onBooked: () => void;
   busy: string | null;
 }) {
   const o = proposal.offerSnapshot;
@@ -655,14 +672,37 @@ function ProposalCard({
         </div>
       </div>
 
-      <div className="mt-5 flex flex-col sm:flex-row gap-2">
-        <Button onClick={onConfirm} disabled={!!busy}>
-          {busy === 'confirm' ? 'Booking…' : 'Book this fare'}
-        </Button>
-        <Button variant="ghost" onClick={onDecline} disabled={!!busy}>
-          Decline
-        </Button>
-      </div>
+      {/* Two paths. An auto-buy mission already authorised the budget, so
+          confirming just captures it. Every other mission has taken nothing
+          so far — the traveller pays this fare, here, now. */}
+      {mission.stripePaymentIntentId ? (
+        <div className="mt-5 flex flex-col sm:flex-row gap-2">
+          <Button onClick={onConfirm} disabled={!!busy}>
+            {busy === 'confirm' ? 'Booking…' : 'Book this fare'}
+          </Button>
+          <Button variant="ghost" onClick={onDecline} disabled={!!busy}>
+            Decline
+          </Button>
+        </div>
+      ) : (
+        <>
+          <BookNow
+            missionId={mission.id}
+            proposalId={proposal.id}
+            amountUsd={o.priceUsd}
+            onBooked={onBooked}
+            t={(k) => BOOK_COPY[k] ?? k}
+          />
+          <button
+            type="button"
+            onClick={onDecline}
+            disabled={!!busy}
+            className="mt-2 w-full text-caption text-pen-3 hover:text-pen-1 transition-colors"
+          >
+            Not this one
+          </button>
+        </>
+      )}
     </Card>
   );
 }

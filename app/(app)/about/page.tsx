@@ -19,7 +19,7 @@ export default function AboutPage() {
           </div>
           <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">About Flyeas</h1>
           <p className="text-base text-white/40 mt-3 max-w-xl mx-auto leading-relaxed">
-            The AI-powered travel agent that watches, predicts, and books — so you never overpay for a flight again.
+            The travel concierge that watches, predicts, and books — so you never overpay for a flight again.
           </p>
         </div>
 
@@ -34,7 +34,7 @@ export default function AboutPage() {
             airlines use dynamic pricing to maximize revenue, and the average traveler has no way to know if they are getting a good deal.
           </p>
           <p className="text-sm text-white/60 leading-relaxed mt-3">
-            Flyeas changes that. Our AI monitors hundreds of routes 24/7, learns the pricing patterns of every airline, and automatically
+            Flyeas changes that. We monitor hundreds of routes 24/7, learns the pricing patterns of every airline, and automatically
             books when the price drops below your target. Your money stays in your hands until the moment we find your deal — no custody, no risk.
           </p>
         </Card>

@@ -12,8 +12,8 @@ const slides = [
         <path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z" />
       </svg>
     ),
-    title: 'Find the cheapest flights',
-    desc: 'Compare 400+ airlines in real-time. Our AI finds deals you won\'t see anywhere else.',
+    title: 'Give us a mission',
+    desc: 'Tell us where you want to go, when, and what you can spend. Starting one costs nothing.',
     color: 'var(--accent)',
   },
   {
@@ -24,8 +24,8 @@ const slides = [
         <circle cx="12" cy="12" r="1.5" fill="currentColor" />
       </svg>
     ),
-    title: 'Set price missions',
-    desc: 'Tell us your target price. We monitor 24/7 and alert you the instant it drops.',
+    title: 'We watch, you carry on',
+    desc: 'We check the route around the clock and only come back when something is worth your attention.',
     color: 'var(--danger)',
   },
   {
@@ -34,8 +34,8 @@ const slides = [
         <path d="M12 2L15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2z" />
       </svg>
     ),
-    title: 'Save up to 40%',
-    desc: 'Track your savings, earn rewards, and share deals with friends.',
+    title: 'You decide, then you pay',
+    desc: 'Nothing is charged until you see a real fare and say yes. Booking takes one tap.',
     color: 'var(--success)',
   },
 ];

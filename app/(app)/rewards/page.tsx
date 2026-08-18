@@ -145,7 +145,7 @@ const REWARDS: Reward[] = [
   { id: 'extended-history', name: 'Extended Price History', description: 'Unlock 180 days of price history for smarter booking', cost: 250 },
   { id: 'pro-month', name: '1 Month Pro Free', description: 'Enjoy all Pro features for a full month at no cost', cost: 500 },
   { id: 'free-mission', name: 'Free Mission Creation', description: 'Create a price tracking mission without limits', cost: 1000 },
-  { id: 'ai-agent', name: 'Dedicated AI Agent', description: 'Your own AI travel agent for 1 week of personalized help', cost: 2500 },
+  { id: 'ai-agent', name: 'Dedicated concierge', description: 'Your own AI travel agent for 1 week of personalized help', cost: 2500 },
   { id: 'elite-month', name: 'Elite Upgrade (1 Month)', description: 'Full Elite tier access for one month', cost: 5000 },
 ];
 

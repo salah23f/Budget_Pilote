@@ -49,7 +49,7 @@ function getWelcomeNotifications(): Notification[] {
       id: 'welcome-1',
       type: 'system',
       title: 'Welcome to Flyeas',
-      body: 'Your AI travel agent is ready. Create your first mission to start saving.',
+      body: 'Your concierge is ready. Create your first mission to start saving.',
       timestamp: new Date(),
       read: false,
     },

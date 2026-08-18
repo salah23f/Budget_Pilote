@@ -14,7 +14,7 @@ interface WebsiteSchemaProps {
 export function WebsiteSchema({
   name = 'Flyeas',
   url = 'https://faregenie.vercel.app',
-  description = 'AI-powered travel agent that monitors live flight and hotel prices 24/7, predicts the best time to buy, and auto-books within your budget.',
+  description = 'Travel concierge that watches live flight and hotel prices 24/7, predicts the best time to buy, and auto-books within your budget.',
 }: WebsiteSchemaProps) {
   const schema = {
     '@context': 'https://schema.org',

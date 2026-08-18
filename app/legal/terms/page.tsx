@@ -47,7 +47,7 @@ export default function TermsOfService() {
         <section className="mb-8">
           <h2 className="text-xl font-semibold text-white mb-2">4. AI Advisory Disclaimer</h2>
           <p className="text-white/70 leading-relaxed">
-            The AI provides recommendations only and does not make purchases on your behalf without explicit confirmation. You are responsible for reviewing and confirming all bookings. Flyeas is not liable for any outcomes based on AI recommendations.
+            Flyeas provides recommendations only and does not make purchases on your behalf without explicit confirmation. You are responsible for reviewing and confirming all bookings. Flyeas is not liable for any outcomes based on its recommendations.
           </p>
         </section>
 

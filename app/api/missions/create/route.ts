@@ -109,6 +109,13 @@ async function handleCreate(
     body.autoBuyThresholdUsd != null
       ? Number(body.autoBuyThresholdUsd)
       : undefined;
+
+  // A mission costs nothing to start. We only authorise the card up front
+  // when the agent is allowed to buy on its own — at that moment there is
+  // nobody to ask, so the money has to already be reachable. Every other
+  // mission just watches, and payment happens when the traveller books.
+  const needsUpfrontHold =
+    autoBuyThreshold != null && autoBuyThreshold > 0;
   if (
     autoBuyThreshold != null &&
     (!Number.isFinite(autoBuyThreshold) || autoBuyThreshold < 0)
@@ -119,7 +126,7 @@ async function handleCreate(
     errors.push('autoBuyThresholdUsd cannot exceed maxBudgetUsd');
   }
 
-  if (rail === 'stripe' && !isStripeConfigured()) {
+  if (rail === 'stripe' && needsUpfrontHold && !isStripeConfigured()) {
     errors.push(
       'Stripe rail is not configured on this server. Set STRIPE_SECRET_KEY.'
     );
@@ -175,7 +182,7 @@ async function handleCreate(
     ecoPreference: body.ecoPreference || 'balanced',
     monitoringEnabled: true,
     alertEmailEnabled: body.alertEmailEnabled !== false,
-    status: 'awaiting_payment',
+    status: needsUpfrontHold ? 'awaiting_payment' : 'monitoring',
     budgetDepositedUsd: 0,
     paymentRail: rail,
     paymentStatus: 'none',
@@ -186,7 +193,7 @@ async function handleCreate(
   // --------------------------------------------------------------
   // Kick off the hold on the chosen rail
   // --------------------------------------------------------------
-  if (rail === 'stripe') {
+  if (rail === 'stripe' && needsUpfrontHold) {
     try {
       const hold = await createMissionHold({
         amountUsd: maxBudget,
