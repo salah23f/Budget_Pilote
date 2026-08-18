@@ -301,7 +301,7 @@ export default function NotificationBell() {
         <div
           className="absolute right-0 top-full mt-2 w-80 overflow-hidden rounded-2xl sm:w-96"
           style={{
-            background: 'rgba(12, 10, 9, 0.97)',
+            background: 'var(--ink-800)',
             backdropFilter: 'blur(24px)',
             WebkitBackdropFilter: 'blur(24px)',
             border: '1px solid var(--ink-800)',
@@ -339,7 +339,7 @@ export default function NotificationBell() {
                 <button
                   key={n.id}
                   onClick={() => markRead(n.id)}
-                  className="flex w-full items-start gap-3 px-4 py-3 text-left transition-colors hover:bg-white/[0.03]"
+                  className="flex w-full items-start gap-3 px-4 py-3 text-left transition-colors hover:bg-ink-900"
                   style={{
                     borderBottom: '1px solid var(--ink-800)',
                     background: n.read ? 'transparent' : 'color-mix(in srgb, var(--flyeas-accent, var(--accent)) 3%, transparent)',

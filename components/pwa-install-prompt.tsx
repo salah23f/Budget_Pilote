@@ -92,7 +92,7 @@ export default function PWAInstallPrompt() {
     <div
       className="fixed bottom-4 left-4 right-4 md:left-auto md:right-6 md:bottom-6 md:max-w-sm z-[60] rounded-2xl p-4 fade-in"
       style={{
-        background: 'rgba(12,10,9,0.96)',
+        background: 'var(--ink-800)',
         border: '1px solid color-mix(in srgb, var(--flyeas-accent, var(--accent)) 30%, transparent)',
         boxShadow: '0 20px 60px color-mix(in srgb, var(--flyeas-accent, var(--accent)) 15%, transparent)',
         backdropFilter: 'blur(20px)',

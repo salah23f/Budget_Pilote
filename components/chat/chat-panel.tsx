@@ -258,9 +258,9 @@ function TypingIndicator() {
           }}
         >
           <div className="flex gap-1 items-center">
-            <div className="w-2 h-2 rounded-full bg-white/30 animate-bounce" style={{ animationDelay: '0ms' }} />
-            <div className="w-2 h-2 rounded-full bg-white/30 animate-bounce" style={{ animationDelay: '150ms' }} />
-            <div className="w-2 h-2 rounded-full bg-white/30 animate-bounce" style={{ animationDelay: '300ms' }} />
+            <div className="w-2 h-2 rounded-full bg-pen-3 animate-bounce" style={{ animationDelay: '0ms' }} />
+            <div className="w-2 h-2 rounded-full bg-pen-3 animate-bounce" style={{ animationDelay: '150ms' }} />
+            <div className="w-2 h-2 rounded-full bg-pen-3 animate-bounce" style={{ animationDelay: '300ms' }} />
           </div>
           <span className="text-[11px] text-pen-3 ml-1">Searching...</span>
         </div>
@@ -629,7 +629,7 @@ export default function ChatPanel() {
                   key={action}
                   onClick={() => send(action)}
                   disabled={loading}
-                  className="rounded-full px-3 py-1.5 text-xs font-medium transition hover:bg-white/[0.06] disabled:opacity-40"
+                  className="rounded-full px-3 py-1.5 text-xs font-medium transition hover:bg-ink-900 disabled:opacity-40"
                   style={{
                     background: 'var(--ink-800)',
                     border: '1px solid var(--ink-800)',
@@ -682,7 +682,7 @@ export default function ChatPanel() {
                 aria-label="Send message"
               >
                 {loading ? (
-                  <span className="h-3.5 w-3.5 rounded-full border-[1.5px] border-white/30 border-t-white animate-spin" />
+                  <span className="h-3.5 w-3.5 rounded-full border-[1.5px] border-accent-ink/30 border-t-accent-ink animate-spin" />
                 ) : (
                   <svg
                     width="16"

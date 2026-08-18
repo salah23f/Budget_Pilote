@@ -85,23 +85,23 @@ export function CurrencyPicker({
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-white/70 hover:text-white hover:bg-white/5 transition"
+        className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-pen-2 hover:text-pen-1 hover:bg-ink-600 transition"
         aria-label="Change currency"
       >
         <DollarSign className="w-4 h-4" strokeWidth={1.8} />
         <span className="font-mono">{current?.code || 'USD'}</span>
-        <span className="text-white/40">{current?.symbol}</span>
+        <span className="text-pen-3">{current?.symbol}</span>
       </button>
 
       {open && (
         <div
           className="absolute right-0 top-full mt-2 w-[320px] max-h-[440px] rounded-2xl overflow-hidden z-50 flex flex-col"
           style={{
-            background: 'rgba(9,9,11,0.98)',
+            background: 'var(--ink-800)',
             backdropFilter: 'blur(24px)',
             WebkitBackdropFilter: 'blur(24px)',
-            border: '1px solid rgba(255,255,255,0.08)',
-            boxShadow: '0 25px 60px rgba(0,0,0,0.6)',
+            border: '1px solid var(--line-1)',
+            boxShadow: '0 25px 60px rgba(var(--pen-1-rgb) / 0.18)',
             animation: 'flyeas-slide-up 0.25s cubic-bezier(0.16,1,0.3,1)',
           }}
         >
@@ -138,16 +138,16 @@ function PickerContent({
 
   return (
     <>
-      <div className="px-3 py-3 flex-shrink-0" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+      <div className="px-3 py-3 flex-shrink-0" style={{ borderBottom: '1px solid var(--line-1)' }}>
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white/30" strokeWidth={1.8} />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-pen-3" strokeWidth={1.8} />
           <input
             ref={(el) => { inputRef.current = el; }}
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search currency..."
-            className="w-full bg-white/[0.04] border border-white/[0.06] rounded-lg pl-8 pr-3 py-1.5 text-xs text-white placeholder:text-white/25 outline-none focus:border-[rgba(232,163,23,0.3)]"
+            className="w-full bg-ink-900 border border-line-1 rounded-lg pl-8 pr-3 py-1.5 text-xs text-pen-1 placeholder:text-pen-3 outline-none focus:border-accent"
           />
         </div>
       </div>
@@ -157,7 +157,7 @@ function PickerContent({
           if (!items || items.length === 0) return null;
           return (
             <div key={region} className="mb-2">
-              <p className="px-4 pt-1 pb-1 text-[9px] font-semibold text-white/25 uppercase tracking-[0.1em]">
+              <p className="px-4 pt-1 pb-1 text-[9px] font-semibold text-pen-3 uppercase tracking-[0.1em]">
                 {region}
               </p>
               {items.map((c) => {
@@ -167,18 +167,18 @@ function PickerContent({
                     key={c.code}
                     onClick={() => pick(c.code)}
                     className={`w-full flex items-center justify-between gap-3 px-4 py-2 text-left transition ${
-                      isActive ? 'bg-white/[0.06]' : 'hover:bg-white/[0.03]'
+                      isActive ? 'bg-ink-900' : 'hover:bg-ink-900'
                     }`}
                   >
                     <div className="flex items-center gap-3 min-w-0">
-                      <span className="text-[11px] font-mono text-white/40 w-8 text-center shrink-0">
+                      <span className="text-[11px] font-mono text-pen-3 w-8 text-center shrink-0">
                         {c.symbol}
                       </span>
                       <div className="flex flex-col items-start min-w-0">
-                        <span className={`text-sm truncate ${isActive ? 'text-white font-medium' : 'text-white/70'}`}>
+                        <span className={`text-sm truncate ${isActive ? 'text-pen-1 font-medium' : 'text-pen-2'}`}>
                           {c.name}
                         </span>
-                        <span className="text-[10px] text-white/30 font-mono">{c.code}</span>
+                        <span className="text-[10px] text-pen-3 font-mono">{c.code}</span>
                       </div>
                     </div>
                     {isActive && <Check className="w-4 h-4 text-accent shrink-0" strokeWidth={2.2} />}
@@ -189,7 +189,7 @@ function PickerContent({
           );
         })}
         {Object.keys(grouped).length === 0 && (
-          <p className="px-4 py-8 text-center text-xs text-white/30">
+          <p className="px-4 py-8 text-center text-xs text-pen-3">
             No currencies match &quot;{query}&quot;
           </p>
         )}

@@ -373,7 +373,7 @@ export default function NotificationPanel() {
                   <button
                     key={n.id}
                     onClick={() => markRead(n.id)}
-                    className="flex w-full items-start gap-4 rounded-2xl p-4 text-left transition-all duration-200 hover:bg-white/[0.02]"
+                    className="flex w-full items-start gap-4 rounded-2xl p-4 text-left transition-all duration-200 hover:bg-ink-900"
                     style={{
                       background: n.read
                         ? 'var(--ink-800)'

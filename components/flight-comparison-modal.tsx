@@ -263,7 +263,7 @@ export function FlightComparisonModal({
           <table className="w-full border-collapse text-left">
             <thead>
               <tr>
-                <th className="sticky left-0 z-10 px-4 py-3 text-xs font-medium text-pen-3 uppercase tracking-wider" style={{ background: 'rgba(28,25,23,0.95)', minWidth: 120 }}>
+                <th className="sticky left-0 z-10 px-4 py-3 text-xs font-medium text-pen-3 uppercase tracking-wider" style={{ background: 'var(--ink-800)', minWidth: 120 }}>
                   Attribute
                 </th>
                 {flights.map((f) => (
@@ -275,8 +275,8 @@ export function FlightComparisonModal({
             </thead>
             <tbody>
               {rows.map((row) => (
-                <tr key={row.label} className="border-t border-white/[0.05]">
-                  <td className="sticky left-0 z-10 px-4 py-3" style={{ background: 'rgba(28,25,23,0.95)' }}>
+                <tr key={row.label} className="border-t border-line-1">
+                  <td className="sticky left-0 z-10 px-4 py-3" style={{ background: 'var(--ink-800)' }}>
                     <div className="flex items-center gap-2 text-pen-2">
                       {row.icon}
                       <span className="text-xs font-medium">{row.label}</span>
@@ -303,8 +303,8 @@ export function FlightComparisonModal({
                 </tr>
               ))}
               {/* Book row */}
-              <tr className="border-t border-white/[0.05]">
-                <td className="sticky left-0 z-10 px-4 py-4" style={{ background: 'rgba(28,25,23,0.95)' }} />
+              <tr className="border-t border-line-1">
+                <td className="sticky left-0 z-10 px-4 py-4" style={{ background: 'var(--ink-800)' }} />
                 {flights.map((f) => (
                   <td key={f.id} className="px-4 py-4 text-center">
                     {f.deepLink ? (

@@ -268,7 +268,7 @@ export default function OnboardingPage() {
 
   // ── UI ──
   const steps = ['Account', 'Wallet', 'Done'];
-  const Spinner = () => <span className="inline-block h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />;
+  const Spinner = () => <span className="inline-block h-4 w-4 rounded-full border-2 border-accent-ink/30 border-t-accent-ink animate-spin" />;
 
   return (
     <main className="min-h-screen flex items-center justify-center px-4 py-8">
@@ -420,7 +420,7 @@ export default function OnboardingPage() {
               <h2 className="text-lg font-semibold text-pen-1">Connect wallet</h2>
               <p className="mt-1 text-[13px] text-pen-1/35">Optional — pay with crypto.</p>
 
-              <div className="mt-6 flex flex-col items-center rounded-2xl p-6" style={{ background: 'var(--ink-800)', border: '1px solid rgba(255,255,255,0.05)' }}>
+              <div className="mt-6 flex flex-col items-center rounded-2xl p-6" style={{ background: 'var(--ink-800)', border: '1px solid var(--line-1)' }}>
                 <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full" style={{
                   background: walletAddress ? 'var(--success-soft)' : 'var(--warning-soft)',
                   border: walletAddress ? '1px solid rgba(34,197,94,0.25)' : '1px solid rgba(245,158,11,0.15)',

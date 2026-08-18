@@ -146,7 +146,7 @@ export default function CommandPalette() {
             placeholder={t('cmd.placeholder')}
             className="flex-1 bg-transparent text-sm text-pen-1 placeholder:text-pen-3 outline-none"
           />
-          <kbd className="flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium text-pen-3 bg-white/[0.04] border border-white/[0.06]">
+          <kbd className="flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium text-pen-3 bg-ink-900 border border-line-1">
             ESC
           </kbd>
         </div>
@@ -172,7 +172,7 @@ export default function CommandPalette() {
                     onClick={() => navigate(item.href)}
                     onMouseEnter={() => setSelectedIndex(globalIdx)}
                     className={`w-full flex items-center gap-3 px-5 py-2.5 text-left transition-colors ${
-                      isSelected ? 'bg-white/[0.06]' : 'hover:bg-white/[0.03]'
+                      isSelected ? 'bg-ink-900' : 'hover:bg-ink-900'
                     }`}
                   >
                     <Icon className={`w-4 h-4 shrink-0 ${isSelected ? 'text-accent' : 'text-pen-3'}`} strokeWidth={1.8} />
@@ -199,7 +199,7 @@ export default function CommandPalette() {
                     onClick={() => navigate(item.href)}
                     onMouseEnter={() => setSelectedIndex(globalIdx)}
                     className={`w-full flex items-center gap-3 px-5 py-2.5 text-left transition-colors ${
-                      isSelected ? 'bg-white/[0.06]' : 'hover:bg-white/[0.03]'
+                      isSelected ? 'bg-ink-900' : 'hover:bg-ink-900'
                     }`}
                   >
                     <Icon className={`w-4 h-4 shrink-0 ${isSelected ? 'text-accent' : 'text-pen-3'}`} strokeWidth={1.8} />
@@ -215,16 +215,16 @@ export default function CommandPalette() {
         {/* Footer */}
         <div className="flex items-center gap-4 px-5 py-3 text-[10px] text-pen-3" style={{ borderTop: '1px solid var(--ink-800)' }}>
           <span className="flex items-center gap-1">
-            <kbd className="px-1 py-0.5 rounded bg-white/[0.04] border border-white/[0.06] text-pen-3">&uarr;</kbd>
-            <kbd className="px-1 py-0.5 rounded bg-white/[0.04] border border-white/[0.06] text-pen-3">&darr;</kbd>
+            <kbd className="px-1 py-0.5 rounded bg-ink-900 border border-line-1 text-pen-3">&uarr;</kbd>
+            <kbd className="px-1 py-0.5 rounded bg-ink-900 border border-line-1 text-pen-3">&darr;</kbd>
             navigate
           </span>
           <span className="flex items-center gap-1">
-            <kbd className="px-1 py-0.5 rounded bg-white/[0.04] border border-white/[0.06] text-pen-3">&crarr;</kbd>
+            <kbd className="px-1 py-0.5 rounded bg-ink-900 border border-line-1 text-pen-3">&crarr;</kbd>
             open
           </span>
           <span className="flex items-center gap-1">
-            <kbd className="px-1 py-0.5 rounded bg-white/[0.04] border border-white/[0.06] text-pen-3">esc</kbd>
+            <kbd className="px-1 py-0.5 rounded bg-ink-900 border border-line-1 text-pen-3">esc</kbd>
             close
           </span>
         </div>
