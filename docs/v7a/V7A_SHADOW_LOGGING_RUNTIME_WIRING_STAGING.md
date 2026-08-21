@@ -100,3 +100,7 @@ npx tsx scripts/v7a/staging-shadow-log-smoke.ts --confirm-staging-write
 Purpose: Deploy to staging Vercel with the feature flags enabled, trigger a watcher run, and verify that rows appear in `v7a_shadow_decision_logs` with correct schema.
 
 Alternatively: **`b1/v7a-production-migration-and-rollout`** — once staging e2e is verified, apply the migration to production and enable shadow logging there.
+# shadow preview trigger
+
+# redeploy
+# algo version

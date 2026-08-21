@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useRef, useEffect } from 'react';
+import { useState, useMemo, useRef, useEffect, type MutableRefObject } from 'react';
 import { useLocale, SUPPORTED_LOCALES } from '@/lib/i18n';
 import type { Locale } from '@/lib/i18n';
 import { Globe, Search, Check } from 'lucide-react';
@@ -20,7 +20,7 @@ export function LanguagePicker({
   const [open, setOpen] = useState(variant === 'inline');
   const [query, setQuery] = useState('');
   const ref = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null) as MutableRefObject<HTMLInputElement | null>;
 
   useEffect(() => {
     if (variant !== 'dropdown') return;
@@ -81,7 +81,7 @@ export function LanguagePicker({
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-white/70 hover:text-white hover:bg-white/5 transition"
+        className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-pen-2 hover:text-pen-1 hover:bg-ink-600 transition"
         aria-label="Change language"
       >
         <Globe className="w-4 h-4" strokeWidth={1.8} />
@@ -92,11 +92,11 @@ export function LanguagePicker({
         <div
           className="absolute right-0 top-full mt-2 w-[320px] max-h-[440px] rounded-2xl overflow-hidden z-50 flex flex-col"
           style={{
-            background: 'rgba(9,9,11,0.98)',
+            background: 'var(--ink-800)',
             backdropFilter: 'blur(24px)',
             WebkitBackdropFilter: 'blur(24px)',
-            border: '1px solid rgba(255,255,255,0.08)',
-            boxShadow: '0 25px 60px rgba(0,0,0,0.6)',
+            border: '1px solid var(--line-1)',
+            boxShadow: '0 25px 60px rgba(var(--pen-1-rgb) / 0.18)',
             animation: 'flyeas-slide-up 0.25s cubic-bezier(0.16,1,0.3,1)',
           }}
         >
@@ -127,22 +127,22 @@ function PickerContent({
   setQuery: (q: string) => void;
   locale: Locale;
   pick: (code: Locale) => void;
-  inputRef: React.RefObject<HTMLInputElement | null>;
+  inputRef: MutableRefObject<HTMLInputElement | null>;
 }) {
   const regionOrder = ['Europe', 'Middle East', 'Asia', 'Africa', 'Americas'];
 
   return (
     <>
-      <div className="px-3 py-3 flex-shrink-0" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+      <div className="px-3 py-3 flex-shrink-0" style={{ borderBottom: '1px solid var(--line-1)' }}>
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white/30" strokeWidth={1.8} />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-pen-3" strokeWidth={1.8} />
           <input
-            ref={inputRef}
+            ref={(el) => { inputRef.current = el; }}
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search language..."
-            className="w-full bg-white/[0.04] border border-white/[0.06] rounded-lg pl-8 pr-3 py-1.5 text-xs text-white placeholder:text-white/25 outline-none focus:border-[rgba(232,163,23,0.3)]"
+            className="w-full bg-ink-900 border border-line-1 rounded-lg pl-8 pr-3 py-1.5 text-xs text-pen-1 placeholder:text-pen-3 outline-none focus:border-accent"
           />
         </div>
       </div>
@@ -152,7 +152,7 @@ function PickerContent({
           if (!items || items.length === 0) return null;
           return (
             <div key={region} className="mb-2">
-              <p className="px-4 pt-1 pb-1 text-[9px] font-semibold text-white/25 uppercase tracking-[0.1em]">
+              <p className="px-4 pt-1 pb-1 text-[9px] font-semibold text-pen-3 uppercase tracking-[0.1em]">
                 {region}
               </p>
               {items.map((l) => {
@@ -162,19 +162,19 @@ function PickerContent({
                     key={l.code}
                     onClick={() => pick(l.code)}
                     className={`w-full flex items-center justify-between gap-3 px-4 py-2 text-left transition ${
-                      isActive ? 'bg-white/[0.06]' : 'hover:bg-white/[0.03]'
+                      isActive ? 'bg-ink-900' : 'hover:bg-ink-900'
                     }`}
                   >
                     <div className="flex flex-col items-start min-w-0">
-                      <span className={`text-sm truncate ${isActive ? 'text-white font-medium' : 'text-white/70'}`}>
+                      <span className={`text-sm truncate ${isActive ? 'text-pen-1 font-medium' : 'text-pen-2'}`}>
                         {l.nativeName}
                       </span>
-                      <span className="text-[10px] text-white/30">{l.name}</span>
+                      <span className="text-[10px] text-pen-3">{l.name}</span>
                     </div>
                     {isActive ? (
                       <Check className="w-4 h-4 text-accent shrink-0" strokeWidth={2.2} />
                     ) : (
-                      <span className="text-[10px] font-mono text-white/20 shrink-0">{l.code.toUpperCase()}</span>
+                      <span className="text-[10px] font-mono text-pen-3 shrink-0">{l.code.toUpperCase()}</span>
                     )}
                   </button>
                 );
@@ -183,7 +183,7 @@ function PickerContent({
           );
         })}
         {Object.keys(grouped).length === 0 && (
-          <p className="px-4 py-8 text-center text-xs text-white/30">No languages match &quot;{query}&quot;</p>
+          <p className="px-4 py-8 text-center text-xs text-pen-3">No languages match &quot;{query}&quot;</p>
         )}
       </div>
     </>

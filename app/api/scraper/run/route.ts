@@ -21,7 +21,23 @@ export const maxDuration = 120; // 2 minutes max for scraping cycle
  * GET /api/scraper/run — diagnostic endpoint (no auth).
  * Tests: env vars, Supabase connectivity, Sky-Scrapper API for one route.
  */
-export async function GET(_req: NextRequest) {
+export async function GET(req: NextRequest) {
+  // Diagnostic endpoint — gated behind the same secret as POST. It reveals
+  // infrastructure wiring (which env vars are set, live DB/API connectivity),
+  // so it must never be reachable anonymously.
+  const secret = process.env.SCRAPER_SECRET;
+  if (!secret) {
+    return NextResponse.json({ error: 'SCRAPER_SECRET not configured' }, { status: 500 });
+  }
+  const providedSecret = (
+    req.headers.get('x-scraper-secret') ??
+    req.nextUrl.searchParams.get('secret') ??
+    ''
+  ).trim();
+  if (providedSecret !== secret.trim()) {
+    return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
+  }
+
   const diag: Record<string, unknown> = {
     status: 'ok',
     timestamp: new Date().toISOString(),
@@ -30,11 +46,11 @@ export async function GET(_req: NextRequest) {
       RAPIDAPI_KEY: !!process.env.RAPIDAPI_KEY,
       SUPABASE_URL: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
       SUPABASE_SERVICE_KEY: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
-      SUPABASE_SERVICE_KEY_LENGTH: (process.env.SUPABASE_SERVICE_ROLE_KEY ?? '').length,
     },
   };
 
-  // Test 1: Supabase connectivity
+  // Test 1: Supabase connectivity (read-only — never writes, so the
+  // diagnostic cannot pollute scraper_runs).
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (supabaseUrl && supabaseKey) {
@@ -42,20 +58,13 @@ export async function GET(_req: NextRequest) {
       const { createClient } = await import('@supabase/supabase-js');
       const sb = createClient(supabaseUrl, supabaseKey, { auth: { persistSession: false } });
 
-      // Try inserting a test row into scraper_runs
-      const { data, error } = await sb.from('scraper_runs').insert({
-        started_at: new Date().toISOString(),
-        completed_at: new Date().toISOString(),
-        routes_attempted: 0,
-        routes_succeeded: 0,
-        routes_failed: 0,
-        total_flights: 0,
-        cheapest_overall: null,
-      }).select('id').single();
+      const { error } = await sb
+        .from('scraper_runs')
+        .select('id', { count: 'exact', head: true });
 
       diag.supabase_test = error
-        ? { ok: false, error: error.message, code: error.code, details: error.details, hint: error.hint }
-        : { ok: true, insertedId: data?.id };
+        ? { ok: false, error: error.message, code: error.code }
+        : { ok: true };
     } catch (err: unknown) {
       diag.supabase_test = { ok: false, exception: (err as Error)?.message };
     }

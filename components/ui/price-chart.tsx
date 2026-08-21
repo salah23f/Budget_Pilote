@@ -45,7 +45,7 @@ export function PriceChart({
   data,
   width = 400,
   height = 200,
-  color = '#D4A24C',
+  color = 'var(--accent)',
   className = '',
 }: PriceChartProps) {
   const svgRef = useRef<SVGSVGElement>(null);
@@ -116,15 +116,13 @@ export function PriceChart({
   if (data.length === 0) {
     return (
       <div
-        className={`flex items-center justify-center text-sm text-white/40 ${className}`}
+        className={`flex items-center justify-center text-sm text-pen-3 ${className}`}
         style={{ width, height }}
       >
         No data
       </div>
     );
   }
-
-  const gradientId = `bp-price-grad-${color.replace('#', '')}`;
 
   return (
     <div className={`relative select-none ${className}`} style={{ width, height }}>
@@ -138,15 +136,8 @@ export function PriceChart({
         onMouseLeave={handleMouseLeave}
         className="overflow-visible"
       >
-        <defs>
-          <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={color} stopOpacity="0.25" />
-            <stop offset="100%" stopColor={color} stopOpacity="0" />
-          </linearGradient>
-        </defs>
-
         {/* Area fill */}
-        <path d={areaPath} fill={`url(#${gradientId})`} />
+        <path d={areaPath} fill={color} fillOpacity="0.12" />
 
         {/* Line */}
         <path
@@ -167,11 +158,11 @@ export function PriceChart({
               y1={PADDING.top}
               x2={tooltip.x}
               y2={PADDING.top + chartH}
-              stroke="rgba(255,255,255,0.15)"
+              stroke="var(--line-2)"
               strokeWidth="1"
               strokeDasharray="3 3"
             />
-            <circle cx={tooltip.x} cy={tooltip.y} r="4" fill={color} stroke="#1C1917" strokeWidth="2" />
+            <circle cx={tooltip.x} cy={tooltip.y} r="4" fill={color} stroke="var(--ink-800)" strokeWidth="2" />
           </>
         )}
 
@@ -181,7 +172,7 @@ export function PriceChart({
             <text
               x={PADDING.left}
               y={height - 4}
-              fill="rgba(255,255,255,0.35)"
+              fill="var(--pen-3)"
               fontSize="10"
               textAnchor="start"
             >
@@ -190,7 +181,7 @@ export function PriceChart({
             <text
               x={width - PADDING.right}
               y={height - 4}
-              fill="rgba(255,255,255,0.35)"
+              fill="var(--pen-3)"
               fontSize="10"
               textAnchor="end"
             >
@@ -203,11 +194,11 @@ export function PriceChart({
       {/* Tooltip */}
       {tooltip && (
         <div
-          className="absolute pointer-events-none z-10 glass rounded-lg px-3 py-2 text-xs whitespace-nowrap -translate-x-1/2 -translate-y-full"
+          className="absolute pointer-events-none z-10 bg-ink-700 border border-line-2 shadow-elev-2 rounded-md px-3 py-2 text-xs whitespace-nowrap -translate-x-1/2 -translate-y-full"
           style={{ left: tooltip.x, top: tooltip.y - 10 }}
         >
-          <span className="text-white/60 mr-2">{formatDate(tooltip.point.date)}</span>
-          <span className="font-semibold text-white">{formatPrice(tooltip.point.price)}</span>
+          <span className="text-pen-3 mr-2">{formatDate(tooltip.point.date)}</span>
+          <span className="font-semibold text-pen-1 num">{formatPrice(tooltip.point.price)}</span>
         </div>
       )}
     </div>

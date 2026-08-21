@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { isInternalRequest } from '@/lib/auth/guard';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 
@@ -61,9 +62,9 @@ async function writeSupabase(
 }
 
 export async function POST(req: NextRequest) {
-  const expected = process.env.CRON_SECRET;
-  const auth = req.headers.get('authorization');
-  if (expected && auth !== `Bearer ${expected}`) {
+  // Fail-closed: an unset CRON_SECRET denies rather than accepting writes
+  // from anyone.
+  if (!isInternalRequest(req.headers.get('authorization'))) {
     return NextResponse.json({ success: false, error: 'unauthorized' }, { status: 401 });
   }
 

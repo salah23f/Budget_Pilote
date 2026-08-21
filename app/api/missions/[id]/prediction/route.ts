@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireMissionOwner } from '@/lib/auth/guard';
 import { getMission } from '@/lib/store/missions-db';
 import {
   getSamples,
@@ -33,6 +34,9 @@ export async function GET(
 ) {
   const started = Date.now();
   const missionId = context.params.id;
+  // Caller must own this mission — 404 (not 403) hides existence.
+  const owned = await requireMissionOwner(missionId);
+  if (!owned.ok) return owned.response;
   const logCtx: Record<string, any> = { missionId };
 
   try {

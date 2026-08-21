@@ -101,6 +101,30 @@ def run_backtest(alpha: float = 0.10):
         idf = pd.read_parquet(iqn_path)
         iqn_cvar_by_route = dict(idf.groupby("route")["cvar10"].mean())
 
+    # --- Thompson expert priors ---
+    # Pick the best expert's posterior win-rate and its buy-rule threshold
+    # on the normalized-z signal. This wires thompson_sampling.py's output
+    # into the compound buy signal (previously produced but unused).
+    thompson_best = None   # (expert_name, expected_win_rate, z_threshold)
+    t_path = f"{MODELS_DIR}/thompson_weights.json"
+    if os.path.exists(t_path):
+        try:
+            with open(t_path) as f:
+                t = json.load(f)
+            winrates = t.get("expected_win_rate", {})
+            if winrates:
+                exp_name = max(winrates, key=winrates.get)
+                z_thr = {
+                    "aggressive": -0.3,
+                    "conservative": -1.2,
+                    "v1_heuristic": -0.8,
+                    "bellman": 0.0,
+                }.get(exp_name, -0.5)
+                thompson_best = (exp_name, float(winrates[exp_name]), z_thr)
+                print(f"[v76] thompson best expert: {exp_name} (winrate={winrates[exp_name]:.3f}, z≤{z_thr})")
+        except Exception as e:
+            print(f"[v76] thompson load failed: {e}")
+
     # --- Backtest on test split ---
     test = load_split("test")
     test = test.sort_values(["origin", "destination", "fetched_at"]).reset_index(drop=True)
@@ -200,6 +224,13 @@ def run_backtest(alpha: float = 0.10):
         # If IQN CVaR is strongly positive, future min > current → BUY NOW
         if cvar_gain > 0:
             signals += 1
+
+        # Thompson expert vote (weighted by its posterior win-rate).
+        # Adds up to +2 to signals when the leading expert's rule fires.
+        if thompson_best is not None:
+            exp_name, exp_winrate, z_thr = thompson_best
+            exp_buy = z <= z_thr
+            signals += np.where(exp_buy & (idx >= 3), exp_winrate * 2.0, 0)
 
         v76_buy = (signals >= 3) & (idx >= 3)
         v76_force = (ttd < 14) & (idx < 3)

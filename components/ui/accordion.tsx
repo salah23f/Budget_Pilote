@@ -27,16 +27,16 @@ export function AccordionItem({ title, children, defaultOpen = false }: Accordio
   }, [isOpen]);
 
   return (
-    <div className="border-b border-white/[0.06] last:border-b-0">
+    <div className="border-b border-line-1 last:border-b-0">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between py-4 px-1 text-left group min-h-[52px]"
+        className="w-full flex items-center justify-between py-4 px-1 text-left group min-h-[52px] focus-visible:ring-2 focus-visible:ring-accent/50"
       >
-        <span className="text-sm font-medium text-text-primary/85 pr-4 group-hover:text-text-primary transition-colors">
+        <span className="text-sm font-medium text-pen-2 pr-4 group-hover:text-pen-1 transition-colors">
           {title}
         </span>
         <ChevronDown
-          className={`w-4 h-4 text-text-muted shrink-0 transition-transform duration-200 ${
+          className={`w-4 h-4 text-pen-3 shrink-0 transition-transform duration-200 ${
             isOpen ? 'rotate-180' : ''
           }`}
           strokeWidth={1.8}
@@ -47,7 +47,7 @@ export function AccordionItem({ title, children, defaultOpen = false }: Accordio
         className="overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
         style={{ height: height !== undefined ? `${height}px` : 'auto' }}
       >
-        <div className="pb-4 px-1 text-sm text-text-secondary leading-relaxed">
+        <div className="pb-4 px-1 text-sm text-pen-2 leading-relaxed">
           {children}
         </div>
       </div>
@@ -62,7 +62,7 @@ interface AccordionProps {
 
 export function Accordion({ children, className = '' }: AccordionProps) {
   return (
-    <div className={`divide-y divide-white/[0.06] ${className}`}>
+    <div className={`divide-y divide-line-1 ${className}`}>
       {children}
     </div>
   );

@@ -59,7 +59,7 @@
     },
     {
       "path": "/api/cron/demo-shadow-sweep",
-      "schedule": "0 2,14 * * *"
+      "schedule": "0 14 * * *"
     }
   ]
 }

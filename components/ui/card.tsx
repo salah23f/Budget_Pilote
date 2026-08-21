@@ -30,9 +30,9 @@ const paddingClasses: Record<PaddingSize, string> = {
 };
 
 const variantClasses: Record<CardVariant, string> = {
-  default: 'bg-surface-card border border-border-subtle',
-  glass: 'glass',
-  elevated: 'glass-elevated',
+  default: 'bg-ink-800 border border-line-1 shadow-elev-1',
+  glass: 'surface-1',
+  elevated: 'surface-2',
 };
 
 /* ------------------------------------------------------------------ */
@@ -58,11 +58,11 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
       <div
         ref={ref}
         className={[
-          'rounded-2xl',
+          'rounded-lg',
           variantClasses[variant],
           paddingClasses[padding],
           hoverable
-            ? 'card-interactive hover:border-border-default'
+            ? 'card-interactive hover:border-line-2'
             : '',
           className,
         ]
@@ -74,12 +74,12 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
         {(title || subtitle) && (
           <div className={`mb-4 ${padding === 'none' ? 'px-6 pt-6' : ''}`}>
             {title && (
-              <h3 className="text-lg font-semibold font-display text-text-primary tracking-tight">
+              <h3 className="text-lg font-semibold text-pen-1 tracking-tight">
                 {title}
               </h3>
             )}
             {subtitle && (
-              <p className="mt-1 text-sm text-text-secondary">{subtitle}</p>
+              <p className="mt-1 text-sm text-pen-2">{subtitle}</p>
             )}
           </div>
         )}

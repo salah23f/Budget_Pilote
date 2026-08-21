@@ -22,9 +22,9 @@ export interface InputProps
 /* ------------------------------------------------------------------ */
 
 const sizeClasses: Record<InputSize, string> = {
-  sm: 'text-xs px-3 py-2 rounded-lg min-h-[36px]',
-  md: 'text-sm px-4 py-2.5 rounded-xl min-h-[44px]',
-  lg: 'text-base px-4 py-3 rounded-xl min-h-[48px]',
+  sm: 'text-xs px-3 py-2 rounded-md min-h-[36px]',
+  md: 'text-sm px-4 py-2.5 rounded-md min-h-[44px]',
+  lg: 'text-base px-4 py-3 rounded-md min-h-[48px]',
 };
 
 /* ------------------------------------------------------------------ */
@@ -41,7 +41,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className="text-sm font-medium text-text-secondary"
+            className="text-sm font-medium text-pen-2"
           >
             {label}
           </label>
@@ -50,7 +50,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {/* Input wrapper */}
         <div className="relative">
           {icon && (
-            <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none">
+            <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-pen-3 pointer-events-none">
               {icon}
             </span>
           )}
@@ -58,12 +58,12 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             ref={ref}
             id={inputId}
             className={[
-              'w-full text-text-primary placeholder-white/40',
-              'bg-surface-card border transition-colors duration-150',
-              'focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent/30',
+              'w-full text-pen-1 placeholder:text-pen-3',
+              'bg-ink-900 border transition-colors duration-150',
+              'focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus:border-accent/30',
               error
-                ? 'border-red-500/50 focus:ring-red-400/30 focus:border-red-400/30'
-                : 'border-border-default hover:border-white/[0.15]',
+                ? 'border-danger/50 focus-visible:ring-danger/30 focus:border-danger/30'
+                : 'border-line-2 hover:border-line-3',
               sizeClasses[inputSize],
               icon ? 'pl-10' : '',
               className,
@@ -76,10 +76,10 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
 
         {/* Error / helper */}
         {error && (
-          <p className="text-xs text-red-400 mt-0.5">{error}</p>
+          <p className="text-xs text-danger mt-0.5">{error}</p>
         )}
         {!error && helperText && (
-          <p className="text-xs text-text-muted mt-0.5">{helperText}</p>
+          <p className="text-xs text-pen-3 mt-0.5">{helperText}</p>
         )}
       </div>
     );

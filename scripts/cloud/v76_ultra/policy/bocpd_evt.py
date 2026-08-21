@@ -28,7 +28,7 @@ from _common import app, volume, base_image, MODELS_DIR, load_split, route_key, 
     timeout=60 * 60,
     memory=16 * 1024,
 )
-def compute_bocpd_and_evt(hazard_rate: float = 1 / 50, u_quantile: float = 0.93):
+def compute_bocpd_and_evt(hazard_rate: float = 1 / 50, u_quantile: float = 0.07):
     import numpy as np
     import pandas as pd
     from scipy.stats import genpareto
@@ -72,15 +72,19 @@ def compute_bocpd_and_evt(hazard_rate: float = 1 / 50, u_quantile: float = 0.93)
         var_rl = float((idx ** 2 @ p_rt) - mean_rl ** 2)
         return mean_rl, np.sqrt(max(var_rl, 0)), float(p_rt[0])
 
-    # --- GPD tail fit ---
+    # --- GPD lower-tail fit (for mistake-fare / deep-discount detection) ---
+    # We fit GPD on the LOWER tail of prices, not the upper bulk. With
+    # u_quantile=0.07, u is the 7th percentile (a low price threshold). The
+    # "excesses" are u - price for prices BELOW u. GPD shape/scale then
+    # describes how extreme the low-price events are.
     def gpd(x):
         if len(x) < 30:
             return None
         # Cap observations to avoid explosion on very long routes
         x_cap = x[:min(500, len(x) // 2)] if len(x) > 1000 else x
-        u = np.quantile(x_cap, u_quantile)
-        excess = u - x_cap
-        excess = excess[excess > 0]
+        u = np.quantile(x_cap, u_quantile)          # low threshold
+        below = x_cap[x_cap < u]                    # points in the low tail
+        excess = u - below                          # positive amounts below u
         if len(excess) < 10:
             return None
         try:

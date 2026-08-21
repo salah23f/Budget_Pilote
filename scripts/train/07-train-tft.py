@@ -74,7 +74,20 @@ def main():
         print("No training features found.")
         return
 
+    TARGET_ROWS_TRAIN = 500_000
     df = pd.read_parquet(path)
+    if len(df) > TARGET_ROWS_TRAIN and "origin" in df.columns and "destination" in df.columns:
+        # Route-stratified sampling to preserve time series
+        df["__route__"] = df["origin"].astype(str) + "-" + df["destination"].astype(str)
+        n_r = df["__route__"].nunique()
+        per_route = max(10, TARGET_ROWS_TRAIN // n_r)
+        print(f"Sampling 07-train-tft: {len(df):,} -> target {per_route}/route across {n_r} routes")
+        df = (df.groupby("__route__", group_keys=False)
+                .apply(lambda g: g.sample(n=min(len(g), per_route), random_state=42))
+                .drop(columns="__route__")
+                .sort_values("fetched_at")
+                .reset_index(drop=True))
+        print(f"After sample: {len(df):,} rows")
     print(f"Loaded {len(df)} rows")
 
     feature_cols = [c for c in df.columns

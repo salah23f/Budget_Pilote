@@ -167,25 +167,25 @@ function FlightSkeleton() {
         <div className="flex flex-col md:flex-row md:items-center gap-5">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 rounded-xl bg-white/5" />
+              <div className="w-10 h-10 rounded-xl bg-ink-600" />
               <div>
-                <div className="h-4 w-28 bg-white/10 rounded mb-1" />
-                <div className="h-3 w-16 bg-white/5 rounded" />
+                <div className="h-4 w-28 bg-ink-600 rounded mb-1" />
+                <div className="h-3 w-16 bg-ink-600 rounded" />
               </div>
             </div>
             <div className="flex items-center gap-4">
-              <div className="h-6 w-14 bg-white/10 rounded" />
-              <div className="flex-1 h-px bg-white/10" />
-              <div className="h-6 w-14 bg-white/10 rounded" />
+              <div className="h-6 w-14 bg-ink-600 rounded" />
+              <div className="flex-1 h-px bg-ink-600" />
+              <div className="h-6 w-14 bg-ink-600 rounded" />
             </div>
           </div>
           <div className="flex flex-col items-end gap-2">
-            <div className="h-5 w-16 bg-white/10 rounded" />
-            <div className="h-5 w-20 bg-white/5 rounded" />
+            <div className="h-5 w-16 bg-ink-600 rounded" />
+            <div className="h-5 w-20 bg-ink-600 rounded" />
           </div>
           <div className="flex flex-col items-end gap-2">
-            <div className="h-8 w-20 bg-white/10 rounded" />
-            <div className="h-3 w-16 bg-white/5 rounded" />
+            <div className="h-8 w-20 bg-ink-600 rounded" />
+            <div className="h-3 w-16 bg-ink-600 rounded" />
             <div className="h-8 w-20 bg-amber-500/20 rounded" />
           </div>
         </div>
@@ -534,7 +534,7 @@ export default function FlightsPage() {
       <Card padding="lg">
         <form onSubmit={(e) => { e.preventDefault(); handleSearch(); }}>
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-white tracking-tight">
+          <h1 className="text-2xl font-bold text-pen-1 tracking-tight">
             Search Flights
           </h1>
           <div className="flex items-center gap-3">
@@ -545,7 +545,7 @@ export default function FlightsPage() {
             )}
             <Link
               href="/flights/calendar"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-white/60 hover:text-white hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-pen-2 hover:text-pen-1 hover:bg-ink-600 border border-line-2 hover:border-line-2 transition-all"
             >
               <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="3" y="4" width="14" height="14" rx="2" />
@@ -639,7 +639,7 @@ export default function FlightsPage() {
 
           {/* Baggage options */}
           <div className="md:col-span-2">
-            <label className="block text-xs font-medium text-white/50 mb-1.5">Cabin bags</label>
+            <label className="block text-xs font-medium text-pen-2 mb-1.5">Cabin bags</label>
             <select
               className="glass-input w-full"
               value={handBags}
@@ -651,7 +651,7 @@ export default function FlightsPage() {
             </select>
           </div>
           <div className="md:col-span-3">
-            <label className="block text-xs font-medium text-white/50 mb-1.5">Checked bags</label>
+            <label className="block text-xs font-medium text-pen-2 mb-1.5">Checked bags</label>
             <select
               className="glass-input w-full"
               value={holdBags}
@@ -719,14 +719,14 @@ export default function FlightsPage() {
         <Card padding="lg">
           <div className="flex items-center gap-3">
             <div className="w-5 h-5 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
-            <p className="text-sm text-white/60">Exploring cheapest destinations from {origin}...</p>
+            <p className="text-sm text-pen-2">Exploring cheapest destinations from {origin}...</p>
           </div>
         </Card>
       )}
       {exploreResults.length > 0 && !exploreLoading && (
         <Card padding="lg">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-bold text-white flex items-center gap-2">
+            <h2 className="text-lg font-bold text-pen-1 flex items-center gap-2">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D4A24C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="10" />
                 <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
@@ -734,7 +734,7 @@ export default function FlightsPage() {
               Explore from {origin}
             </h2>
             <button
-              className="text-xs text-white/40 hover:text-white/70 transition"
+              className="text-xs text-pen-3 hover:text-pen-2 transition"
               onClick={() => setExploreResults([])}
             >
               Close
@@ -745,7 +745,7 @@ export default function FlightsPage() {
               <button
                 key={d.destination}
                 type="button"
-                className="glass rounded-xl p-4 text-left hover:bg-white/5 transition-all group border border-white/5 hover:border-amber-500/20"
+                className="glass rounded-xl p-4 text-left hover:bg-ink-600 transition-all group border border-line-2 hover:border-amber-500/20"
                 onClick={() => {
                   setDestination(d.destination);
                   setDestSkyId('');
@@ -753,12 +753,12 @@ export default function FlightsPage() {
                   setExploreResults([]);
                 }}
               >
-                <p className="text-sm font-semibold text-white group-hover:text-amber-300 transition-colors">
+                <p className="text-sm font-semibold text-pen-1 group-hover:text-amber-300 transition-colors">
                   {d.destinationCity}
                 </p>
-                <p className="text-[10px] text-white/40 mt-0.5">{d.destination}</p>
+                <p className="text-[10px] text-pen-3 mt-0.5">{d.destination}</p>
                 <p className="text-lg font-bold text-amber-400 mt-2">${d.price}</p>
-                <p className="text-[10px] text-white/40 mt-0.5">{d.airline}</p>
+                <p className="text-[10px] text-pen-3 mt-0.5">{d.airline}</p>
               </button>
             ))}
           </div>
@@ -768,7 +768,7 @@ export default function FlightsPage() {
       {/* ---- Price Calendar Modal ---- */}
       <Modal isOpen={calendarOpen} onClose={() => setCalendarOpen(false)} title="Price Calendar">
         <div className="p-1">
-          <p className="text-xs text-white/40 mb-4">
+          <p className="text-xs text-pen-3 mb-4">
             {origin} → {destination} · Cheapest prices per day
           </p>
           <PriceCalendar
@@ -804,9 +804,9 @@ export default function FlightsPage() {
               <p className="text-sm font-semibold text-amber-300">
                 {/temporarily unavailable/i.test(error) ? 'Live provider is catching up' : "Couldn't load flights"}
               </p>
-              <p className="text-xs text-white/60 mt-1">{error}</p>
+              <p className="text-xs text-pen-2 mt-1">{error}</p>
               {/temporarily unavailable/i.test(error) && (
-                <p className="text-xs text-white/40 mt-1">
+                <p className="text-xs text-pen-3 mt-1">
                   Our upstream Sky-Scrapper data source is momentarily throttled for this route. Try a nearby airport, a different date, or search hotels for the same destination.
                 </p>
               )}
@@ -831,7 +831,7 @@ export default function FlightsPage() {
         <div className="space-y-4">
           <div className="flex items-center gap-3">
             <div className="w-5 h-5 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
-            <p className="text-sm text-white/60">
+            <p className="text-sm text-pen-2">
               Searching live flight prices...
             </p>
           </div>
@@ -850,7 +850,7 @@ export default function FlightsPage() {
           <div>
             {/* Mobile toggle */}
             <button
-              className="lg:hidden w-full glass rounded-xl px-4 py-3 text-sm text-white/80 flex items-center justify-between mb-4"
+              className="lg:hidden w-full glass rounded-xl px-4 py-3 text-sm text-pen-1/80 flex items-center justify-between mb-4"
               onClick={() => setFiltersOpen(!filtersOpen)}
             >
               <span>Filters</span>
@@ -875,7 +875,7 @@ export default function FlightsPage() {
             >
               {/* Price range */}
               <Card padding="md">
-                <h3 className="text-sm font-semibold text-white/80 mb-3">
+                <h3 className="text-sm font-semibold text-pen-1/80 mb-3">
                   Price Range (USD)
                 </h3>
                 <div className="flex gap-2">
@@ -896,14 +896,14 @@ export default function FlightsPage() {
 
               {/* Stops */}
               <Card padding="md">
-                <h3 className="text-sm font-semibold text-white/80 mb-3">
+                <h3 className="text-sm font-semibold text-pen-1/80 mb-3">
                   Stops
                 </h3>
                 <div className="space-y-2">
                   {([0, 1, 2] as const).map((s) => (
                     <label
                       key={s}
-                      className="flex items-center gap-2.5 text-sm text-white/70 cursor-pointer hover:text-white/90 transition-colors"
+                      className="flex items-center gap-2.5 text-sm text-pen-2 cursor-pointer hover:text-pen-1/90 transition-colors"
                     >
                       <input
                         type="checkbox"
@@ -922,14 +922,14 @@ export default function FlightsPage() {
               {/* Airlines */}
               {airlinesList.length > 0 && (
                 <Card padding="md">
-                  <h3 className="text-sm font-semibold text-white/80 mb-3">
+                  <h3 className="text-sm font-semibold text-pen-1/80 mb-3">
                     Airlines
                   </h3>
                   <div className="space-y-2 max-h-48 overflow-y-auto">
                     {airlinesList.map((a) => (
                       <label
                         key={a}
-                        className="flex items-center gap-2.5 text-sm text-white/70 cursor-pointer hover:text-white/90 transition-colors"
+                        className="flex items-center gap-2.5 text-sm text-pen-2 cursor-pointer hover:text-pen-1/90 transition-colors"
                       >
                         <input
                           type="checkbox"
@@ -948,14 +948,14 @@ export default function FlightsPage() {
 
               {/* Departure Time */}
               <Card padding="md">
-                <h3 className="text-sm font-semibold text-white/80 mb-3">
+                <h3 className="text-sm font-semibold text-pen-1/80 mb-3">
                   Departure Time
                 </h3>
                 <div className="space-y-2">
                   {['Morning', 'Afternoon', 'Evening', 'Night'].map((t) => (
                     <label
                       key={t}
-                      className="flex items-center gap-2.5 text-sm text-white/70 cursor-pointer hover:text-white/90 transition-colors"
+                      className="flex items-center gap-2.5 text-sm text-pen-2 cursor-pointer hover:text-pen-1/90 transition-colors"
                     >
                       <input
                         type="checkbox"
@@ -980,14 +980,14 @@ export default function FlightsPage() {
 
               {/* Carbon */}
               <Card padding="md">
-                <h3 className="text-sm font-semibold text-white/80 mb-3">
+                <h3 className="text-sm font-semibold text-pen-1/80 mb-3">
                   Carbon Footprint
                 </h3>
                 <div className="space-y-2">
                   {['Low', 'Medium', 'High'].map((c) => (
                     <label
                       key={c}
-                      className="flex items-center gap-2.5 text-sm text-white/70 cursor-pointer hover:text-white/90 transition-colors"
+                      className="flex items-center gap-2.5 text-sm text-pen-2 cursor-pointer hover:text-pen-1/90 transition-colors"
                     >
                       <input
                         type="checkbox"
@@ -1027,7 +1027,7 @@ export default function FlightsPage() {
                   <p className="text-sm font-semibold text-emerald-300">
                     Hacker Fare — Save ${hackerFare.savings}
                   </p>
-                  <p className="text-xs text-white/40 mt-0.5">
+                  <p className="text-xs text-pen-3 mt-0.5">
                     Combine {hackerFare.outboundAirline} outbound (${hackerFare.outboundPrice}) + {hackerFare.returnAirline} return (${hackerFare.returnPrice}) for ${hackerFare.total} instead of ${hackerFare.sameAirlineTotal} on {hackerFare.sameAirlineName}
                   </p>
                 </div>
@@ -1039,8 +1039,8 @@ export default function FlightsPage() {
           <div className="space-y-4">
             {/* Results header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <p className="text-sm text-white/60">
-                <span className="text-white font-semibold">
+              <p className="text-sm text-pen-2">
+                <span className="text-pen-1 font-semibold">
                   {results.length}
                 </span>{' '}
                 flights found
@@ -1061,7 +1061,7 @@ export default function FlightsPage() {
             {/* Flight cards */}
             {results.length === 0 && (
               <Card padding="lg" className="text-center">
-                <p className="text-white/50 text-sm">
+                <p className="text-pen-2 text-sm">
                   {flights.length === 0
                     ? 'No flights found. Try different dates or routes.'
                     : 'No flights match your filters. Try adjusting your criteria.'}
@@ -1092,7 +1092,7 @@ export default function FlightsPage() {
                     }}
                     className="w-4 h-4 rounded accent-amber-400 cursor-pointer"
                   />
-                  <span className="text-[10px] text-white/40 select-none">Compare</span>
+                  <span className="text-[10px] text-pen-3 select-none">Compare</span>
                 </label>
                 <div className="p-5 md:p-6">
                   <div className="flex flex-col md:flex-row md:items-center gap-5">
@@ -1120,10 +1120,10 @@ export default function FlightsPage() {
                           )}
                         </div>
                         <div>
-                          <p className="text-sm font-semibold text-white">
+                          <p className="text-sm font-semibold text-pen-1">
                             {f.airline}
                           </p>
-                          <p className="text-xs text-white/45">
+                          <p className="text-xs text-pen-1/45">
                             {f.flightNumber || f.airlineCode}
                           </p>
                         </div>
@@ -1137,19 +1137,19 @@ export default function FlightsPage() {
                       {/* Times */}
                       <div className="flex items-center gap-4">
                         <div>
-                          <p className="text-xl font-bold text-white">
+                          <p className="text-xl font-bold text-pen-1">
                             {formatTime(f.departureTime)}
                           </p>
-                          <p className="text-xs text-white/45">
+                          <p className="text-xs text-pen-1/45">
                             {f.originIata || origin.toUpperCase().slice(0, 3)}
                           </p>
                         </div>
 
                         <div className="flex-1 flex flex-col items-center gap-1 px-2">
-                          <p className="text-xs text-white/45">
+                          <p className="text-xs text-pen-1/45">
                             {formatDuration(f.durationMinutes)}
                           </p>
-                          <div className="w-full h-px bg-white/10 relative">
+                          <div className="w-full h-px bg-ink-600 relative">
                             <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-amber-400" />
                             <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-amber-400" />
                             {f.stops > 0 && (
@@ -1175,10 +1175,10 @@ export default function FlightsPage() {
                         </div>
 
                         <div>
-                          <p className="text-xl font-bold text-white">
+                          <p className="text-xl font-bold text-pen-1">
                             {formatTime(f.arrivalTime)}
                           </p>
-                          <p className="text-xs text-white/45">
+                          <p className="text-xs text-pen-1/45">
                             {f.destinationIata || destination.toUpperCase().slice(0, 3)}
                           </p>
                         </div>
@@ -1210,7 +1210,7 @@ export default function FlightsPage() {
                       <span className={`px-1.5 py-0.5 rounded text-[9px] font-medium ${
                         f.baggageIncluded
                           ? 'bg-emerald-500/10 text-emerald-300 border border-emerald-400/20'
-                          : 'bg-white/5 text-white/40 border border-white/10'
+                          : 'bg-ink-600 text-pen-3 border border-line-2'
                       }`}>
                         {f.baggageIncluded ? 'Checked: Bag included' : 'Carry-on: Cabin only'}
                       </span>
@@ -1234,7 +1234,7 @@ export default function FlightsPage() {
                       <div className="text-right">
                         <div className="flex items-center justify-end gap-2">
                           <PriceSparkline price={f.price} score={f.score} />
-                          <p className="text-2xl font-bold text-white">
+                          <p className="text-2xl font-bold text-pen-1">
                             ${f.price}
                           </p>
                           {/* Price level badge */}
@@ -1247,7 +1247,7 @@ export default function FlightsPage() {
                               Low
                             </span>
                           ) : f.score >= 40 ? (
-                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-white/8 text-white/50 border border-white/10">
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-ink-600 text-pen-2 border border-line-2">
                               Typical
                             </span>
                           ) : (
@@ -1260,7 +1260,7 @@ export default function FlightsPage() {
                             </span>
                           )}
                         </div>
-                        <p className="text-xs text-white/40">per person</p>
+                        <p className="text-xs text-pen-3">per person</p>
                         {/* Price volatility indicator */}
                         {f.dealQuality.toLowerCase() === 'excellent' && (
                           <p className="text-[10px] text-amber-400 mt-0.5 flex items-center justify-end gap-1">
@@ -1284,7 +1284,7 @@ export default function FlightsPage() {
                           </p>
                         )}
                         {f.dealQuality.toLowerCase() === 'poor' && (
-                          <p className="text-[10px] text-white/40 mt-0.5 flex items-center justify-end gap-1">
+                          <p className="text-[10px] text-pen-3 mt-0.5 flex items-center justify-end gap-1">
                             Wait for better price
                           </p>
                         )}
@@ -1292,7 +1292,7 @@ export default function FlightsPage() {
 
                       {/* Score bar */}
                       <div className="flex items-center gap-2 w-full max-w-[120px]">
-                        <div className="flex-1 h-1.5 rounded-full bg-white/10 overflow-hidden">
+                        <div className="flex-1 h-1.5 rounded-full bg-ink-600 overflow-hidden">
                           <div
                             className="h-full rounded-full"
                             style={{
@@ -1306,7 +1306,7 @@ export default function FlightsPage() {
                             }}
                           />
                         </div>
-                        <span className="text-xs font-semibold text-white/60">
+                        <span className="text-xs font-semibold text-pen-2">
                           {f.score}
                         </span>
                       </div>
@@ -1338,7 +1338,7 @@ export default function FlightsPage() {
                       {/* Alert button — quick mission creation */}
                       <Link
                         href={`/missions/new?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}&departDate=${departDate}&budget=${Math.round(f.price * 1.1)}&autoBuy=${Math.round(f.price * 0.95)}`}
-                        className="rounded-lg px-3 py-2 text-xs text-white/40 hover:text-amber-300 hover:bg-amber-500/5 transition"
+                        className="rounded-lg px-3 py-2 text-xs text-pen-3 hover:text-amber-300 hover:bg-amber-500/5 transition"
                         title="Set price alert for this route"
                       >
                         <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -1350,7 +1350,7 @@ export default function FlightsPage() {
                       {/* Share button */}
                       <button
                         type="button"
-                        className="rounded-lg px-3 py-2 text-xs text-white/40 hover:text-white hover:bg-white/5 transition"
+                        className="rounded-lg px-3 py-2 text-xs text-pen-3 hover:text-pen-1 hover:bg-ink-600 transition"
                         title="Share this deal"
                         onClick={() => shareDeal({
                           origin: f.originIata || origin,
@@ -1371,7 +1371,7 @@ export default function FlightsPage() {
                           href={f.deepLink}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="premium-button rounded-lg px-4 py-2 text-xs font-semibold text-white inline-flex items-center gap-1.5"
+                          className="premium-button rounded-lg px-4 py-2 text-xs font-semibold text-pen-1 inline-flex items-center gap-1.5"
                           title="Book this flight on the carrier's partner site"
                         >
                           Book
@@ -1384,7 +1384,7 @@ export default function FlightsPage() {
                       ) : (
                         <Link
                           href={`/flights/book?price=${f.price}&airline=${encodeURIComponent(f.airline)}&route=${origin}-${destination}&flight=${f.flightNumber || ''}&departure=${f.departureTime}&arrival=${f.arrivalTime}&duration=${f.durationMinutes}&stops=${f.stops}`}
-                          className="premium-button rounded-lg px-4 py-2 text-xs font-semibold text-white"
+                          className="premium-button rounded-lg px-4 py-2 text-xs font-semibold text-pen-1"
                         >
                           Book
                         </Link>
@@ -1447,7 +1447,7 @@ export default function FlightsPage() {
         <div
           className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-3 px-5 py-3 rounded-2xl shadow-2xl"
           style={{
-            background: 'rgba(28,25,23,0.92)',
+            background: 'var(--ink-800)',
             backdropFilter: 'blur(16px)',
             WebkitBackdropFilter: 'blur(16px)',
             border: '1px solid rgba(245,158,11,0.25)',
@@ -1457,7 +1457,7 @@ export default function FlightsPage() {
             <rect x="1" y="1" width="5" height="14" rx="1" />
             <rect x="10" y="4" width="5" height="11" rx="1" />
           </svg>
-          <span className="text-sm text-white/80 font-medium">
+          <span className="text-sm text-pen-1/80 font-medium">
             {compareSet.size} flights selected
           </span>
           <Button
@@ -1468,7 +1468,7 @@ export default function FlightsPage() {
             Compare
           </Button>
           <button
-            className="text-xs text-white/40 hover:text-white/70 transition ml-1"
+            className="text-xs text-pen-3 hover:text-pen-2 transition ml-1"
             onClick={() => setCompareSet(new Set())}
           >
             Clear

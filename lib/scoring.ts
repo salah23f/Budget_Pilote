@@ -11,14 +11,76 @@ import type {
 // Weight configuration
 // ---------------------------------------------------------------------------
 
-const WEIGHTS = {
+export interface ScoreWeights {
+  price: number;
+  carbon: number;
+  duration: number;
+  stops: number;
+  time: number;
+  deal: number;
+}
+
+/** Neutral profile — used when a caller expresses no preference. */
+const WEIGHTS: ScoreWeights = {
   price: 0.4,
   carbon: 0.15,
   duration: 0.15,
   stops: 0.1,
   time: 0.1,
   deal: 0.1,
-} as const;
+};
+
+/**
+ * Translate what the traveller asked for into scoring weights.
+ *
+ * The mission flow asks "what matters to you" and stores the answers as
+ * pricePriority / stopsPreference / ecoPreference. Without this the engine
+ * scored every mission identically and simply returned the cheapest fare,
+ * which is how a 2-stop 14-hour itinerary wins over a nonstop that costs
+ * fifteen euros more.
+ *
+ * Weights are renormalised to sum to 1 so scores stay comparable at 0-100.
+ */
+export function weightsForMission(mission: {
+  pricePriority?: string;
+  stopsPreference?: string;
+  ecoPreference?: string;
+}): ScoreWeights {
+  const w: ScoreWeights = { ...WEIGHTS };
+
+  // "Cheapest possible" — price dominates, comfort dimensions shrink.
+  if (mission.pricePriority === 'cheapest') {
+    w.price = 0.62;
+    w.deal = 0.14;
+    w.duration = 0.08;
+    w.stops = 0.06;
+    w.time = 0.05;
+    w.carbon = 0.05;
+  }
+
+  // Nonstop matters — stops and duration carry real weight.
+  if (mission.stopsPreference === 'direct') {
+    w.stops += 0.14;
+    w.duration += 0.06;
+    w.price = Math.max(0.2, w.price - 0.2);
+  }
+
+  // Greener travel — carbon becomes a first-class dimension.
+  if (mission.ecoPreference === 'eco' || mission.ecoPreference === 'greenest') {
+    w.carbon += 0.18;
+    w.price = Math.max(0.2, w.price - 0.18);
+  }
+
+  const total = w.price + w.carbon + w.duration + w.stops + w.time + w.deal;
+  return {
+    price: w.price / total,
+    carbon: w.carbon / total,
+    duration: w.duration / total,
+    stops: w.stops / total,
+    time: w.time / total,
+    deal: w.deal / total,
+  };
+}
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -84,7 +146,9 @@ export interface ScoredOffer extends Offer {
  */
 export function scoreOffers(
   offers: Offer[],
-  signal: MarketSignal
+  signal: MarketSignal,
+  /** Optional per-mission profile. Defaults to the neutral weights. */
+  weights: ScoreWeights = WEIGHTS
 ): ScoredOffer[] {
   if (offers.length === 0) return [];
 
@@ -131,12 +195,12 @@ export function scoreOffers(
     const dqScore = dealQualityScore(quality);
 
     const composite = Math.round(
-      pScore * WEIGHTS.price +
-        cScore * WEIGHTS.carbon +
-        dScore * WEIGHTS.duration +
-        sScore * WEIGHTS.stops +
-        tScore * WEIGHTS.time +
-        dqScore * WEIGHTS.deal
+      pScore * weights.price +
+        cScore * weights.carbon +
+        dScore * weights.duration +
+        sScore * weights.stops +
+        tScore * weights.time +
+        dqScore * weights.deal
     );
 
     const parts: string[] = [];

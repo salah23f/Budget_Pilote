@@ -15,9 +15,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'STRIPE_SECRET_KEY not configured' }, { status: 503 });
   }
 
-  // Auth gate — only allow with the cron secret
+  // Auth gate — fail CLOSED: require CRON_SECRET to be set AND matched.
+  // (Previously, if CRON_SECRET was unset this check was skipped, leaving
+  // this Stripe-account-mutating endpoint fully open to anyone.)
   const auth = req.headers.get('authorization');
-  if (process.env.CRON_SECRET && auth !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (!process.env.CRON_SECRET || auth !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -76,12 +78,13 @@ export async function POST(req: NextRequest) {
       url: webhook.url,
     });
 
+    // Do NOT return the whsec_ signing secret in the HTTP response.
+    // Copy it from the Stripe dashboard instead.
     return NextResponse.json({
       success: true,
       webhookId: webhook.id,
       url: webhook.url,
-      signingSecret: webhook.secret,
-      message: 'Webhook created! Add the signing secret to Vercel as STRIPE_WEBHOOK_SECRET',
+      message: 'Webhook created. Copy its signing secret from the Stripe dashboard and set STRIPE_WEBHOOK_SECRET in Vercel.',
     });
   } catch (err: any) {
     return NextResponse.json({

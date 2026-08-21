@@ -32,27 +32,27 @@ export function CookieBanner() {
 
   return (
     <div
-      className="fixed bottom-4 left-4 right-4 md:left-auto md:right-6 md:max-w-md z-[9998] rounded-2xl p-5 shadow-2xl"
+      className="fixed bottom-4 left-4 right-4 md:left-auto md:right-6 md:max-w-md z-[9998] rounded-lg p-5 shadow-elev-3"
       style={{
-        background: 'rgba(28, 25, 23, 0.95)',
-        border: '1px solid rgba(255,255,255,0.1)',
+        background: 'var(--ink-800)',
+        border: '1px solid var(--line-2)',
         backdropFilter: 'blur(20px)',
       }}
     >
-      <p className="text-sm text-white/70 mb-3 leading-relaxed">
+      <p className="text-sm text-pen-2 mb-3 leading-relaxed">
         We use cookies to improve your experience and analyze traffic. No tracking, no ads — just essential functionality.
       </p>
       <div className="flex items-center gap-2">
         <button
           onClick={accept}
-          className="flex-1 px-4 py-2 rounded-xl text-sm font-semibold text-white"
-          style={{ background: 'var(--flyeas-gradient, linear-gradient(135deg, #D4A24C, #EF4444))' }}
+          className="flex-1 px-4 py-2 rounded-md text-sm font-semibold text-accent-ink"
+          style={{ background: 'var(--accent)' }}
         >
           Accept
         </button>
         <button
           onClick={decline}
-          className="px-4 py-2 rounded-xl text-sm text-white/50 hover:text-white border border-white/10 transition"
+          className="px-4 py-2 rounded-md text-sm text-pen-2 hover:text-pen-1 border border-line-2 transition"
         >
           Decline
         </button>

@@ -23,22 +23,23 @@ export interface ButtonProps
 /* ------------------------------------------------------------------ */
 
 const variantClasses: Record<ButtonVariant, string> = {
+  // Solid accent — no gradient, no glow (DS v3 §9)
   primary:
-    'bg-gradient-to-r from-accent-light to-accent-dark text-white font-semibold shadow-glow hover:shadow-glow-lg hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all duration-200',
+    'bg-accent text-accent-ink font-semibold hover:bg-accent-hover active:scale-[0.98] transition-all duration-default',
   secondary:
-    'bg-surface-card text-text-primary border border-border-default hover:bg-white/[0.08] hover:border-border-default transition-colors',
+    'bg-ink-800 text-pen-1 border border-line-2 hover:bg-ink-600 hover:border-line-3 transition-colors',
   ghost:
-    'bg-transparent text-text-secondary hover:bg-white/[0.06] hover:text-text-primary transition-colors border border-transparent',
+    'bg-transparent text-pen-2 hover:bg-ink-600 hover:text-pen-1 transition-colors border border-transparent',
   outline:
     'bg-transparent text-accent border border-accent/30 hover:bg-accent/10 hover:border-accent/50 transition-colors',
   danger:
-    'bg-red-500/15 text-red-300 border border-red-500/25 hover:bg-red-500/25 transition-colors',
+    'bg-danger/10 text-danger border border-danger/25 hover:bg-danger/20 transition-colors',
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
-  sm: 'text-xs px-3.5 py-2 rounded-lg gap-1.5 min-h-[36px]',
-  md: 'text-sm px-5 py-2.5 rounded-xl gap-2 min-h-[44px]',
-  lg: 'text-base px-7 py-3.5 rounded-xl gap-2.5 min-h-[48px]',
+  sm: 'text-xs px-3.5 py-2 rounded-md gap-1.5 min-h-[36px]',
+  md: 'text-sm px-5 py-2.5 rounded-md gap-2 min-h-[44px]',
+  lg: 'text-base px-7 py-3.5 rounded-md gap-2.5 min-h-[48px]',
 };
 
 /* ------------------------------------------------------------------ */
@@ -99,7 +100,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={isDisabled}
         className={[
           'inline-flex items-center justify-center font-medium select-none',
-          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-primary',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 focus-visible:ring-offset-ink-950',
           variantClasses[variant],
           sizeClasses[size],
           fullWidth ? 'w-full' : '',

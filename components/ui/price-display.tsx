@@ -81,18 +81,18 @@ export function PriceDisplay({
 
   return (
     <span className="inline-flex flex-col items-end leading-none">
-      <span className={`${sizes[size]} ${className}`} style={color ? { color } : undefined}>
-        {prefix && <span className="text-white/40 font-normal mr-1">{prefix}</span>}
+      <span className={`num ${sizes[size]} ${className}`} style={color ? { color } : undefined}>
+        {prefix && <span className="text-pen-3 font-normal mr-1">{prefix}</span>}
         <span style={strikethrough ? { textDecoration: 'line-through', opacity: 0.5 } : undefined}>
           {displayValue}
         </span>
         {showCode && activeCurrency !== 'USD' && (
-          <span className="text-[0.6em] text-white/30 ml-1 font-mono">{activeCurrency}</span>
+          <span className="text-[0.6em] text-pen-3 ml-1 font-mono">{activeCurrency}</span>
         )}
-        {suffix && <span className="text-white/40 text-[0.75em] font-normal ml-0.5">{suffix}</span>}
+        {suffix && <span className="text-pen-3 text-[0.75em] font-normal ml-0.5">{suffix}</span>}
       </span>
       {needsOriginal && (
-        <span className="text-[10px] text-white/25 mt-0.5 font-mono">
+        <span className="num text-[10px] text-pen-3 mt-0.5 font-mono">
           ~ ${Math.round(usd!).toLocaleString()}
         </span>
       )}

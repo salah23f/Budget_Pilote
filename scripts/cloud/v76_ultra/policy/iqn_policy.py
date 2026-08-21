@@ -57,12 +57,17 @@ def train_iqn(seq_len: int = 32, d_hidden: int = 128, n_cos: int = 64,
             n = e - s
             if n < seq_len + 2:
                 continue
-            # Target = future-min price minus the current price,
-            # to give the policy an explicit "how much can I still save?" signal.
+            # Target = future-min price minus the current price.
+            # The future window must EXCLUDE the current observation (s+k),
+            # otherwise fut_min ≤ cur trivially (cur is inside the min) and
+            # the target is always ≤ 0. We look at prices[k+1 : k+31].
             for k in range(seq_len, n - 1):
                 history = prices[s + k - seq_len:s + k]
                 cur = prices[s + k]
-                fut_min = prices[s + k:s + k + min(30, e - s - k)].min()
+                fut_slice = prices[s + k + 1:s + k + 1 + min(30, e - s - k - 1)]
+                if len(fut_slice) == 0:
+                    continue
+                fut_min = fut_slice.min()
                 X.append(np.concatenate([history, [cur]]))
                 Y.append(fut_min - cur)
                 rlist.append(un[i])

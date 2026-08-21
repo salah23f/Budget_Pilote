@@ -8,12 +8,12 @@ import { WebsiteSchema } from '@/components/structured-data';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const jakarta = Plus_Jakarta_Sans({ subsets: ['latin'], variable: '--font-display', weight: ['500', '600', '700', '800'] });
-// Editorial serif — hero headlines, greetings, section intros (see docs/design-system.md §2)
+// Editorial display — Fraunces variable, softened via SOFT axis (see globals.css .editorial)
 const fraunces = Fraunces({
   subsets: ['latin'],
   variable: '--font-serif',
-  weight: ['300', '400', '500', '600'],
   style: ['normal', 'italic'],
+  axes: ['SOFT', 'WONK', 'opsz'],
 });
 
 export const metadata = {
@@ -62,7 +62,7 @@ export const metadata = {
   },
   appleWebApp: {
     capable: true,
-    statusBarStyle: 'black-translucent',
+    statusBarStyle: 'default',
     title: 'Flyeas',
   },
 };
@@ -72,13 +72,20 @@ export const viewport = {
   initialScale: 1,
   maximumScale: 1,
   viewportFit: 'cover' as const,
-  themeColor: '#0B0B0D',
+  themeColor: '#FAF7F2',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${inter.variable} ${jakarta.variable} ${fraunces.variable}`}>
+    // suppressHydrationWarning: the pre-paint script below adds .dark before React hydrates
+    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${jakarta.variable} ${fraunces.variable}`}>
       <head>
+        {/* Apply stored dark mode before first paint — no theme flash */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var s=localStorage.getItem('flyeas_theme');if(s&&JSON.parse(s).mode==='dark'){document.documentElement.classList.add('dark');document.documentElement.style.colorScheme='dark';}}catch(e){}})();`,
+          }}
+        />
         {/* Travelpayouts affiliate verification */}
         <script
           dangerouslySetInnerHTML={{
@@ -101,10 +108,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             position="top-right"
             toastOptions={{
               style: {
-                background: '#1D1D22',
-                border: '1px solid #252528',
-                color: '#F5F5F1',
-                borderRadius: '10px',
+                background: 'var(--ink-800)',
+                border: '1px solid var(--line-2)',
+                color: 'var(--pen-1)',
+                borderRadius: '12px',
+                boxShadow: 'var(--shadow-2)',
               },
             }}
           />

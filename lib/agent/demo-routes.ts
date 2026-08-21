@@ -29,6 +29,33 @@ export interface DemoRoute {
 }
 
 export const DEMO_ROUTES: DemoRoute[] = [
+  // ==========================================================
+  // ROUTES DU PRODUIT — Genève (12)
+  // ==========================================================
+  // Placées en tête volontairement : la rotation part de l'index 0, donc
+  // ces routes sont scannées les premières et le plus souvent.
+  //
+  // Elles manquaient entièrement. Le pool couvrait 100 paires — US
+  // domestique, transatlantique, transpacifique — mais aucune au départ
+  // de GVA, alors que c'est de là que partent les missions réelles
+  // (GVA→TUN, GVA→IBZ, GVA→LIS). L'agent n'accumulait donc aucun
+  // historique sur les routes qu'il doit précisément savoir prédire, et
+  // toute mesure de performance portait sur des routes que le produit ne
+  // vend pas. Plusieurs TTD par destination : les baselines comparent à
+  // time-to-departure comparable, une seule valeur ne les nourrit pas.
+  { origin: 'GVA', destination: 'TUN', ttd: 21, label: 'Genève-Tunis' },
+  { origin: 'GVA', destination: 'TUN', ttd: 45 },
+  { origin: 'GVA', destination: 'IBZ', ttd: 21, label: 'Genève-Ibiza' },
+  { origin: 'GVA', destination: 'IBZ', ttd: 45 },
+  { origin: 'GVA', destination: 'LIS', ttd: 21, label: 'Genève-Lisbonne' },
+  { origin: 'GVA', destination: 'LIS', ttd: 45 },
+  { origin: 'GVA', destination: 'BCN', ttd: 30, label: 'Genève-Barcelone' },
+  { origin: 'GVA', destination: 'FCO', ttd: 30, label: 'Genève-Rome' },
+  { origin: 'GVA', destination: 'LHR', ttd: 14, label: 'Genève-Londres' },
+  { origin: 'GVA', destination: 'CDG', ttd: 14, label: 'Genève-Paris' },
+  { origin: 'GVA', destination: 'IST', ttd: 45, label: 'Genève-Istanbul' },
+  { origin: 'GVA', destination: 'RAK', ttd: 45, label: 'Genève-Marrakech' },
+
   // ============================
   // US DOMESTIC (35)
   // ============================

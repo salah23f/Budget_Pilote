@@ -119,11 +119,11 @@ export function HotelDestinationInput({ label, value, onChange, placeholder }: P
 
   return (
     <div ref={wrapperRef} className="relative">
-      <label className="block text-xs font-medium text-white/50 mb-1.5">{label}</label>
+      <label className="block text-xs font-medium text-pen-3 mb-1.5">{label}</label>
       <div className="relative">
         <input
           type="text"
-          className="glass-input w-full pr-8"
+          className="w-full rounded-md bg-ink-900 border border-line-2 px-3 py-2 pr-8 text-sm text-pen-1 placeholder:text-pen-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
           placeholder={placeholder || 'City, neighborhood, hotel...'}
           value={query}
           onChange={handleInputChange}
@@ -135,12 +135,12 @@ export function HotelDestinationInput({ label, value, onChange, placeholder }: P
         />
         {loading && (
           <div className="absolute right-3 top-1/2 -translate-y-1/2">
-            <div className="w-4 h-4 border-2 border-amber-400/40 border-t-amber-400 rounded-full animate-spin" />
+            <div className="w-4 h-4 border-2 border-accent/40 border-t-accent rounded-full animate-spin" />
           </div>
         )}
         {!loading && selected && (
           <div className="absolute right-3 top-1/2 -translate-y-1/2">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="var(--success)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M3 8.5l3.5 3.5L13 5" />
             </svg>
           </div>
@@ -149,29 +149,27 @@ export function HotelDestinationInput({ label, value, onChange, placeholder }: P
 
       {isOpen && results.length > 0 && (
         <div
-          className="absolute z-50 mt-1 w-full max-h-72 overflow-y-auto rounded-xl shadow-2xl"
-          style={{ background: '#1C1917', border: '1px solid rgba(255,255,255,0.1)' }}
+          className="absolute z-50 mt-1 w-full max-h-72 overflow-y-auto rounded-lg bg-ink-800 border border-line-1 shadow-elev-3"
         >
           {results.map((r, i) => (
             <button
               key={`${r.entityId}-${i}`}
               type="button"
-              className="w-full px-4 py-3 text-left transition-colors hover:bg-white/5 flex items-center gap-3"
+              className="w-full px-4 py-3 text-left transition-colors hover:bg-ink-600 flex items-center gap-3"
               onClick={() => select(r)}
             >
               <div
-                className="flex h-9 w-9 items-center justify-center rounded-lg text-base flex-shrink-0"
-                style={{ background: 'rgba(245,158,11,0.1)' }}
+                className="flex h-9 w-9 items-center justify-center rounded-md bg-accent-soft text-base flex-shrink-0"
               >
                 {typeIcon(r.type)}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium text-white truncate">{r.name}</p>
-                <p className="text-xs text-white/40 truncate">
+                <p className="text-sm font-medium text-pen-1 truncate">{r.name}</p>
+                <p className="text-xs text-pen-3 truncate">
                   {r.hierarchy || typeLabel(r.type)}
                 </p>
               </div>
-              <span className="text-[10px] text-white/20 font-mono flex-shrink-0">
+              <span className="text-[10px] text-pen-3 font-mono flex-shrink-0">
                 {typeLabel(r.type)}
               </span>
             </button>

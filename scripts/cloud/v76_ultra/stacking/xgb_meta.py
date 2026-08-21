@@ -131,10 +131,13 @@ def fit_xgb_meta():
             "models": cols,
         }, f, indent=2)
 
-    # OOF predictions produced by the meta (for level 2 / policy layer)
-    full_pred = model.predict(X)
-    out = pd.DataFrame({"route": merged["route"].values,
-                         "actual": y, "prediction": full_pred})
+    # OOF predictions for the policy layer: ONLY on the held-out split.
+    # Saving predictions on Xtr too would leak training info into the
+    # conformal calibration downstream, making the offsets artificially
+    # tight. We only expose the genuine out-of-sample predictions.
+    val_pred = model.predict(Xva)
+    out = pd.DataFrame({"route": merged["route"].values[split:],
+                         "actual": yva, "prediction": val_pred})
     out.to_parquet(f"{MODELS_DIR}/xgb_meta_oof_predictions.parquet", index=False)
 
     volume.commit()

@@ -1,73 +1,144 @@
 name: Flyeas watcher
 
-# Keeps the AI agent "always watching" — runs every 15 minutes on
-# GitHub's free tier (2000 min/month for private repos, UNLIMITED for
-# public repos). Calls the /api/agent/sweep endpoint which:
-#   1. Loads every active mission
-#   2. Runs a fresh flight search
-#   3. Records a price sample into the time-series store
-#   4. Runs the statistical predictor
-#   5. Auto-buys (or creates a proposal) on BUY_NOW signals
+# Keeps the AI agent "toujours à l'affût" — runs every 15 minutes.
+# Calls the /api/agent/sweep endpoint which loads active missions, runs a
+# flight search, records a price sample, runs the predictor and fires
+# proposals when the gate passes.
 #
-# This is how Flyeas gives you Hopper-grade continuous monitoring
-# without Vercel Pro. Vercel Hobby's daily cron is the backup; this
-# workflow is the primary scheduler.
+# REQUIRED GitHub Secrets
+# -----------------------
+# FLYEAS_BASE_URL    — prod URL of the Vercel deployment without trailing
+#                      slash. Example: https://faregenie.vercel.app
+# FLYEAS_CRON_SECRET — same value as CRON_SECRET configured in Vercel env.
+#                      Used by /api/agent/sweep for Bearer auth.
 #
-# Setup:
-#   1. Go to GitHub → Settings → Secrets and variables → Actions
-#   2. Add secret: FLYEAS_CRON_SECRET = same value as CRON_SECRET on Vercel
-#   3. Add secret: FLYEAS_BASE_URL = https://faregenie.vercel.app
-#   4. Commit this file — the workflow starts running automatically
+# OPTIONAL GitHub Variables
+# -------------------------
+# FLYEAS_FAIL_IF_UNCONFIGURED (default: true) — set to "false" to keep the
+#                              workflow green when secrets are missing. In
+#                              that case the run logs a clear notice and
+#                              exits 0. Useful on forks.
+#
+# Documentation produit : docs/V7A_WATCHER_WORKFLOW.md
+# Documentation audit    : docs/V7A_PRODUCT_INTEGRATION.md
 
 on:
   schedule:
-    # Every 15 minutes. GitHub Actions cron has a minimum interval of
-    # 5 minutes; we use 15 to stay well under rate limits from
-    # Sky-Scrapper / Kiwi upstream.
+    # Every 15 minutes. GitHub Actions cron has a 5-minute floor; 15 stays
+    # well below upstream rate limits (Sky-Scrapper / Kiwi).
     - cron: '*/15 * * * *'
-  # Allow manual triggering from the Actions tab for debugging
   workflow_dispatch:
 
-# Don't queue overlapping runs — if a previous sweep is still running
-# (e.g. Sky-Scrapper is slow) skip this tick instead of stacking up.
 concurrency:
   group: flyeas-watcher
   cancel-in-progress: false
 
 jobs:
+  preflight:
+    name: Preflight secrets check
+    runs-on: ubuntu-latest
+    outputs:
+      ready: ${{ steps.check.outputs.ready }}
+    steps:
+      - id: check
+        name: Check required secrets
+        env:
+          BASE_URL: ${{ secrets.FLYEAS_BASE_URL }}
+          CRON_SECRET: ${{ secrets.FLYEAS_CRON_SECRET }}
+          FAIL_IF_UNCONFIGURED: ${{ vars.FLYEAS_FAIL_IF_UNCONFIGURED || 'true' }}
+        run: |
+          missing=0
+          if [ -z "${BASE_URL:-}" ]; then
+            echo "::warning::FLYEAS_BASE_URL secret is not set."
+            missing=$((missing+1))
+          else
+            # Strip trailing slash to avoid 404 on /api/agent/sweep
+            BASE_URL="${BASE_URL%/}"
+            if [ -n "${BASE_URL##https://*}" ]; then
+              echo "::warning::FLYEAS_BASE_URL does not start with https:// — got '$BASE_URL'"
+            fi
+          fi
+
+          if [ -z "${CRON_SECRET:-}" ]; then
+            echo "::warning::FLYEAS_CRON_SECRET secret is not set."
+            missing=$((missing+1))
+          else
+            len=$(printf '%s' "$CRON_SECRET" | wc -c | tr -d ' ')
+            if [ "$len" -lt 16 ]; then
+              echo "::warning::FLYEAS_CRON_SECRET seems short ($len chars). Use ≥32 random chars."
+            fi
+          fi
+
+          if [ "$missing" -gt 0 ]; then
+            echo "::error::Watcher is not fully configured. See docs/V7A_WATCHER_WORKFLOW.md"
+            echo "Required repository secrets (Settings -> Secrets and variables -> Actions):"
+            echo "  - FLYEAS_BASE_URL      (e.g. https://faregenie.vercel.app)"
+            echo "  - FLYEAS_CRON_SECRET   (same as Vercel env CRON_SECRET)"
+            echo "Optional repository variable:"
+            echo "  - FLYEAS_FAIL_IF_UNCONFIGURED=false  (exit 0 while setting up)"
+            if [ "${FAIL_IF_UNCONFIGURED,,}" = "false" ]; then
+              echo "ready=false" >> "$GITHUB_OUTPUT"
+              echo "::notice::FLYEAS_FAIL_IF_UNCONFIGURED=false — exiting cleanly."
+              exit 0
+            fi
+            exit 1
+          fi
+
+          echo "ready=true" >> "$GITHUB_OUTPUT"
+
   sweep:
+    name: Call /api/agent/sweep
+    needs: preflight
+    if: needs.preflight.outputs.ready == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Call /api/agent/sweep
+      - name: Sweep
         env:
           BASE_URL: ${{ secrets.FLYEAS_BASE_URL }}
           CRON_SECRET: ${{ secrets.FLYEAS_CRON_SECRET }}
         run: |
-          if [ -z "$BASE_URL" ]; then
-            echo "::error::FLYEAS_BASE_URL secret is not set"
-            exit 1
-          fi
-          if [ -z "$CRON_SECRET" ]; then
-            echo "::error::FLYEAS_CRON_SECRET secret is not set"
-            exit 1
-          fi
+          BASE_URL="${BASE_URL%/}"
+          url="$BASE_URL/api/agent/sweep"
+          echo "::notice::POST $url"
 
-          echo "Calling sweep endpoint at $BASE_URL/api/agent/sweep"
-          response=$(curl -sS -w "\n%{http_code}" -X POST \
-            "$BASE_URL/api/agent/sweep" \
-            -H "authorization: Bearer $CRON_SECRET" \
-            -H "content-type: application/json" \
-            --max-time 280 \
-            -d '{"source":"github-actions"}')
+          # Retry with light backoff (3 attempts). Upstream is Vercel — 5xx
+          # can happen during deploys.
+          attempt=0
+          max_attempts=3
+          while : ; do
+            attempt=$((attempt+1))
+            resp_file="$(mktemp)"
+            http_code=$(curl -sS -o "$resp_file" -w "%{http_code}" -X POST \
+              "$url" \
+              -H "authorization: Bearer $CRON_SECRET" \
+              -H "content-type: application/json" \
+              -H "x-source: github-actions" \
+              --max-time 280 \
+              -d '{"source":"github-actions"}' || echo "000")
 
-          http_code=$(echo "$response" | tail -n 1)
-          body=$(echo "$response" | sed '$d')
+            echo "HTTP $http_code (attempt $attempt/$max_attempts)"
+            head -c 2000 "$resp_file" || true
+            echo
 
-          echo "HTTP $http_code"
-          echo "$body" | head -c 2000
-
-          if [ "$http_code" != "200" ]; then
-            echo "::error::Sweep failed with HTTP $http_code"
-            exit 1
-          fi
+            if [ "$http_code" = "200" ]; then
+              rm -f "$resp_file"
+              exit 0
+            fi
+            if [ "$http_code" = "401" ] || [ "$http_code" = "403" ]; then
+              echo "::error::Sweep unauthorized. FLYEAS_CRON_SECRET mismatch vs Vercel CRON_SECRET."
+              rm -f "$resp_file"
+              exit 1
+            fi
+            if [ "$http_code" = "404" ]; then
+              echo "::error::Sweep endpoint not found. Verify BASE_URL points at the right deployment."
+              rm -f "$resp_file"
+              exit 1
+            fi
+            if [ "$attempt" -ge "$max_attempts" ]; then
+              echo "::error::Sweep failed after $max_attempts attempts (last HTTP $http_code)."
+              rm -f "$resp_file"
+              exit 1
+            fi
+            sleep 15
+          done

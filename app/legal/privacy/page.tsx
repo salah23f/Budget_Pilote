@@ -31,7 +31,7 @@ export default function PrivacyPolicy() {
         <section className="mb-8">
           <h2 className="text-xl font-semibold text-white mb-2">2. Data We Collect</h2>
           <p className="text-white/70 leading-relaxed">
-            We collect your email and name for account creation, and your search queries to provide AI-powered travel recommendations. We do not collect any unnecessary personal data beyond what is required to operate the service.
+            We collect your email and name for account creation, and your search queries to provide travel recommendations. We do not collect any unnecessary personal data beyond what is required to operate the service.
           </p>
         </section>
 
@@ -39,7 +39,7 @@ export default function PrivacyPolicy() {
         <section className="mb-8">
           <h2 className="text-xl font-semibold text-white mb-2">3. How We Use Data</h2>
           <p className="text-white/70 leading-relaxed">
-            Your data is used to provide travel search results and to improve AI recommendations. We never sell your personal data to third parties.
+            Your data is used to provide travel search results and to improve our recommendations. We never sell your personal data to third parties.
           </p>
         </section>
 

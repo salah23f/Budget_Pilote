@@ -28,7 +28,7 @@ export const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
         className={[
           'relative shrink-0 overflow-hidden rounded-lg',
           sizeClasses[size],
-          !showImage ? 'flex items-center justify-center font-bold text-white bg-gradient-to-br from-accent-light to-accent-dark' : '',
+          !showImage ? 'flex items-center justify-center font-bold text-accent-ink bg-accent' : '',
           className,
         ].join(' ')}
         {...props}

@@ -268,7 +268,7 @@ export default function OnboardingPage() {
 
   // ── UI ──
   const steps = ['Account', 'Wallet', 'Done'];
-  const Spinner = () => <span className="inline-block h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />;
+  const Spinner = () => <span className="inline-block h-4 w-4 rounded-full border-2 border-accent-ink/30 border-t-accent-ink animate-spin" />;
 
   return (
     <main className="min-h-screen flex items-center justify-center px-4 py-8">
@@ -281,15 +281,15 @@ export default function OnboardingPage() {
               <div key={l} className="flex items-center">
                 <div className="flex flex-col items-center">
                   <div className="flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold transition-all" style={{
-                    background: i < step ? 'linear-gradient(135deg,#D4A24C,#F97316)' : i === step ? 'linear-gradient(135deg,#D4A24C,#EF4444)' : 'rgba(255,255,255,0.06)',
-                    color: i <= step ? '#fff' : 'rgba(255,255,255,0.3)',
-                    boxShadow: i === step ? '0 0 16px rgba(245,158,11,0.25)' : 'none',
+                    background: i < step ? 'var(--accent)' : i === step ? 'var(--accent)' : 'var(--line-1)',
+                    color: i <= step ? 'var(--accent-ink)' : 'var(--pen-3)',
+                    boxShadow: 'none',
                   }}>
                     {i < step ? '✓' : i + 1}
                   </div>
-                  <span className="mt-1 text-[10px] font-medium hidden sm:block" style={{ color: i <= step ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.2)' }}>{l}</span>
+                  <span className="mt-1 text-[10px] font-medium hidden sm:block" style={{ color: i <= step ? 'var(--pen-2)' : 'var(--pen-3)' }}>{l}</span>
                 </div>
-                {i < steps.length - 1 && <div className="mx-2.5 h-[2px] w-12 sm:w-16 rounded-full" style={{ background: i < step ? '#D4A24C' : 'rgba(255,255,255,0.06)' }} />}
+                {i < steps.length - 1 && <div className="mx-2.5 h-[2px] w-12 sm:w-16 rounded-full" style={{ background: i < step ? 'var(--accent)' : 'var(--line-1)' }} />}
               </div>
             ))}
           </div>
@@ -331,16 +331,16 @@ export default function OnboardingPage() {
           {/* ══ Step 1a: Email form ══ */}
           {step === 1 && !codeSent && (
             <div>
-              <h2 className="text-lg font-semibold text-white">Create your account</h2>
-              <p className="mt-1 text-[13px] text-white/35">We'll send a verification code to your email.</p>
+              <h2 className="text-lg font-semibold text-pen-1">Create your account</h2>
+              <p className="mt-1 text-[13px] text-pen-1/35">We'll send a verification code to your email.</p>
 
               <form onSubmit={(e) => { e.preventDefault(); handleSendCode(); }} className="mt-6 space-y-4">
                 <div>
-                  <label className="block text-[11px] font-medium text-white/45 mb-1.5 uppercase tracking-wider">Name</label>
+                  <label className="block text-[11px] font-medium text-pen-1/45 mb-1.5 uppercase tracking-wider">Name</label>
                   <input className="glass-input" value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="Your first name" autoFocus />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-medium text-white/45 mb-1.5 uppercase tracking-wider">Email</label>
+                  <label className="block text-[11px] font-medium text-pen-1/45 mb-1.5 uppercase tracking-wider">Email</label>
                   <input className="glass-input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
                 </div>
 
@@ -352,7 +352,7 @@ export default function OnboardingPage() {
                     onChange={(e) => setAcceptedTerms(e.target.checked)}
                     className="mt-0.5 w-4 h-4 rounded accent-amber-500 flex-shrink-0"
                   />
-                  <span className="text-[12px] text-white/40 leading-relaxed">
+                  <span className="text-[12px] text-pen-1/40 leading-relaxed">
                     I agree to the{' '}
                     <Link href="/legal/terms" target="_blank" className="text-amber-400/70 hover:text-amber-400 underline">Terms of Service</Link>
                     {' '}and{' '}
@@ -372,14 +372,14 @@ export default function OnboardingPage() {
           {/* ══ Step 1b: OTP verification ══ */}
           {step === 1 && codeSent && (
             <div>
-              <h2 className="text-lg font-semibold text-white">Check your inbox</h2>
-              <p className="mt-1 text-[13px] text-white/35">
-                We sent a 6-digit code to <span className="text-white font-medium">{email}</span>
+              <h2 className="text-lg font-semibold text-pen-1">Check your inbox</h2>
+              <p className="mt-1 text-[13px] text-pen-1/35">
+                We sent a 6-digit code to <span className="text-pen-1 font-medium">{email}</span>
               </p>
 
               <form onSubmit={(e) => { e.preventDefault(); handleVerify(); }} className="mt-6 space-y-4">
                 <div>
-                  <label className="block text-[11px] font-medium text-white/45 mb-1.5 uppercase tracking-wider">Verification code</label>
+                  <label className="block text-[11px] font-medium text-pen-1/45 mb-1.5 uppercase tracking-wider">Verification code</label>
                   <input
                     className="glass-input text-center text-xl tracking-[0.35em] font-mono"
                     type="text" inputMode="numeric" maxLength={8}
@@ -388,7 +388,7 @@ export default function OnboardingPage() {
                   />
                 </div>
 
-                <p className="text-[11px] text-white/25 text-center">Check your spam folder if you don't see it.</p>
+                <p className="text-[11px] text-pen-1/25 text-center">Check your spam folder if you don't see it.</p>
 
                 {error && <p className="text-[13px] text-red-400 bg-red-400/5 rounded-lg px-3 py-2">{error}</p>}
 
@@ -397,11 +397,11 @@ export default function OnboardingPage() {
                 </button>
 
                 <div className="flex items-center justify-between pt-1">
-                  <button type="button" onClick={() => { setCodeSent(false); setCode(''); setError(''); setResendTimer(0); }} className="text-[12px] text-white/30 hover:text-white/50 transition">
+                  <button type="button" onClick={() => { setCodeSent(false); setCode(''); setError(''); setResendTimer(0); }} className="text-[12px] text-pen-1/30 hover:text-pen-1/50 transition">
                     ← Change email
                   </button>
                   {resendTimer > 0 ? (
-                    <span className="text-[12px] text-white/25">
+                    <span className="text-[12px] text-pen-1/25">
                       Resend in {resendTimer}s
                     </span>
                   ) : (
@@ -417,25 +417,25 @@ export default function OnboardingPage() {
           {/* ══ Step 2: Wallet ══ */}
           {step === 2 && (
             <div>
-              <h2 className="text-lg font-semibold text-white">Connect wallet</h2>
-              <p className="mt-1 text-[13px] text-white/35">Optional — pay with crypto.</p>
+              <h2 className="text-lg font-semibold text-pen-1">Connect wallet</h2>
+              <p className="mt-1 text-[13px] text-pen-1/35">Optional — pay with crypto.</p>
 
-              <div className="mt-6 flex flex-col items-center rounded-2xl p-6" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}>
+              <div className="mt-6 flex flex-col items-center rounded-2xl p-6" style={{ background: 'var(--ink-800)', border: '1px solid var(--line-1)' }}>
                 <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full" style={{
-                  background: walletAddress ? 'rgba(34,197,94,0.12)' : 'rgba(245,158,11,0.08)',
+                  background: walletAddress ? 'var(--success-soft)' : 'var(--warning-soft)',
                   border: walletAddress ? '1px solid rgba(34,197,94,0.25)' : '1px solid rgba(245,158,11,0.15)',
                 }}>
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={walletAddress ? '#22c55e' : '#D4A24C'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={walletAddress ? '#22c55e' : 'var(--accent)'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                     <rect x="2" y="6" width="20" height="14" rx="2" /><path d="M2 10h20" /><path d="M16 14h2" />
                   </svg>
                 </div>
                 {walletAddress ? (
                   <div className="text-center">
                     <p className="text-[13px] font-medium text-emerald-400">Connected</p>
-                    <p className="mt-0.5 text-[11px] font-mono text-white/35">{walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}</p>
+                    <p className="mt-0.5 text-[11px] font-mono text-pen-1/35">{walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}</p>
                   </div>
                 ) : (
-                  <p className="mb-2 text-center text-[13px] text-white/30">USDC, ETH or card</p>
+                  <p className="mb-2 text-center text-[13px] text-pen-1/30">USDC, ETH or card</p>
                 )}
                 <div className="mt-2"><ConnectWalletButton /></div>
               </div>
@@ -454,25 +454,25 @@ export default function OnboardingPage() {
             <div className="flex flex-col items-center py-6">
               {success ? (
                 <>
-                  <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full" style={{ background: 'rgba(34,197,94,0.12)', border: '2px solid rgba(34,197,94,0.35)' }}>
+                  <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full" style={{ background: 'var(--success-soft)', border: '2px solid rgba(34,197,94,0.35)' }}>
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12l5 5L20 7" /></svg>
                   </div>
-                  <h2 className="text-lg font-semibold text-white">Welcome, {firstName}!</h2>
+                  <h2 className="text-lg font-semibold text-pen-1">Welcome, {firstName}!</h2>
                   <div className="mt-2 flex items-center gap-2 px-3 py-1.5 rounded-full" style={{ background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.2)' }}>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D4A24C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M12 2L14.9 8.6L22 9.3L16.8 14L18.2 21L12 17.5L5.8 21L7.2 14L2 9.3L9.1 8.6L12 2Z" />
                     </svg>
                     <span className="text-[13px] font-semibold text-amber-400">You earned 50 bonus points!</span>
                   </div>
-                  <p className="mt-2 text-[13px] text-white/35">Redirecting...</p>
-                  <div className="mt-4 h-1 w-32 overflow-hidden rounded-full" style={{ background: 'rgba(255,255,255,0.05)' }}>
-                    <div className="h-full rounded-full" style={{ background: 'linear-gradient(90deg,#D4A24C,#F97316)', animation: 'grow 1.8s ease forwards' }} />
+                  <p className="mt-2 text-[13px] text-pen-1/35">Redirecting...</p>
+                  <div className="mt-4 h-1 w-32 overflow-hidden rounded-full" style={{ background: 'var(--line-1)' }}>
+                    <div className="h-full rounded-full" style={{ background: 'linear-gradient(90deg,var(--accent),#F97316)', animation: 'grow 1.8s ease forwards' }} />
                   </div>
                 </>
               ) : (
                 <>
-                  <div className="h-8 w-8 rounded-full" style={{ border: '2.5px solid rgba(245,158,11,0.25)', borderTopColor: '#D4A24C', animation: 'spin 0.7s linear infinite' }} />
-                  <p className="mt-3 text-[13px] text-white/35">Setting up...</p>
+                  <div className="h-8 w-8 rounded-full" style={{ border: '2.5px solid rgba(245,158,11,0.25)', borderTopColor: 'var(--accent)', animation: 'spin 0.7s linear infinite' }} />
+                  <p className="mt-3 text-[13px] text-pen-1/35">Setting up...</p>
                 </>
               )}
               {error && (

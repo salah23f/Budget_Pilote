@@ -135,8 +135,8 @@ export function Modal({
       {/* Panel */}
       <div
         className={[
-          'bp-modal-panel relative w-full rounded-2xl shadow-xl',
-          'bg-surface-elevated border border-border-default',
+          'bp-modal-panel relative w-full rounded-xl shadow-elev-3',
+          'bg-ink-800 border border-line-1',
           sizeClasses[size],
         ].join(' ')}
         role="dialog"
@@ -146,7 +146,7 @@ export function Modal({
         <button
           onClick={onClose}
           aria-label="Close"
-          className="absolute top-4 right-4 z-10 p-2 rounded-xl text-text-muted hover:text-text-primary hover:bg-white/[0.06] transition-colors"
+          className="absolute top-4 right-4 z-10 p-2 rounded-md text-pen-3 hover:text-pen-1 hover:bg-ink-600 transition-colors focus-visible:ring-2 focus-visible:ring-accent/50"
         >
           <X className="w-5 h-5" strokeWidth={2} />
         </button>
@@ -154,18 +154,18 @@ export function Modal({
         {/* Title */}
         {title && (
           <div className="px-6 pt-6 pb-2 pr-14">
-            <h2 className="text-lg font-semibold font-display text-text-primary tracking-tight">
+            <h2 className="text-lg font-semibold font-display text-pen-1 tracking-tight">
               {title}
             </h2>
           </div>
         )}
 
         {/* Body — scrollable */}
-        <div className="px-6 py-4 text-sm text-text-secondary overflow-y-auto max-h-[80vh]">{children}</div>
+        <div className="px-6 py-4 text-sm text-pen-2 overflow-y-auto max-h-[80vh]">{children}</div>
 
         {/* Footer */}
         {footer && (
-          <div className="px-6 pb-6 pt-2 flex items-center justify-end gap-3 border-t border-border-subtle">
+          <div className="px-6 pb-6 pt-2 flex items-center justify-end gap-3 border-t border-line-1">
             {footer}
           </div>
         )}

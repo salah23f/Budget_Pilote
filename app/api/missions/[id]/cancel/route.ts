@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireMissionOwner } from '@/lib/auth/guard';
 import { getMission, updateMission } from '@/lib/store/missions-db';
 import { cancelMissionHold } from '@/lib/payments/stripe';
 
@@ -21,6 +22,9 @@ export async function POST(
 ) {
   const started = Date.now();
   const missionId = context.params.id;
+  // Caller must own this mission — 404 (not 403) hides existence.
+  const owned = await requireMissionOwner(missionId);
+  if (!owned.ok) return owned.response;
   const logCtx: Record<string, any> = { missionId };
 
   try {
@@ -70,9 +74,12 @@ export async function POST(
       ms: Date.now() - started,
     });
 
+    // Don't echo the full Mission (userId, stripePaymentIntentId,
+    // stripeClientSecret, walletUserAddress...). The cockpit ignores this
+    // body and re-fetches; return a minimal, non-sensitive view.
     return NextResponse.json({
       success: true,
-      mission: await getMission(missionId),
+      mission: { id: missionId, status: 'cancelled', paymentStatus: 'cancelled' },
     });
   } catch (err: any) {
     console.error('[missions/cancel] unhandled', {

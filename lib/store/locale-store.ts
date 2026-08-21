@@ -39,7 +39,10 @@ function loadLocale(): LocaleCode {
 }
 
 export const useLocaleStore = create<LocaleState>()((set) => ({
-  locale: loadLocale(),
+  // Deterministic 'en' for SSR AND the first client render — the real
+  // locale is applied after mount via initializeLocale() (no hydration
+  // mismatch between server and client HTML).
+  locale: 'en',
   setLocale: (locale) => {
     set({ locale });
     if (typeof window !== 'undefined') {
@@ -51,3 +54,14 @@ export const useLocaleStore = create<LocaleState>()((set) => ({
     }
   },
 }));
+
+/**
+ * Hydrate the stored/browser locale after mount (client only).
+ * Called from AppShell alongside initializeTheme().
+ */
+export function initializeLocale() {
+  if (typeof window === 'undefined') return;
+  const detected = loadLocale();
+  const { locale, setLocale } = useLocaleStore.getState();
+  if (detected !== locale) setLocale(detected);
+}

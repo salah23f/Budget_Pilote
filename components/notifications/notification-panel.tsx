@@ -47,14 +47,14 @@ function getTypeIcon(type: NotificationType) {
     case 'mission':
     case 'mission_created':
       return (
-        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#f59e0b" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="9" cy="9" r="7" />
           <circle cx="9" cy="9" r="2.5" />
         </svg>
       );
     case 'price_drop':
       return (
-        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#D4A24C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M13 4L9 12 5 4" />
           <path d="M5 15h8" />
         </svg>
@@ -69,7 +69,7 @@ function getTypeIcon(type: NotificationType) {
     case 'booking':
     case 'booking_confirmed':
       return (
-        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#22c55e" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="var(--success)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="9" cy="9" r="7" />
           <path d="M6 9.5l2.5 2.5L12.5 7" />
         </svg>
@@ -96,13 +96,13 @@ function getTypeIcon(type: NotificationType) {
 function getTypeBgColor(type: NotificationType) {
   switch (type) {
     case 'price_drop':
-      return 'rgba(245,158,11,0.1)';
+      return 'var(--accent-soft)';
     case 'booking':
     case 'booking_confirmed':
-      return 'rgba(34,197,94,0.1)';
+      return 'var(--success-soft)';
     case 'mission':
     case 'mission_created':
-      return 'rgba(245,158,11,0.1)';
+      return 'var(--accent-soft)';
     case 'proposal':
       return 'rgba(96,165,250,0.1)';
     case 'wallet':
@@ -116,13 +116,13 @@ function getTypeBgColor(type: NotificationType) {
 function getTypeBorderColor(type: NotificationType) {
   switch (type) {
     case 'price_drop':
-      return 'rgba(245,158,11,0.2)';
+      return 'var(--accent-soft)';
     case 'booking':
     case 'booking_confirmed':
-      return 'rgba(34,197,94,0.2)';
+      return 'var(--success-soft)';
     case 'mission':
     case 'mission_created':
-      return 'rgba(245,158,11,0.2)';
+      return 'var(--accent-soft)';
     case 'proposal':
       return 'rgba(96,165,250,0.2)';
     case 'wallet':
@@ -284,7 +284,7 @@ export default function NotificationPanel() {
       {/* Header */}
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-2xl font-semibold text-white">Notifications</h2>
+          <h2 className="text-2xl font-semibold text-pen-1">Notifications</h2>
           <p className="mt-1 text-sm muted">
             {loading
               ? 'Loading notifications...'
@@ -298,8 +298,8 @@ export default function NotificationPanel() {
           <div
             className="flex rounded-lg p-0.5"
             style={{
-              background: 'rgba(255,255,255,0.04)',
-              border: '1px solid rgba(255,255,255,0.06)',
+              background: 'var(--ink-800)',
+              border: '1px solid var(--ink-800)',
             }}
           >
             {(['all', 'unread'] as const).map((f) => (
@@ -309,16 +309,16 @@ export default function NotificationPanel() {
                 className="rounded-md px-3 py-1.5 text-xs font-medium capitalize transition-all duration-200"
                 style={{
                   background:
-                    filter === f ? 'rgba(245,158,11,0.12)' : 'transparent',
+                    filter === f ? 'var(--accent-soft)' : 'transparent',
                   color:
-                    filter === f ? '#D4A24C' : 'rgba(255,255,255,0.5)',
+                    filter === f ? 'var(--accent)' : 'var(--pen-2)',
                 }}
               >
                 {f}
                 {f === 'unread' && unreadCount > 0 && (
                   <span
-                    className="ml-1.5 inline-flex h-4 min-w-[16px] items-center justify-center rounded-full px-1 text-[10px] font-bold text-white"
-                    style={{ background: '#ef4444' }}
+                    className="ml-1.5 inline-flex h-4 min-w-[16px] items-center justify-center rounded-full px-1 text-[10px] font-bold text-pen-1"
+                    style={{ background: 'var(--danger)' }}
                   >
                     {unreadCount}
                   </span>
@@ -330,10 +330,10 @@ export default function NotificationPanel() {
           {unreadCount > 0 && (
             <button
               onClick={markAllRead}
-              className="rounded-lg px-3 py-1.5 text-xs font-medium transition-colors hover:bg-white/5"
+              className="rounded-lg px-3 py-1.5 text-xs font-medium transition-colors hover:bg-ink-600"
               style={{
-                color: '#D4A24C',
-                border: '1px solid rgba(245,158,11,0.2)',
+                color: 'var(--accent)',
+                border: '1px solid var(--accent-soft)',
               }}
             >
               Mark all read
@@ -347,7 +347,7 @@ export default function NotificationPanel() {
         <div
           className="glass flex flex-col items-center rounded-2xl py-16"
         >
-          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="var(--line-2)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M20 5a10 10 0 00-10 10c0 8-4 10-4 10h28s-4-2-4-10a10 10 0 00-10-10z" />
             <path d="M17 35a3 3 0 006 0" />
           </svg>
@@ -362,7 +362,7 @@ export default function NotificationPanel() {
               {/* Group label */}
               <h3
                 className="mb-3 text-xs font-semibold uppercase tracking-wider"
-                style={{ color: 'rgba(255,255,255,0.35)' }}
+                style={{ color: 'var(--pen-3)' }}
               >
                 {group.label}
               </h3>
@@ -373,14 +373,14 @@ export default function NotificationPanel() {
                   <button
                     key={n.id}
                     onClick={() => markRead(n.id)}
-                    className="flex w-full items-start gap-4 rounded-2xl p-4 text-left transition-all duration-200 hover:bg-white/[0.02]"
+                    className="flex w-full items-start gap-4 rounded-2xl p-4 text-left transition-all duration-200 hover:bg-ink-900"
                     style={{
                       background: n.read
-                        ? 'rgba(255,255,255,0.02)'
-                        : 'rgba(245,158,11,0.03)',
+                        ? 'var(--ink-800)'
+                        : 'var(--accent-soft)',
                       border: n.read
-                        ? '1px solid rgba(255,255,255,0.05)'
-                        : '1px solid rgba(245,158,11,0.1)',
+                        ? '1px solid var(--ink-800)'
+                        : '1px solid var(--accent-soft)',
                     }}
                   >
                     {/* Icon */}
@@ -400,7 +400,7 @@ export default function NotificationPanel() {
                         <p
                           className="text-sm"
                           style={{
-                            color: n.read ? 'rgba(255,255,255,0.6)' : 'white',
+                            color: n.read ? 'var(--pen-2)' : 'white',
                             fontWeight: n.read ? 400 : 500,
                           }}
                         >
@@ -409,7 +409,7 @@ export default function NotificationPanel() {
                         <div className="flex items-center gap-2 flex-shrink-0">
                           <span
                             className="text-[11px]"
-                            style={{ color: 'rgba(255,255,255,0.25)' }}
+                            style={{ color: 'var(--pen-3)' }}
                           >
                             {formatTimestamp(n.timestamp)}
                           </span>
@@ -417,8 +417,8 @@ export default function NotificationPanel() {
                             <span
                               className="h-2.5 w-2.5 rounded-full"
                               style={{
-                                background: '#D4A24C',
-                                boxShadow: '0 0 6px rgba(245,158,11,0.4)',
+                                background: 'var(--accent)',
+                                boxShadow: '0 0 6px var(--accent-soft)',
                               }}
                             />
                           )}
@@ -426,7 +426,7 @@ export default function NotificationPanel() {
                       </div>
                       <p
                         className="mt-1 text-xs leading-relaxed"
-                        style={{ color: 'rgba(255,255,255,0.4)' }}
+                        style={{ color: 'var(--pen-3)' }}
                       >
                         {n.body}
                       </p>

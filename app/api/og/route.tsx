@@ -5,7 +5,7 @@ export const runtime = 'edge';
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const title = searchParams.get('title') || 'Flyeas — AI Travel Agent';
+  const title = searchParams.get('title') || 'Flyeas — Travel Agent';
   const subtitle = searchParams.get('subtitle') || 'Find the cheapest flights & hotels powered by AI';
   const price = searchParams.get('price');
   const route = searchParams.get('route');

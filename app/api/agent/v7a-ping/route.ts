@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { isInternalRequest } from '@/lib/auth/guard';
 import { callV7a, type V7aPredictInput } from '@/lib/agent/v7a/client';
 
 /**
@@ -28,11 +29,10 @@ export const runtime = 'nodejs';
 export async function POST(req: NextRequest) {
   const started = Date.now();
 
+  // Fail-closed: unset CRON_SECRET denies instead of opening up.
+
   const auth = req.headers.get('authorization');
-  if (
-    process.env.CRON_SECRET &&
-    auth !== `Bearer ${process.env.CRON_SECRET}`
-  ) {
+  if (!isInternalRequest(auth)) {
     console.warn('[v7a-ping] 401 unauthorized', {
       has_auth_header: Boolean(auth),
       cron_secret_configured: Boolean(process.env.CRON_SECRET),

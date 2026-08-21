@@ -103,6 +103,60 @@ export async function createMissionHold(params: {
 }
 
 /**
+ * Charge for one specific offer, at the moment the traveller books it.
+ *
+ * This is the ordinary path: a mission costs nothing to start, we watch
+ * fares for free, and money only moves once the traveller has seen a real
+ * offer and said yes. Capture is automatic because there is nothing to
+ * wait for — the offer is on screen and the decision has been made.
+ *
+ * Contrast with createMissionHold, which authorises the whole budget up
+ * front. That is only needed when the agent is allowed to buy on its own
+ * while the traveller sleeps, and it cannot ask at that moment.
+ */
+export async function createBookingPayment(params: {
+  amountUsd: number;
+  missionId: string;
+  proposalId: string;
+  userEmail?: string;
+  description: string;
+}): Promise<{
+  paymentIntentId: string;
+  clientSecret: string;
+  amountCents: number;
+}> {
+  const stripe = await getStripe();
+  const amountCents = Math.round(params.amountUsd * 100);
+
+  const pi = await stripe.paymentIntents.create({
+    amount: amountCents,
+    currency: 'usd',
+    capture_method: 'automatic',
+    // Let Stripe offer whatever the traveller's device supports —
+    // Apple Pay and Google Pay turn this into a single tap.
+    automatic_payment_methods: { enabled: true },
+    description: params.description,
+    receipt_email: params.userEmail,
+    metadata: {
+      missionId: params.missionId,
+      proposalId: params.proposalId,
+      flyeas_rail: 'stripe',
+      flyeas_kind: 'booking',
+    },
+  });
+
+  if (!pi.client_secret) {
+    throw new Error('Stripe did not return a client_secret');
+  }
+
+  return {
+    paymentIntentId: pi.id,
+    clientSecret: pi.client_secret,
+    amountCents,
+  };
+}
+
+/**
  * Capture a portion of the authorized hold and release the rest.
  *
  * Call this the moment the AI agent commits to a specific offer. Stripe
@@ -123,10 +177,10 @@ export async function captureMissionHold(params: {
 
   const pi = await stripe.paymentIntents.capture(params.paymentIntentId, {
     amount_to_capture: amountCents,
-    metadata_final: {
+    metadata: {
       offerReference: params.offerReference,
-    } as any,
-  } as any);
+    },
+  });
 
   const chargeId =
     typeof pi.latest_charge === 'string'

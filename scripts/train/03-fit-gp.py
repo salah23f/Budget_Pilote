@@ -26,7 +26,7 @@ from scipy.spatial.distance import cdist
 
 OUTPUT_DIR = "models"
 INPUT_DIR = "data/features"
-MIN_SAMPLES_PER_ROUTE = 50
+MIN_SAMPLES_PER_ROUTE = 30
 MAX_SAMPLES_GP = 300  # GP is O(N^3) — cap for tractability
 
 

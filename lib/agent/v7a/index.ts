@@ -80,9 +80,18 @@ export async function predictV7aFirst(args: V7aPredictArgs): Promise<EnrichedPre
   const v1Action = mapV7aActionToV1(v7.action);
 
   // Confidence : si ml_layer disponible, dérive une confiance à partir de
-  // la width conformale relative au prix. Sinon, confidence = 0.7 (par
-  // défaut, décision baseline sans explication fine).
-  let confidence = 0.7;
+  // la width conformale relative au prix.
+  //
+  // Sinon, la décision est une baseline sans aucun appui ML — et elle DOIT
+  // rester sous le seuil d'achat automatique (0.6 dans propose/route.ts).
+  // Cette valeur valait 0.7 : au-dessus du seuil. Comme serve.py lève une
+  // NotImplementedError sur _build_runtime_features, ml_available est
+  // structurellement false en production ; chaque BUY_NOW baseline aurait
+  // donc franchi le portillon avec une confiance fabriquée et capturé de
+  // l'argent sans fondement. Une décision qu'on ne sait pas expliquer ne
+  // dépense pas.
+  const NO_ML_CONFIDENCE = 0.45;
+  let confidence = NO_ML_CONFIDENCE;
   if (v7.ml_layer.ml_available && v7.ml_layer.conformal_width !== null) {
     const wop = v7.ml_layer.conformal_width / Math.max(1, v7.current_price);
     confidence = Math.max(0, Math.min(1, 1 - Math.min(1, wop / 2)));

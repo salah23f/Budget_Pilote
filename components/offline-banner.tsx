@@ -43,8 +43,8 @@ export function OfflineBanner() {
       <p className="text-xs text-red-200 flex items-center justify-center gap-2">
         <WifiOff className="w-3.5 h-3.5" strokeWidth={1.8} />
         <span>{t('common.offline') || 'You are offline'}</span>
-        <span className="text-white/40">·</span>
-        <span className="text-white/50">{t('common.offlineMsg') || 'Showing cached results'}</span>
+        <span className="text-pen-3">·</span>
+        <span className="text-pen-2">{t('common.offlineMsg') || 'Showing cached results'}</span>
       </p>
     </div>
   );

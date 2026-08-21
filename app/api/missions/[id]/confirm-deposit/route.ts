@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireMissionOwner } from '@/lib/auth/guard';
 import { getMission, updateMission } from '@/lib/store/missions-db';
 import { readMissionState } from '@/lib/payments/escrow';
 
@@ -22,6 +23,9 @@ export async function POST(
 ) {
   const started = Date.now();
   const missionId = context.params.id;
+  // Caller must own this mission — 404 (not 403) hides existence.
+  const owned = await requireMissionOwner(missionId);
+  if (!owned.ok) return owned.response;
   const logCtx: Record<string, any> = { missionId };
 
   try {
@@ -80,9 +84,17 @@ export async function POST(
         ms: Date.now() - started,
       });
 
+      // Don't echo the full Mission (it carries userId, wallet address,
+      // escrow id, and tx hashes). The pay page only reads `success`;
+      // return a minimal, non-sensitive view. On-chain state is public.
       return NextResponse.json({
         success: true,
-        mission: await getMission(missionId),
+        mission: {
+          id: missionId,
+          status: 'monitoring',
+          paymentStatus: 'authorized',
+          budgetDepositedUsd: state.budgetUsd,
+        },
         onchain: state,
       });
     } catch (err: any) {

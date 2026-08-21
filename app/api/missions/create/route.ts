@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import type { Mission, PaymentRail } from '@/lib/types';
+import { requireUser } from '@/lib/auth/guard';
 import { createMission } from '@/lib/store/missions-db';
 import {
   createMissionHold,
@@ -46,8 +47,12 @@ export async function POST(req: NextRequest) {
   const ip = req.headers.get('x-forwarded-for') || 'unknown';
   const logCtx: Record<string, any> = { ip };
 
+  // Ownership comes from the verified session, never from the request body.
+  const auth = await requireUser();
+  if (!auth.ok) return auth.response;
+
   try {
-    return await handleCreate(req, started, logCtx);
+    return await handleCreate(req, started, logCtx, auth.user.id);
   } catch (err: any) {
     console.error('[missions/create] unhandled error', {
       ...logCtx,
@@ -65,7 +70,9 @@ export async function POST(req: NextRequest) {
 async function handleCreate(
   req: NextRequest,
   started: number,
-  logCtx: Record<string, any>
+  logCtx: Record<string, any>,
+  /** Verified caller id — the mission owner. Never read from the body. */
+  ownerUserId: string
 ) {
   let body: any;
   try {
@@ -102,6 +109,13 @@ async function handleCreate(
     body.autoBuyThresholdUsd != null
       ? Number(body.autoBuyThresholdUsd)
       : undefined;
+
+  // A mission costs nothing to start. We only authorise the card up front
+  // when the agent is allowed to buy on its own — at that moment there is
+  // nobody to ask, so the money has to already be reachable. Every other
+  // mission just watches, and payment happens when the traveller books.
+  const needsUpfrontHold =
+    autoBuyThreshold != null && autoBuyThreshold > 0;
   if (
     autoBuyThreshold != null &&
     (!Number.isFinite(autoBuyThreshold) || autoBuyThreshold < 0)
@@ -112,7 +126,7 @@ async function handleCreate(
     errors.push('autoBuyThresholdUsd cannot exceed maxBudgetUsd');
   }
 
-  if (rail === 'stripe' && !isStripeConfigured()) {
+  if (rail === 'stripe' && needsUpfrontHold && !isStripeConfigured()) {
     errors.push(
       'Stripe rail is not configured on this server. Set STRIPE_SECRET_KEY.'
     );
@@ -149,7 +163,7 @@ async function handleCreate(
 
   const mission: Mission = {
     id,
-    userId: body.userId || 'anonymous',
+    userId: ownerUserId,
     type: 'flight',
     origin: String(body.origin),
     originCity: body.originCity,
@@ -164,10 +178,11 @@ async function handleCreate(
     cabinBagRequired: body.cabinBagRequired !== false,
     stopsPreference: body.stopsPreference || 'any',
     preferredAirlines: body.preferredAirlines || [],
+    pricePriority: body.pricePriority === 'cheapest' ? 'cheapest' : 'balanced',
     ecoPreference: body.ecoPreference || 'balanced',
     monitoringEnabled: true,
     alertEmailEnabled: body.alertEmailEnabled !== false,
-    status: 'awaiting_payment',
+    status: needsUpfrontHold ? 'awaiting_payment' : 'monitoring',
     budgetDepositedUsd: 0,
     paymentRail: rail,
     paymentStatus: 'none',
@@ -178,7 +193,7 @@ async function handleCreate(
   // --------------------------------------------------------------
   // Kick off the hold on the chosen rail
   // --------------------------------------------------------------
-  if (rail === 'stripe') {
+  if (rail === 'stripe' && needsUpfrontHold) {
     try {
       const hold = await createMissionHold({
         amountUsd: maxBudget,

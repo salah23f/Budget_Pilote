@@ -104,12 +104,32 @@ function findCol(headers: string[], candidates: string[]): number {
 async function streamParseCSV(
   filePath: string,
   ds: KaggleDataset
-): Promise<Array<{ origin: string; destination: string; priceUsd: number; ttd: number | null }>> {
-  const rows: Array<{ origin: string; destination: string; priceUsd: number; ttd: number | null }> = [];
+): Promise<
+  Array<{
+    origin: string;
+    destination: string;
+    priceUsd: number;
+    ttd: number | null;
+    observedAt: string | null;
+  }>
+> {
+  // V7a-fix: on cherche explicitement la colonne searchDate (dilwong) afin de
+  // préserver le vrai timestamp d'observation. Sans elle, on ne remplace plus
+  // aveuglément par `new Date()` — on renvoie `observedAt=null` et downstream
+  // on tombera en qualité=50 (filtré par v7a/build_dataset.py).
+  const rows: Array<{
+    origin: string;
+    destination: string;
+    priceUsd: number;
+    ttd: number | null;
+    observedAt: string | null;
+  }> = [];
 
   const rl = createInterface({ input: createReadStream(filePath, 'utf-8'), crlfDelay: Infinity });
   let headers: string[] = [];
   let lineNum = 0;
+
+  const SEARCH_DATE_COLS = ['searchDate', 'search_date', 'search_time', 'queryDate'];
 
   for await (const line of rl) {
     lineNum++;
@@ -125,6 +145,7 @@ async function streamParseCSV(
     const originIdx = findCol(headers, ds.originCol);
     const destIdx = findCol(headers, ds.destCol);
     const ttdIdx = ds.ttdCol.length > 0 ? findCol(headers, ds.ttdCol) : -1;
+    const searchDateIdx = findCol(headers, SEARCH_DATE_COLS);
 
     if (priceIdx < 0 || originIdx < 0 || destIdx < 0) continue;
 
@@ -139,7 +160,26 @@ async function streamParseCSV(
 
     const ttd = ttdIdx >= 0 ? parseInt(cols[ttdIdx] ?? '') || null : null;
 
-    rows.push({ origin, destination: dest, priceUsd: Math.round(priceUsd * 100) / 100, ttd });
+    // Préservation du timestamp d'observation original lorsqu'il existe.
+    // ISO-normalisation conservatrice : on renvoie null si non parseable.
+    let observedAt: string | null = null;
+    if (searchDateIdx >= 0) {
+      const raw = cols[searchDateIdx] ?? '';
+      if (raw) {
+        const d = new Date(raw);
+        if (!Number.isNaN(d.getTime())) {
+          observedAt = d.toISOString();
+        }
+      }
+    }
+
+    rows.push({
+      origin,
+      destination: dest,
+      priceUsd: Math.round(priceUsd * 100) / 100,
+      ttd,
+      observedAt,
+    });
   }
 
   return rows;
@@ -199,17 +239,36 @@ export async function ingestKaggle(): Promise<{
         const withoutTTD = rows.filter((r) => r.ttd === null || r.ttd <= 0);
 
         // Insert rows with TTD into real_price_samples
+        // V7a-fix:
+        //   - fetched_at = observedAt (vrai timestamp) OU null + quality=50
+        //     si absent. Ne plus écraser aveuglément par new Date().
+        //   - depart_date = observedAt + ttd quand searchDate est connu, sinon
+        //     null (le downstream filtrera).
         for (let j = 0; j < withTTD.length; j += 500) {
-          const chunk = withTTD.slice(j, j + 500).map((r) => ({
-            origin: r.origin,
-            destination: r.destination,
-            depart_date: new Date(Date.now() + (r.ttd ?? 30) * 86400000).toISOString().split('T')[0],
-            price_usd: r.priceUsd,
-            airline: 'Unknown',
-            stops: 0,
-            source: `${SOURCE}/${ds.slug}`,
-            fetched_at: new Date().toISOString(),
-          }));
+          const chunk = withTTD.slice(j, j + 500).map((r) => {
+            const observedAt = r.observedAt ?? null;
+            const baseMs =
+              observedAt && !Number.isNaN(new Date(observedAt).getTime())
+                ? new Date(observedAt).getTime()
+                : null;
+            const departDate =
+              baseMs !== null
+                ? new Date(baseMs + (r.ttd ?? 30) * 86400000)
+                    .toISOString()
+                    .split('T')[0]
+                : null;
+            return {
+              origin: r.origin,
+              destination: r.destination,
+              depart_date: departDate,
+              price_usd: r.priceUsd,
+              airline: 'Unknown',
+              stops: 0,
+              source: `${SOURCE}/${ds.slug}`,
+              fetched_at: observedAt,
+              quality: observedAt ? 100 : 50,
+            };
+          });
 
           const { error } = await supabase.from('real_price_samples').insert(chunk);
           if (!error) {
@@ -272,4 +331,21 @@ export async function ingestKaggle(): Promise<{
   }
 
   return { inserted: totalInserted, skipped: totalSkipped, errors, perDataset };
+}
+
+// CLI entry
+const isMain =
+  import.meta.url === `file://${process.argv[1]}` ||
+  process.argv[1]?.endsWith('kaggle.ts');
+
+if (isMain) {
+  ingestKaggle()
+    .then((r) => {
+      console.log('[kaggle] Done:', JSON.stringify(r, null, 2));
+      process.exit(0);
+    })
+    .catch((err) => {
+      console.error('[kaggle] Fatal:', err);
+      process.exit(1);
+    });
 }

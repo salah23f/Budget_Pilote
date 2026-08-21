@@ -1,23 +1,23 @@
 'use client';
 
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
-import { useUserStore } from '@/stores/user-store';
+import { useUserStore } from '@/lib/store/user-store';
 import { useIdentity } from '@/lib/store/identity-store';
 import { useStreakStore } from '@/lib/store/streak-store';
 import { useLocale } from '@/lib/i18n';
 import {
   LayoutGrid,
-  Map,
   Plane,
   Building2,
-  Car,
   Users,
-  Target,
   Heart,
   Receipt,
   Star,
   Gift,
+  Target,
+  Plus,
   UserCircle,
   Settings,
   LogOut,
@@ -25,22 +25,30 @@ import {
 } from 'lucide-react';
 import { Avatar } from '@/components/ui/avatar';
 
+// Missions-first navigation. The mission is the product, so it sits alone
+// at the top with the primary button above it — everything else is a way
+// to look things up, and lives under its own heading below.
+// Standalone car rental stays out by design: a car is part of a trip here,
+// not something sold on its own.
 const navSections = [
   {
-    label: 'Travel',
+    label: 'Missions',
     items: [
-      { labelKey: 'sidebar.dashboard', href: '/dashboard', icon: LayoutGrid },
-      { labelKey: 'sidebar.tripBuilder', href: '/trip-builder', icon: Map },
-      { labelKey: 'sidebar.flights', href: '/flights', icon: Plane },
-      { labelKey: 'sidebar.hotels', href: '/hotels', icon: Building2 },
-      { labelKey: 'sidebar.cars', href: '/cars', icon: Car },
-      { labelKey: 'sidebar.groupTrip', href: '/group-trip', icon: Users },
+      { labelKey: 'sidebar.home', href: '/dashboard', icon: LayoutGrid },
+      { labelKey: 'sidebar.missions', href: '/missions', icon: Target },
     ],
   },
   {
-    label: 'Watches',
+    label: 'Search',
     items: [
-      { labelKey: 'sidebar.missions', href: '/missions', icon: Target },
+      { labelKey: 'sidebar.flights', href: '/flights', icon: Plane },
+      { labelKey: 'sidebar.hotels', href: '/hotels', icon: Building2 },
+    ],
+  },
+  {
+    label: 'Trips',
+    items: [
+      { labelKey: 'sidebar.groupTrip', href: '/group-trip', icon: Users },
       { labelKey: 'sidebar.favorites', href: '/favorites', icon: Heart },
       { labelKey: 'sidebar.bookings', href: '/bookings', icon: Receipt },
     ],
@@ -50,7 +58,7 @@ const navSections = [
     items: [
       { labelKey: 'sidebar.rewards', href: '/rewards', icon: Star },
       { labelKey: 'sidebar.referral', href: '/referral', icon: Gift },
-      { labelKey: 'sidebar.account', href: '/account', icon: UserCircle },
+      { labelKey: 'sidebar.profile', href: '/account', icon: UserCircle },
       { labelKey: 'sidebar.settings', href: '/settings', icon: Settings },
     ],
   },
@@ -96,7 +104,19 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         </div>
 
         {/* Separator */}
-        <div className="mx-4 h-px bg-white/[0.06]" />
+        <div className="mx-4 h-px bg-line-1" />
+
+        {/* Primary action — creating a mission is THE product */}
+        <div className="px-3 pt-4">
+          <Link
+            href="/missions/new"
+            onClick={onClose}
+            className="premium-button flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-md text-[13px]"
+          >
+            <Plus className="w-4 h-4" strokeWidth={2.2} />
+            {t('nav.newMission')}
+          </Link>
+        </div>
 
         {/* Navigation */}
         <nav className="flex-1 px-3 pt-4 pb-2 overflow-y-auto">
@@ -176,8 +196,14 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 }
 
 function SidebarBadge() {
-  const badges = useStreakStore((s) => s.badges);
-  const streak = useStreakStore((s) => s.currentStreak);
+  // Streak data comes from localStorage — render the SSR-stable variant
+  // until mounted so server and client first-render markup match.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const rawBadges = useStreakStore((s) => s.badges);
+  const rawStreak = useStreakStore((s) => s.currentStreak);
+  const badges = mounted ? rawBadges : [];
+  const streak = mounted ? rawStreak : 0;
   const top = badges.length > 0 ? badges[badges.length - 1] : null;
 
   if (top) {

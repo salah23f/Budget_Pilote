@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { isInternalRequest } from '@/lib/auth/guard';
 import { listMissions } from '@/lib/store/missions-db';
 import { watchMission } from '@/lib/agent/watcher';
 import type { Mission } from '@/lib/types';
@@ -37,12 +38,11 @@ const PARALLEL_LIMIT = 5;
 export async function POST(req: NextRequest) {
   const started = Date.now();
 
-  // Auth — same shared secret as the Vercel cron
+  // Auth — same shared secret as the Vercel cron. Fail-closed: an unset
+  // CRON_SECRET denies rather than opening this money-moving sweep.
+  // Kept in a const: forwarded downstream so propose sees an internal call.
   const auth = req.headers.get('authorization');
-  if (
-    process.env.CRON_SECRET &&
-    auth !== `Bearer ${process.env.CRON_SECRET}`
-  ) {
+  if (!isInternalRequest(auth)) {
     return NextResponse.json(
       { success: false, error: 'Unauthorized' },
       { status: 401 }

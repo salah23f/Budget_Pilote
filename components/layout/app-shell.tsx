@@ -5,10 +5,11 @@ import Sidebar from './sidebar';
 import Topbar from './topbar';
 import BottomNav from './bottom-nav';
 import PageTransition from './page-transition';
-import { useUserStore } from '@/stores/user-store';
+import { useUserStore } from '@/lib/store/user-store';
 import { useIdentityStore } from '@/lib/store/identity-store';
 import { useProfileStore } from '@/lib/store/profile-store';
 import { initializeTheme } from '@/lib/store/theme-store';
+import { initializeLocale } from '@/lib/store/locale-store';
 import { ChevronUp } from 'lucide-react';
 
 const ChatPanel = lazy(() => import('@/components/chat/chat-panel'));
@@ -35,6 +36,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     hydrateProfile();
     // 3. Initialize theme
     initializeTheme();
+    // 3b. Hydrate locale after mount (SSR + first client render stay 'en')
+    initializeLocale();
     // 4. Try server reconcile (async, non-blocking)
     void reconcileIdentity();
   }, [hydrateIdentity, reconcileIdentity, hydrateProfile]);

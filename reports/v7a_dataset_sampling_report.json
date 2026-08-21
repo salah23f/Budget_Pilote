@@ -1,0 +1,133 @@
+{
+  "before": {
+    "n_rows": 82137285,
+    "n_routes": 235,
+    "price_mean": 340.3824215519176,
+    "price_std": 195.8466909473615,
+    "ttd_mean_days": 26.900621416936293,
+    "date_distribution_monthly": {
+      "2022-04": 6617363,
+      "2022-05": 12118532,
+      "2022-06": 13799042,
+      "2022-07": 17759912,
+      "2022-08": 14944272,
+      "2022-09": 14527445,
+      "2022-10": 2370719
+    },
+    "ttd_bucket_distribution": {
+      "0-7": 11940874,
+      "8-21": 22326536,
+      "22-60": 47869875,
+      "61+": 0
+    },
+    "price_bucket_distribution": {
+      "0-100": 3297122,
+      "100-200": 18148217,
+      "200-300": 18983972,
+      "300-400": 14785972,
+      "400-500": 11500531,
+      "500-600": 8514452,
+      "600-800": 5392799,
+      "800-1000": 927565,
+      "1000+": 586655
+    },
+    "top_20_routes_by_count": {
+      "ATL-LAX": 709809,
+      "LAX-BOS": 679169,
+      "LGA-LAX": 677713,
+      "LAX-ATL": 669609,
+      "LAX-LGA": 663659,
+      "BOS-LAX": 644390,
+      "LAX-JFK": 625496,
+      "LAX-ORD": 620576,
+      "DFW-LAX": 612390,
+      "LAX-DFW": 610669,
+      "JFK-LAX": 605017,
+      "LAX-DTW": 601537,
+      "ORD-LAX": 597847,
+      "LAX-EWR": 587270,
+      "DTW-LAX": 582022,
+      "CLT-LAX": 572097,
+      "JFK-ORD": 557152,
+      "LAX-CLT": 554473,
+      "LGA-ORD": 550319,
+      "LAX-PHL": 549879
+    }
+  },
+  "after": {
+    "n_rows": 3285485,
+    "n_routes": 235,
+    "price_mean": 340.2983478086188,
+    "price_std": 195.69111200919045,
+    "ttd_mean_days": 26.9005443640741,
+    "date_distribution_monthly": {
+      "2022-04": 264695,
+      "2022-05": 484741,
+      "2022-06": 551963,
+      "2022-07": 710394,
+      "2022-08": 597766,
+      "2022-09": 581096,
+      "2022-10": 94830
+    },
+    "ttd_bucket_distribution": {
+      "0-7": 477638,
+      "8-21": 893067,
+      "22-60": 1914780,
+      "61+": 0
+    },
+    "price_bucket_distribution": {
+      "0-100": 131883,
+      "100-200": 725860,
+      "200-300": 759792,
+      "300-400": 590876,
+      "400-500": 460899,
+      "500-600": 340138,
+      "600-800": 215801,
+      "800-1000": 36848,
+      "1000+": 23388
+    },
+    "top_20_routes_by_count": {
+      "ATL-LAX": 28435,
+      "LAX-BOS": 27148,
+      "LGA-LAX": 27136,
+      "LAX-ATL": 26855,
+      "LAX-LGA": 26554,
+      "BOS-LAX": 25755,
+      "LAX-JFK": 24996,
+      "LAX-ORD": 24800,
+      "DFW-LAX": 24536,
+      "LAX-DFW": 24394,
+      "JFK-LAX": 24212,
+      "LAX-DTW": 24090,
+      "ORD-LAX": 23894,
+      "LAX-EWR": 23467,
+      "DTW-LAX": 23307,
+      "CLT-LAX": 22832,
+      "JFK-ORD": 22266,
+      "LAX-CLT": 22138,
+      "LAX-PHL": 21980,
+      "LGA-ORD": 21968
+    }
+  },
+  "comparison": {
+    "sample_every": 25,
+    "seed": 42,
+    "n_rows_before": 82137285,
+    "n_rows_after": 3285485,
+    "overall_ratio_actual": 0.03999992208167095,
+    "overall_ratio_expected": 0.04,
+    "ratio_delta_pct": 7.791832905279517e-06,
+    "l1_distance_date_monthly": 3.3357573630578286e-06,
+    "l1_distance_ttd_bucket": 6.860514857320865e-06,
+    "l1_distance_price_bucket": 0.0008538864121568979,
+    "top20_route_retention_ratio_mean": 0.039991145680976746,
+    "top20_route_retention_ratio_min": 0.039909316077518325,
+    "verdict": {
+      "representative": true,
+      "notes": [
+        "L1 distance \u2264 0.03 means each marginal distribution is preserved within 3 pp.",
+        "Systematic sampling with reproducible offset from np.random.default_rng(SEED)."
+      ]
+    }
+  }
+}

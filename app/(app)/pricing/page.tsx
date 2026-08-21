@@ -14,7 +14,7 @@ const TIERS = [
     name: 'Free',
     price: 0,
     annual: 0,
-    desc: 'Get started with AI travel intelligence',
+    desc: 'Get started — watch a route for free',
     cta: 'Get started',
     ctaHref: '/onboarding',
     highlight: false,
@@ -59,13 +59,13 @@ const TIERS = [
     name: 'Elite',
     price: 29.99,
     annual: 249,
-    desc: 'Premium experience with dedicated AI agent',
+    desc: 'Premium experience with a dedicated concierge',
     cta: 'Go Elite',
     ctaHref: '/onboarding',
     highlight: false,
     features: [
       'Everything in Pro',
-      'Dedicated AI travel advisor',
+      'Dedicated travel advisor',
       'Group trip builder',
       'Business & First class tracking',
       'Multi-city mission planning',
@@ -254,7 +254,7 @@ export default function PricingPage() {
           <div className="space-y-3">
             {[
               { q: 'Is the Free plan really free?', a: 'Yes. No credit card required. You only pay the 5% service fee when you actually book a flight through Flyeas.' },
-              { q: 'What does "auto-buy" mean?', a: 'You set a budget and a threshold. When our AI finds a flight below your threshold AND our statistical model confirms it\'s a good deal, we automatically capture the funds and give you a one-click booking link. Your card is never charged more than the actual price.' },
+              { q: 'What does "auto-buy" mean?', a: 'You set a budget and a threshold. When we find a flight below your threshold AND our statistical model confirms it\'s a good deal, we automatically capture the funds and give you a one-click booking link. Your card is never charged more than the actual price.' },
               { q: 'Can I pay with crypto?', a: 'Yes. Elite users can deposit USDC into a non-custodial smart contract on Base. Gas costs ~$0.01 per transaction. You keep your keys and can withdraw anytime.' },
               { q: 'How does the AI predict prices?', a: 'We track prices on every route over time and compute statistical baselines (mean, standard deviation, trend slope, percentile rank). When a price is significantly below the historical average with high confidence, the agent acts.' },
               { q: 'Can I cancel anytime?', a: 'Yes. Cancel your Pro or Elite subscription at any time. No lock-in, no penalties. Active mission holds are released back to your card immediately.' },

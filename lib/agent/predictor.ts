@@ -283,11 +283,11 @@ function coldStartPrediction(
   const confidence = Math.min(0.35, 0.1 + sampleCount * 0.04);
   const reason =
     sampleCount === 0
-      ? `First time watching this route. Building baseline — the agent will make stronger recommendations once it has 10+ observations.`
+      ? `First time watching this route. We're building a baseline — our calls get stronger once we have 10+ observations.`
       : `Still learning this route (${sampleCount} observation${sampleCount > 1 ? 's' : ''} so far). ${
           ttd < 14
-            ? `With only ${ttd} days until departure, I recommend locking in the current price.`
-            : `Monitoring until I have enough data to predict confidently.`
+            ? `With only ${ttd} days until departure, our call is to lock in the current price.`
+            : `We keep watching until we have enough data to call it confidently.`
         }`;
 
   return {

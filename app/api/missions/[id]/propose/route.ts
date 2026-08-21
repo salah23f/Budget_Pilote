@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { isInternalRequest, requireMissionOwner } from '@/lib/auth/guard';
 import {
   getMission,
   updateMission,
@@ -55,6 +56,21 @@ export async function POST(
   const missionId = context.params.id;
   const logCtx: Record<string, any> = { missionId };
 
+  // Only internal callers (the cron + sweep agent loops, which hold
+  // CRON_SECRET) are allowed to MOVE MONEY. A browser-initiated "Check now"
+  // may refresh the price and open a proposal, but must never silently
+  // capture a card / release escrow — so the auto-buy path below
+  // additionally requires this internal secret.
+  const authHeader = req.headers.get('authorization');
+  const isInternalCall = isInternalRequest(authHeader);
+
+  // Anyone who is not an internal caller must be the signed-in owner of this
+  // mission — otherwise a stranger could drive proposals on someone else's.
+  if (!isInternalCall) {
+    const owned = await requireMissionOwner(missionId);
+    if (!owned.ok) return owned.response;
+  }
+
   try {
     const mission = await getMission(missionId);
     if (!mission) {
@@ -99,7 +115,13 @@ export async function POST(
       });
     }
 
+    // `cheapest` stays the true market minimum: it drives the budget gate,
+    // the bestSeenPrice history and the predictor baseline.
     const cheapest = watch.cheapest;
+    // `offer` is what we actually put in front of the traveller — the best
+    // composite score within budget, weighted by what they said matters.
+    // Falls back to the cheapest when scoring produced nothing.
+    const offer = watch.recommended ?? cheapest;
     const prediction = watch.prediction;
 
     await updateMission(missionId, {
@@ -151,7 +173,7 @@ export async function POST(
         ? mission.autoBuyThresholdUsd
         : 0;
 
-    const deepLink = buildBookingDeepLink(cheapest, {
+    const deepLink = buildBookingDeepLink(offer, {
       origin: mission.origin,
       destination: mission.destination,
       departDate: mission.departDate,
@@ -161,16 +183,16 @@ export async function POST(
     });
 
     const snapshot: MissionProposal['offerSnapshot'] = {
-      airline: cheapest.airline || 'Unknown',
-      airlineCode: cheapest.airlineCode,
-      logoUrl: (cheapest.rawData as any)?.logoUrl,
-      priceUsd: cheapest.priceUsd,
-      originIata: (cheapest.rawData as any)?.originIata,
-      destinationIata: (cheapest.rawData as any)?.destinationIata,
-      departureTime: cheapest.departureTime,
-      arrivalTime: cheapest.arrivalTime,
-      durationMinutes: cheapest.durationMinutes || 0,
-      stops: cheapest.stops || 0,
+      airline: offer.airline || 'Unknown',
+      airlineCode: offer.airlineCode,
+      logoUrl: (offer.rawData as any)?.logoUrl,
+      priceUsd: offer.priceUsd,
+      originIata: (offer.rawData as any)?.originIata,
+      destinationIata: (offer.rawData as any)?.destinationIata,
+      departureTime: offer.departureTime,
+      arrivalTime: offer.arrivalTime,
+      durationMinutes: offer.durationMinutes || 0,
+      stops: offer.stops || 0,
       deepLink: deepLink.url,
     };
 
@@ -188,13 +210,15 @@ export async function POST(
     // confidence, so the agent falls through to the proposal path and
     // lets the user confirm manually while we build up data.
     // ----------------------------------------------------------------
-    const meetsThresholdGate = threshold > 0 && cheapest.priceUsd <= threshold;
+    // Gate on the offer we would actually buy, never on the market minimum —
+    // otherwise a pricier recommendation could slip past the user's ceiling.
+    const meetsThresholdGate = threshold > 0 && offer.priceUsd <= threshold;
     const meetsPredictorGate =
       !!prediction &&
       prediction.action === 'BUY_NOW' &&
       prediction.confidence >= AUTO_BUY_MIN_CONFIDENCE;
 
-    if (meetsThresholdGate && meetsPredictorGate) {
+    if (meetsThresholdGate && meetsPredictorGate && isInternalCall) {
       const proposal: MissionProposal = {
         id: crypto.randomUUID(),
         missionId,
@@ -203,7 +227,7 @@ export async function POST(
         status: 'auto_bought',
         reason: prediction
           ? `Auto-bought. ${prediction.reason}`
-          : `Agent auto-bought: $${cheapest.priceUsd} is ≤ your $${threshold} auto-buy limit.`,
+          : `Agent auto-bought: $${offer.priceUsd} is ≤ your $${threshold} auto-buy limit.`,
         captureAmountCents: Math.round(cheapest.priceUsd * 100),
         bookingDeepLink: deepLink.url,
         createdAt: new Date().toISOString(),

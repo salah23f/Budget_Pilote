@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireMissionOwner } from '@/lib/auth/guard';
 import {
   getMission,
   listProposalsForMission,
@@ -22,6 +23,9 @@ export async function GET(
 ) {
   const started = Date.now();
   const missionId = context.params.id;
+  // Caller must own this mission — 404 (not 403) hides existence.
+  const owned = await requireMissionOwner(missionId);
+  if (!owned.ok) return owned.response;
   const logCtx: Record<string, any> = { missionId };
 
   try {
@@ -36,9 +40,36 @@ export async function GET(
     logCtx.rail = mission.paymentRail;
     logCtx.status = mission.status;
 
-    // Strip secret fields before sending to the client
-    const safe: any = { ...mission };
-    delete safe.stripeClientSecret;
+    // Project to only non-sensitive fields. This endpoint is currently
+    // UNAUTHENTICATED (no ownership check yet — see docs/audit/), so it must
+    // not leak userId, payment identifiers/secrets, wallet addresses, tx
+    // hashes, or contact info. The cockpit + pay pages only consume the
+    // fields below; the Stripe client secret comes from the create response
+    // (sessionStorage on the client), never from this endpoint.
+    const safe = {
+      id: mission.id,
+      type: mission.type,
+      status: mission.status,
+      origin: mission.origin,
+      originCity: mission.originCity,
+      destination: mission.destination,
+      destinationCity: mission.destinationCity,
+      departDate: mission.departDate,
+      returnDate: mission.returnDate,
+      passengers: mission.passengers,
+      cabinClass: mission.cabinClass,
+      maxBudgetUsd: mission.maxBudgetUsd,
+      autoBuyThresholdUsd: mission.autoBuyThresholdUsd,
+      bestSeenPrice: mission.bestSeenPrice,
+      lastCheckedAt: mission.lastCheckedAt,
+      budgetDepositedUsd: mission.budgetDepositedUsd,
+      paymentRail: mission.paymentRail,
+      paymentStatus: mission.paymentStatus,
+      stripeAuthorizedAmount: mission.stripeAuthorizedAmount,
+      stripeCapturedAmount: mission.stripeCapturedAmount,
+      createdAt: mission.createdAt,
+      updatedAt: mission.updatedAt,
+    };
 
     const proposals = await listProposalsForMission(missionId);
     logCtx.proposalCount = proposals.length;

@@ -129,7 +129,7 @@ export default function LiveDeals() {
             Live deals right now
           </h3>
         </div>
-        <p className="text-[10px] text-white/35">
+        <p className="text-[10px] text-pen-1/35">
           Real prices · Kiwi.com · updated every 30 min
         </p>
       </div>
@@ -150,26 +150,26 @@ function DealCard({ deal }: { deal: Deal }) {
     <div
       className="relative w-[260px] md:w-auto rounded-2xl p-4 transition-all duration-200 hover:-translate-y-0.5 group overflow-hidden"
       style={{
-        background: 'rgba(255,255,255,0.02)',
-        border: '1px solid rgba(255,255,255,0.06)',
+        background: 'var(--ink-800)',
+        border: '1px solid var(--ink-800)',
       }}
     >
       {/* Top row: route */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2 min-w-0">
-          <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(245,158,11,0.1)' }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--flyeas-accent, #D4A24C)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>
+          <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: 'var(--accent-soft)' }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--flyeas-accent, var(--accent))" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>
           </div>
           <div className="min-w-0">
-            <p className="text-[10px] text-white/35 uppercase tracking-wider font-semibold">
+            <p className="text-[10px] text-pen-1/35 uppercase tracking-wider font-semibold">
               {deal.originCity} → {deal.destinationCity}
             </p>
-            <p className="text-[9px] text-white/25 truncate">
+            <p className="text-[9px] text-pen-3 truncate">
               {deal.origin} → {deal.destination}
             </p>
           </div>
         </div>
-        <div className="w-7 h-7 rounded-md bg-white/5 flex items-center justify-center overflow-hidden flex-shrink-0">
+        <div className="w-7 h-7 rounded-md bg-ink-600 flex items-center justify-center overflow-hidden flex-shrink-0">
           {deal.logoUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -189,23 +189,23 @@ function DealCard({ deal }: { deal: Deal }) {
       </div>
 
       {/* Airline + flight info */}
-      <p className="text-xs text-white/55 truncate mb-1">{deal.airline}</p>
-      <div className="flex items-center gap-2 text-[10px] text-white/35 mb-4">
+      <p className="text-xs text-pen-1/55 truncate mb-1">{deal.airline}</p>
+      <div className="flex items-center gap-2 text-[10px] text-pen-1/35 mb-4">
         <span>{formatDate(deal.departDate)}</span>
-        <span className="text-white/15">·</span>
+        <span className="text-pen-1/15">·</span>
         <span>{formatDuration(deal.durationMinutes)}</span>
-        <span className="text-white/15">·</span>
+        <span className="text-pen-1/15">·</span>
         <span>{deal.stops === 0 ? 'Nonstop' : `${deal.stops} stop`}</span>
       </div>
 
       {/* Price */}
       <div className="flex items-end justify-between">
         <div>
-          <p className="text-[9px] text-white/35 uppercase tracking-wider">From</p>
+          <p className="text-[9px] text-pen-1/35 uppercase tracking-wider">From</p>
           <p
             className="text-2xl font-bold leading-none"
             style={{
-              background: 'var(--flyeas-gradient, linear-gradient(135deg, #D4A24C, #F97316))',
+              background: 'var(--accent)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
             }}
@@ -236,7 +236,7 @@ function DealCard({ deal }: { deal: Deal }) {
         className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300"
         style={{
           background:
-            'radial-gradient(circle at top left, color-mix(in srgb, var(--flyeas-accent, #D4A24C) 8%, transparent), transparent 60%)',
+            'radial-gradient(circle at top left, color-mix(in srgb, var(--flyeas-accent, var(--accent)) 8%, transparent), transparent 60%)',
         }}
       />
     </div>
@@ -263,28 +263,28 @@ function DealSkeleton() {
     <div
       className="w-[260px] md:w-auto rounded-2xl p-4 animate-pulse"
       style={{
-        background: 'rgba(255,255,255,0.02)',
-        border: '1px solid rgba(255,255,255,0.06)',
+        background: 'var(--ink-800)',
+        border: '1px solid var(--ink-800)',
       }}
     >
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded bg-white/5" />
+          <div className="w-6 h-6 rounded bg-ink-600" />
           <div className="space-y-1">
-            <div className="h-2.5 w-24 rounded bg-white/5" />
-            <div className="h-2 w-16 rounded bg-white/5" />
+            <div className="h-2.5 w-24 rounded bg-ink-600" />
+            <div className="h-2 w-16 rounded bg-ink-600" />
           </div>
         </div>
-        <div className="w-7 h-7 rounded-md bg-white/5" />
+        <div className="w-7 h-7 rounded-md bg-ink-600" />
       </div>
-      <div className="h-3 w-20 rounded bg-white/5 mb-2" />
-      <div className="h-2 w-32 rounded bg-white/5 mb-4" />
+      <div className="h-3 w-20 rounded bg-ink-600 mb-2" />
+      <div className="h-2 w-32 rounded bg-ink-600 mb-4" />
       <div className="flex items-end justify-between">
         <div className="space-y-1">
-          <div className="h-2 w-8 rounded bg-white/5" />
-          <div className="h-7 w-20 rounded bg-white/10" />
+          <div className="h-2 w-8 rounded bg-ink-600" />
+          <div className="h-7 w-20 rounded bg-ink-600" />
         </div>
-        <div className="h-3 w-12 rounded bg-white/5" />
+        <div className="h-3 w-12 rounded bg-ink-600" />
       </div>
     </div>
   );

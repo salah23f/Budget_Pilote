@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: 'class',
   content: [
     './app/**/*.{js,ts,jsx,tsx}',
     './components/**/*.{js,ts,jsx,tsx}',
@@ -10,7 +11,7 @@ module.exports = {
       fontFamily: {
         // Default sans for UI
         sans: ['var(--font-inter)', 'Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'sans-serif'],
-        // Editorial serif — hero headlines, greetings, section intros
+        // Editorial display — Fraunces. Headlines, greetings, destination names.
         serif: ['var(--font-serif)', 'Fraunces', 'ui-serif', 'Georgia', 'serif'],
         // Legacy display — logo wordmark only
         display: ['var(--font-display)', 'Plus Jakarta Sans', 'ui-sans-serif', 'system-ui', 'sans-serif'],
@@ -18,7 +19,7 @@ module.exports = {
         mono: ['ui-monospace', 'SF Mono', 'Menlo', 'monospace'],
       },
       fontSize: {
-        // Strict 6-size scale — see design-system.md §2
+        // Strict 6-size scale — see docs/design-system.md §2
         micro: ['10.5px', { lineHeight: '1.3', letterSpacing: '0.08em' }],
         caption: ['12px', { lineHeight: '1.4' }],
         body: ['14px', { lineHeight: '1.5' }],
@@ -28,80 +29,85 @@ module.exports = {
         display: ['48px', { lineHeight: '1.05', letterSpacing: '-0.02em' }],
       },
       colors: {
-        // New ink scale (warm off-black surfaces)
+        // All values live in globals.css as themed CSS variables.
+        // Light (default) = warm paper; .dark = after-hours.
         ink: {
-          950: '#0B0B0D',
-          900: '#111114',
-          800: '#17171B',
-          700: '#1D1D22',
-          600: '#26262C',
-          500: '#32323A',
+          950: 'var(--ink-950)',
+          900: 'var(--ink-900)',
+          800: 'var(--ink-800)',
+          700: 'var(--ink-700)',
+          600: 'var(--ink-600)',
+          500: 'var(--ink-500)',
         },
         // Text tones
         pen: {
-          1: '#F5F5F1', // primary
-          2: '#A9A9A4', // secondary
-          3: '#6E6E68', // muted
+          1: 'var(--pen-1)',
+          2: 'var(--pen-2)',
+          3: 'var(--pen-3)',
         },
         // Border levels
         line: {
-          1: '#1A1A1D', // subtle
-          2: '#252528', // hover / interactive
-          3: '#2F2F34', // focused / strong
+          1: 'var(--line-1)',
+          2: 'var(--line-2)',
+          3: 'var(--line-3)',
         },
-        // Single primary accent — use rarely (5-10% of screen)
+        // Single primary accent — cedar green. Use rarely (5-10% of screen).
         accent: {
-          DEFAULT: '#D4A24C',
-          soft: 'rgba(212,162,76,0.12)',
-          ink: '#0B0B0D', // foreground on solid accent bg
+          DEFAULT: 'rgb(var(--accent-rgb) / <alpha-value>)',
+          soft: 'var(--accent-soft)',
+          ink: 'var(--accent-ink)',
+          hover: 'var(--accent-hover)',
+          // Legacy gradient stops — degrade to solid accent
+          light: 'var(--accent-hover)',
+          dark: 'rgb(var(--accent-rgb) / <alpha-value>)',
         },
         // Semantic
         success: {
-          DEFAULT: '#4F8A6E',
-          soft: 'rgba(79,138,110,0.12)',
+          DEFAULT: 'rgb(var(--success-rgb) / <alpha-value>)',
+          soft: 'var(--success-soft)',
         },
         danger: {
-          DEFAULT: '#A14848',
-          soft: 'rgba(161,72,72,0.12)',
+          DEFAULT: 'rgb(var(--danger-rgb) / <alpha-value>)',
+          soft: 'var(--danger-soft)',
         },
         warning: {
-          DEFAULT: '#B8893C',
+          DEFAULT: 'rgb(var(--warning-rgb) / <alpha-value>)',
+          soft: 'var(--warning-soft)',
         },
 
         // Legacy aliases — keep temporarily for incremental migration
         surface: {
-          primary: '#0B0B0D',
-          elevated: '#17171B',
-          card: '#17171B',
+          primary: 'var(--ink-950)',
+          elevated: 'var(--ink-800)',
+          card: 'var(--ink-800)',
         },
         border: {
-          subtle: '#1A1A1D',
-          DEFAULT: '#252528',
+          subtle: 'var(--line-1)',
+          DEFAULT: 'var(--line-2)',
         },
         text: {
-          primary: '#F5F5F1',
-          secondary: '#A9A9A4',
-          muted: '#6E6E68',
+          primary: 'var(--pen-1)',
+          secondary: 'var(--pen-2)',
+          muted: 'var(--pen-3)',
         },
       },
       borderRadius: {
-        // 4-size scale — see design-system.md §5
+        // 4-size scale — buttons/inputs md, cards lg, hero xl
         none: '0',
-        sm: '6px',
-        md: '10px',
-        lg: '14px',
+        sm: '8px',
+        md: '12px',
+        lg: '16px',
         xl: '20px',
         full: '9999px',
       },
       boxShadow: {
-        // Subtle only. No glow. No accent shadows.
-        'elev-1': '0 1px 0 rgba(0,0,0,0.2) inset',
-        'elev-2': '0 8px 24px -8px rgba(0,0,0,0.4)',
-        'elev-3': '0 24px 48px -12px rgba(0,0,0,0.5)',
-      },
-      spacing: {
-        // Match 4px base — 0.5 = 2px through 24 = 96px
-        // Tailwind has most of these natively; we add the 0.5 step explicitly.
+        // Themed: soft warm shadows in light, surface lift in dark.
+        'elev-1': 'var(--shadow-1)',
+        'elev-2': 'var(--shadow-2)',
+        'elev-3': 'var(--shadow-3)',
+        // Legacy glow classes — neutralized (no glow in this design system)
+        glow: '0 0 0 0 rgba(0,0,0,0)',
+        'glow-lg': '0 0 0 0 rgba(0,0,0,0)',
       },
       maxWidth: {
         prose: '640px',
