@@ -28,3 +28,5 @@ copula_weights.json
 # Build artifacts (never commit)
 *.tsbuildinfo
 .claude/scheduled_tasks*.lock
+.env*
+!.env.example
