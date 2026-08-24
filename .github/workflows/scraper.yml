@@ -1,8 +1,15 @@
 name: Flight Price Scraper
 
 on:
-  schedule:
-    - cron: '0 */4 * * *'
+  # PAUSED 2026-08-21 — same reason as flyeas-watcher.yml: the RapidAPI plan is
+  # BASIC (20 calls/month) and this scraper alone is sized for ~4,500. The last
+  # row it managed to write to real_price_samples is dated 2026-07-09.
+  #
+  # Re-enable by uncommenting the two lines below, after subscribing to PRO and
+  # setting SKY_SCRAPPER_MONTHLY_QUOTA=10600. See docs/REPRISE.md.
+  #
+  # schedule:
+  #   - cron: '0 */4 * * *'
   workflow_dispatch:
 
 jobs:

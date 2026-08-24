@@ -25,7 +25,17 @@ export const API_CONFIGS: ApiConfig[] = [
   {
     id: 'sky-scrapper',
     host: 'sky-scrapper.p.rapidapi.com',
-    monthlyQuota: 10000,
+    // This must be the quota of the plan actually subscribed to, not the one
+    // we wish we had. BASIC is 20/month; PRO is 10,600.
+    //
+    // It was hardcoded to 10000 while the account sat on BASIC, which disarmed
+    // the 90%-of-quota brake below: the rotator burned the real 20 calls in the
+    // first minutes of the month, then queried a 429 wall for the remaining 30
+    // days. Every layer above reported success, so the collection was dead from
+    // June to August 2026 with a fully green dashboard on top of it.
+    //
+    // On upgrading the RapidAPI plan, set SKY_SCRAPPER_MONTHLY_QUOTA=10600.
+    monthlyQuota: Number(process.env.SKY_SCRAPPER_MONTHLY_QUOTA ?? 20),
     priority: 1,
     searchEndpoint: '/api/v1/flights/searchFlights',
     enabled: true,

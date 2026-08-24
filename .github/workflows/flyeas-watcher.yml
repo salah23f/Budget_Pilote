@@ -23,10 +23,19 @@ name: Flyeas watcher
 # Documentation audit    : docs/V7A_PRODUCT_INTEGRATION.md
 
 on:
-  schedule:
-    # Every 15 minutes. GitHub Actions cron has a 5-minute floor; 15 stays
-    # well below upstream rate limits (Sky-Scrapper / Kiwi).
-    - cron: '*/15 * * * *'
+  # PAUSED 2026-08-21 — the RapidAPI plan is BASIC (20 calls/month), which the
+  # sweep exhausts within minutes. Running this every 15 minutes produced ~2,280
+  # runs a month against a 429 wall while reporting success on every one of them,
+  # because the upstream 429 is translated into "no offers found" downstream.
+  #
+  # Re-enable by uncommenting the two lines below, but only AFTER:
+  #   1. subscribing to the RapidAPI PRO plan (10,600 calls/month), and
+  #   2. setting SKY_SCRAPPER_MONTHLY_QUOTA=10600 so the rotator brake works.
+  #
+  # See docs/REPRISE.md for the full checklist.
+  #
+  # schedule:
+  #   - cron: '*/15 * * * *'
   workflow_dispatch:
 
 concurrency:
