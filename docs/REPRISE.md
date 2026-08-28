@@ -128,9 +128,71 @@ pas, et le quota se débloque dessus.
       ```
       Référence à battre : **2 230**.
 
-- [ ] **7. Poser l'alerte manquante** — « zéro échantillon inséré en 24 h →
-      notification ». C'est l'absence de cette alerte, pas le fournisseur, qui
-      a laissé la collecte morte pendant deux mois.
+- [x] **7. ~~Poser l'alerte manquante~~** — fait le 28 août, voir la section
+      « Le chien de garde » ci-dessous. Rien à faire à la reprise : il tourne
+      déjà et t'alertera dès que la collecte redeviendra muette.
+
+---
+
+## Le chien de garde
+
+Installé le 28 août 2026 sur les crédits Azure. C'est la réponse au vrai
+problème : la collecte est morte le 20 juin, tu l'as su le 21 août.
+
+**Ce qu'il fait.** Tous les jours à 07:00 UTC (09:00 en Suisse), il demande à
+Supabase si une seule ligne est arrivée dans `real_price_samples` ou
+`price_history_samples` durant les dernières 24 heures. Si non, il t'envoie un
+e-mail. Il ne demande à aucun endpoint s'il va bien — il vérifie que de la
+donnée a atterri, seule affirmation qu'une couche intermédiaire ne peut pas
+maquiller.
+
+**Deux règles de conception**, qui comptent plus que le code :
+
+1. *Il vit en dehors du système qu'il surveille.* Il parle à Supabase en
+   direct, jamais via l'application. Un chien de garde hébergé sur Vercel ne
+   peut pas signaler une panne de Vercel, et un chien de garde qui interroge
+   l'application n'apprend que ce que l'application croit d'elle-même.
+2. *Il parle aussi quand tout va bien.* Un système qui ne s'exprime qu'en cas
+   de panne a le même défaut que celui qu'il remplace : s'il meurt, son silence
+   ressemble à de la santé. D'où l'e-mail hebdomadaire du lundi. **Si tu ne
+   reçois plus rien pendant plus de huit jours, c'est le chien de garde
+   lui-même qui est mort** — et ce silence est alors l'alarme.
+
+**Où ça vit.** Job Container Apps `flyeas-chien-de-garde` dans `flyeas-prod`,
+image `python:3.12-alpine`, script embarqué compressé dans la variable `WD`.
+Coût : quelques centimes par mois (24 secondes de calcul par jour).
+
+**Destinataire : `salahfarhat04@gmail.com`.** C'est la seule adresse possible
+tant que `budgetpilot.eth` n'est pas vérifié chez Resend — sans domaine
+vérifié, Resend n'autorise l'envoi que vers l'adresse propriétaire du compte.
+Vérifier un vrai domaine sera nécessaire pour écrire à des clients.
+
+**Le code est dans [`scripts/watchdog/collection-watchdog.py`](../scripts/watchdog/collection-watchdog.py)**, versionné et lisible.
+Pour le modifier, édite ce fichier puis réencode la variable `WD` :
+
+```bash
+base64 < scripts/watchdog/collection-watchdog.py | tr -d '\n'   # ancienne méthode : trop long
+python3 -c "import base64,gzip;print(base64.b64encode(gzip.compress(open('scripts/watchdog/collection-watchdog.py','rb').read(),9)).decode())"
+```
+
+Réglages disponibles via variables d'environnement du job : `STALE_HOURS`
+(défaut 24), `HEARTBEAT_WEEKDAY` (0 = lundi, -1 pour couper le battement de
+cœur), `ALERT_TO`.
+
+**Trois pièges rencontrés à l'installation**, notés pour t'épargner l'enquête :
+
+- Resend est derrière Cloudflare, qui **refuse l'agent utilisateur par défaut
+  de Python** (erreur 1010, renvoyée en HTML). Sans en-tête `User-Agent`
+  explicite, aucun e-mail ne part et l'échec ressemble à une erreur HTTP
+  générique.
+- Azure **refuse silencieusement** une variable d'environnement trop longue :
+  il crée la ressource avec un `template` vide et la marque « Failed », sans
+  message. Le script en clair (10 560 caractères) passait la limite ;
+  compressé, il tient en 4 400.
+- L'environnement avait été créé avec `--logs-destination none` par économie.
+  Fausse économie pour un outil de surveillance : impossible de vérifier ce
+  qu'il faisait. Un espace `flyeas-logs` (rétention 30 jours) est maintenant
+  rattaché.
 
 ---
 

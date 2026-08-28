@@ -162,6 +162,12 @@ def main() -> int:
         for t, n, last in results
     ]
 
+    # An alerting system that cannot deliver its alert must fail loudly, or it
+    # inherits the exact flaw it exists to correct. Undelivered mail is treated
+    # as a watchdog failure, never as a quiet success — which also means the
+    # job's own Succeeded/Failed status becomes proof that the mail went out.
+    # Without this, "Succeeded" would only mean "the script finished".
+
     # The watchdog cannot vouch for silence it could not verify.
     if unreadable == len(WATCHED):
         send_mail(
@@ -176,7 +182,7 @@ def main() -> int:
         return 1
 
     if fresh_total == 0:
-        send_mail(
+        delivered = send_mail(
             f"🔴 Flyeas — aucune donnée collectée depuis {STALE_HOURS} h",
             [
                 f"Zéro ligne écrite dans les {STALE_HOURS} dernières heures.",
@@ -188,10 +194,11 @@ def main() -> int:
                 "SKY_SCRAPPER_MONTHLY_QUOTA. Voir docs/REPRISE.md.",
             ],
         )
-        return 0
+        print(f"[watchdog] stale — alert {'delivered' if delivered else 'NOT DELIVERED'}")
+        return 0 if delivered else 1
 
     if HEARTBEAT_WEEKDAY >= 0 and now.weekday() == HEARTBEAT_WEEKDAY:
-        send_mail(
+        delivered = send_mail(
             f"🟢 Flyeas — collecte vivante ({fresh_total} lignes / 24 h)",
             [
                 "Résumé hebdomadaire. Aucune action requise.",
@@ -202,6 +209,9 @@ def main() -> int:
                 "c'est le chien de garde lui-même qui est mort.",
             ],
         )
+        if not delivered:
+            print("[watchdog] heartbeat NOT DELIVERED", file=sys.stderr)
+            return 1
 
     print(f"[watchdog] ok — {fresh_total} rows in the last {STALE_HOURS}h")
     return 0
